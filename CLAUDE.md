@@ -21,7 +21,7 @@ package.json                     # npm: otica-compartilhado (raiz do repo)
 
 ## Features
 
-### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.1.0, out/2026
+### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.2.0, out/2026
 Origem: 4 Olhos (ago/2026). Páginas de captura por template pronto com edição guiada (4 templates:
 `simples`, `promocao`, `agendar_consulta`, `greats`), página pública `/lp/:slug`, contagem de
 visualizações e captura de lead (nome + telefone + fbclid).
@@ -35,8 +35,9 @@ visualizações e captura de lead (nome + telefone + fbclid).
   em **cada** app (os dois têm migração runtime própria no startup).
 - **Lead é dado permanente**: sem cascade no modelo; `DELETE` de página com lead → 422 ("pause em vez
   de excluir"). Regra herdada do Ariel (histórico de perda de dados), vale para os dois.
-- Slug ASCII-only sem transliterar acento ("Promoção" → "promo-o") — mantido por compatibilidade com
-  slugs já publicados.
+- Slug: sem acento, minúsculo, o resto vira "-" ("Promoção" → `promocao`, desde v0.2.0). Slug gravado
+  nunca é recalculado. A regra existe em dois lugares: `_slug` (router.py) e `normalizarSlug`
+  (LandingPageEditor.jsx).
 - A definição visual dos templates mora **só no frontend**; o backend guarda `conteudo` como JSON solto.
 
 **Frontend** — `configurarLandingPages({...})` uma vez no `main.jsx`, depois usar as páginas:
@@ -79,6 +80,14 @@ para todas as opções.
 8. Repo **público**: nunca commitar segredo, credencial, URL interna, dado de cliente ou telefone real.
 
 ## Changelog
+
+### v0.2.0 (19/10/2026)
+- Editor: bloco "Página" no topo do formulário, com o **nome** (autosave) e o **endereço/slug** editáveis.
+  O slug salva com botão/Enter, mostra o erro 409 ("endereço já em uso") e avisa quando a página já está
+  publicada, porque o link antigo para de funcionar.
+- Slug agora translitera acento ("Promoção" → `promocao`; antes `promo-o`). Isso vale para páginas novas e
+  para slugs editados; slugs já gravados não mudam. Regra igual em `_slug` (router.py) e `normalizarSlug`
+  (LandingPageEditor.jsx): mudar uma exige mudar a outra.
 
 ### v0.1.0 (19/10/2026)
 - Landing pages extraídas da 4 Olhos. Diferenças em relação ao código original da 4 Olhos:

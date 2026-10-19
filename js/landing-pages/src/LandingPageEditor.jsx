@@ -105,6 +105,8 @@ export default function LandingPageEditor() {
 
       <div className="flex-1 max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-0 lg:gap-6 p-4 sm:p-6">
         <div className="space-y-4">
+          <CamposPagina lp={lp} nome={nome} onNomeChange={handleNomeChange} onSalvo={setLp} rotaPublica={rotaPublica} />
+
           {template.campos.map(campo => (
             <CampoEditor key={campo.chave} campo={campo} valor={conteudo[campo.chave]} onChange={v => handleCampoChange(campo.chave, v)} />
           ))}
@@ -128,6 +130,83 @@ export default function LandingPageEditor() {
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  )
+}
+
+// Mesma regra de `_slug` no backend (router.py): sem acento, minúsculo, o resto vira "-".
+// `final=false` enquanto digita (mantém o "-" do fim para dar pra continuar a palavra).
+function normalizarSlug(texto, final = false) {
+  let s = (texto || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-')
+  if (final) s = s.replace(/^-+|-+$/g, '').slice(0, 80)
+  return s
+}
+
+function CamposPagina({ lp, nome, onNomeChange, onSalvo, rotaPublica }) {
+  const [slug, setSlug] = useState(lp.slug)
+  const [salvandoSlug, setSalvandoSlug] = useState(false)
+  const [erroSlug, setErroSlug] = useState('')
+  const slugFinal = normalizarSlug(slug, true)
+  const mudou = slugFinal && slugFinal !== lp.slug
+
+  async function salvarSlug() {
+    if (!mudou || salvandoSlug) return
+    setSalvandoSlug(true)
+    setErroSlug('')
+    try {
+      const atualizado = await atualizarLandingPage(lp.id, { slug: slugFinal })
+      onSalvo(atualizado)
+      setSlug(atualizado.slug)
+    } catch (e) {
+      setErroSlug(e.message)
+    } finally {
+      setSalvandoSlug(false)
+    }
+  }
+
+  return (
+    <div className="rounded-lg border border-gray-200 bg-white p-3 space-y-3">
+      <div>
+        <label className="text-xs font-medium text-gray-500 mb-1 block">Nome da página</label>
+        <input
+          value={nome}
+          onChange={e => onNomeChange(e.target.value)}
+          placeholder="Ex: Promoção Dia das Mães"
+          className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
+        />
+      </div>
+      <div>
+        <label className="text-xs font-medium text-gray-500 mb-1 block">Endereço da página</label>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <div className="flex flex-1 min-w-0 items-center rounded-lg border border-gray-200 focus-within:ring-2 focus-within:ring-violet-400">
+            <span className="pl-3 text-sm text-gray-400 whitespace-nowrap">{rotaPublica}/</span>
+            <input
+              value={slug}
+              onChange={e => { setSlug(normalizarSlug(e.target.value)); setErroSlug('') }}
+              onKeyDown={e => { if (e.key === 'Enter') salvarSlug() }}
+              placeholder="promocao-dia-das-maes"
+              className="flex-1 min-w-0 bg-transparent px-1 py-2 text-sm focus:outline-none"
+            />
+          </div>
+          <button
+            type="button"
+            onClick={salvarSlug}
+            disabled={!mudou || salvandoSlug}
+            className="px-3 py-2 rounded-lg text-sm font-medium bg-violet-600 text-white hover:bg-violet-700 disabled:opacity-40 shrink-0"
+          >
+            {salvandoSlug ? 'Salvando...' : 'Salvar endereço'}
+          </button>
+        </div>
+        {erroSlug && <p className="text-xs text-red-600 mt-1">{erroSlug}</p>}
+        {!erroSlug && mudou && lp.status === 'publicada' && (
+          <p className="text-xs text-amber-700 mt-1">
+            A página está publicada: links já divulgados com o endereço antigo vão parar de funcionar.
+          </p>
+        )}
+        <p className="text-xs text-gray-400 mt-1 break-all">
+          {window.location.origin}{rotaPublica}/{slugFinal || lp.slug}
+        </p>
       </div>
     </div>
   )

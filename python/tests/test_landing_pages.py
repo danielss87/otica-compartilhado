@@ -88,7 +88,7 @@ def test_exige_auth(client):
 
 def test_criar_e_listar(client):
     lp = _criar(client)
-    assert lp["slug"] == "promo-o-de-agosto"
+    assert lp["slug"] == "promocao-de-agosto"
     assert lp["status"] == "rascunho"
     assert lp["criado_por_nome"] == "Daniel"
     lista = client.get("/api/landing-pages", headers=AUTH).json()
@@ -106,6 +106,19 @@ def test_slug_com_colisao(client):
     assert (a["slug"], b["slug"]) == ("oferta", "oferta-2")
     r = client.put(f"/api/landing-pages/{b['id']}", json={"slug": "oferta"}, headers=AUTH)
     assert r.status_code == 409
+
+
+def test_editar_nome_e_slug(client):
+    lp = _criar(client, "Oferta")
+    r = client.put(f"/api/landing-pages/{lp['id']}", json={"nome": "Óculos de Sol", "slug": " Verão Ótica! "}, headers=AUTH)
+    assert r.status_code == 200
+    assert (r.json()["nome"], r.json()["slug"]) == ("Óculos de Sol", "verao-otica")
+    client.post(f"/api/landing-pages/{lp['id']}/publicar", headers=AUTH)
+    assert client.get("/api/publico/landing-pages/verao-otica").status_code == 200
+    assert client.get("/api/publico/landing-pages/oferta").status_code == 404
+    # slug vazio é ignorado (não apaga o endereço)
+    r = client.put(f"/api/landing-pages/{lp['id']}", json={"slug": ""}, headers=AUTH)
+    assert r.json()["slug"] == "verao-otica"
 
 
 def test_atualizar_conteudo(client):

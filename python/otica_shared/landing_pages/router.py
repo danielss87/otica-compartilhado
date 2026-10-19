@@ -11,6 +11,7 @@ Tudo que é específico de cada sistema entra por injeção em `criar_routers`
 """
 import json
 import re
+import unicodedata
 from datetime import datetime, timezone
 from typing import Callable, Optional, Tuple
 
@@ -46,9 +47,11 @@ InfoCriador = Callable[[Session, int], Tuple[Optional[str], Optional[str]]]
 
 
 def _slug(nome: str) -> str:
-    # ASCII-only, sem transliterar acento ("Promoção" → "promo-o") — mesmo
-    # comportamento que a 4 Olhos já tinha; mudar quebraria slugs existentes.
-    s = nome.lower().strip()
+    # Translitera acento ("Promoção" → "promocao"); o resto vira "-". Slug já
+    # gravado nunca é recalculado, então mudar esta regra não quebra link publicado.
+    # Mesma regra de `normalizarSlug` no frontend (LandingPageEditor.jsx).
+    s = unicodedata.normalize("NFKD", nome).encode("ascii", "ignore").decode("ascii")
+    s = s.lower().strip()
     s = re.sub(r"[^a-z0-9]+", "-", s)
     return s.strip("-")[:80] or "pagina"
 
@@ -171,7 +174,7 @@ def criar_routers(
             novo_slug = _slug(data["slug"])
             conflito = db.query(LandingPage).filter(LandingPage.slug == novo_slug, LandingPage.id != lp_id).first()
             if conflito:
-                raise HTTPException(409, "Já existe uma landing page com esse slug.")
+                raise HTTPException(409, "Esse endereço já está em uso por outra landing page.")
             lp.slug = novo_slug
         data.pop("slug", None)
         if "status" in data and data["status"] not in STATUS_VALIDOS:
