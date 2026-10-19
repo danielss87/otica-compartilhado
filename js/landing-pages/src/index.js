@@ -1,0 +1,6 @@
+export { configurarLandingPages } from './config'
+export { LANDING_PAGE_TEMPLATES, TEMPLATE_LIST, TemplateCardPreview } from './templates'
+export { default as LandingPagesLista } from './LandingPagesLista'
+export { default as LandingPageEditor } from './LandingPageEditor'
+export { default as LandingPageView } from './LandingPageView'
+export * as landingPagesApi from './api'

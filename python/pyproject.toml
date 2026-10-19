@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "otica-shared"
+version = "0.1.0"
+description = "Features compartilhadas entre Ariel (Armazém dos Óculos) e 4 Olhos gestão"
+requires-python = ">=3.9"
+# Sem dependências declaradas de propósito: fastapi, sqlalchemy (2.x) e
+# pydantic (2.x) vêm do app hospedeiro — declarar aqui faria o pip mexer nas
+# versões fixadas de cada sistema em produção.
+dependencies = []
+
+[tool.setuptools.packages.find]
+include = ["otica_shared*"]

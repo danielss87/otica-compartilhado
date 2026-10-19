@@ -1,0 +1,25 @@
+{
+  "name": "otica-compartilhado",
+  "version": "0.1.0",
+  "description": "Features compartilhadas entre Ariel (Armazém dos Óculos) e 4 Olhos gestão",
+  "type": "module",
+  "files": [
+    "js/landing-pages/dist"
+  ],
+  "exports": {
+    "./landing-pages": "./js/landing-pages/dist/index.js"
+  },
+  "scripts": {
+    "build": "esbuild js/landing-pages/src/index.js --bundle --format=esm --jsx=automatic --target=es2020 --external:react --external:react/jsx-runtime --external:react-router-dom --external:lucide-react --outfile=js/landing-pages/dist/index.js",
+    "test": "cd python && ../.venv/bin/pytest -q"
+  },
+  "peerDependencies": {
+    "lucide-react": ">=0.300.0",
+    "react": ">=18",
+    "react-router-dom": ">=6"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.10"
+  },
+  "license": "UNLICENSED"
+}
