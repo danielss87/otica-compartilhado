@@ -1,3 +1,5 @@
+import { useRef } from 'react'
+
 // Moldura comum a TODAS as landing pages: logo no topo e botão flutuante de
 // WhatsApp, vindos das configurações gerais (GET /landing-pages/configuracoes;
 // na página pública chegam junto com a página, em `configuracoes`).
@@ -65,12 +67,55 @@ function BotaoWhatsApp({ href, notificacao }) {
 }
 
 // Menu no topo: logo à esquerda + CTA à direita no desktop; só o logo, centralizado, no celular.
+// Rolagem suave até um elemento, com easing (easeInOutCubic, ~0,9s) — como o "scroll to
+// section" do Unbounce. Rola o ancestral rolável mais próximo (a área de pré-visualização no
+// editor) ou a janela (página pública). Sem animação pra quem pede menos movimento.
+function ancestralRolavel(el) {
+  for (let p = el.parentElement; p; p = p.parentElement) {
+    const { overflowY } = getComputedStyle(p)
+    if ((overflowY === 'auto' || overflowY === 'scroll') && p.scrollHeight > p.clientHeight) return p
+  }
+  return null
+}
+
+export function rolarSuaveAte(el, { duracao = 900, folga = 16 } = {}) {
+  if (!el) return
+  const caixa = ancestralRolavel(el)
+  const inicio = caixa ? caixa.scrollTop : window.scrollY
+  const topoRelativo = caixa
+    ? el.getBoundingClientRect().top - caixa.getBoundingClientRect().top
+    : el.getBoundingClientRect().top
+  const maximo = caixa ? caixa.scrollHeight - caixa.clientHeight : document.documentElement.scrollHeight - window.innerHeight
+  const destino = Math.max(0, Math.min(maximo, inicio + topoRelativo - folga))
+  const rolar = (y) => (caixa ? (caixa.scrollTop = y) : window.scrollTo(0, y))
+  if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return rolar(destino)
+  const easeInOutCubic = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2)
+  const t0 = performance.now()
+  const passo = (agora) => {
+    const t = Math.min(1, (agora - t0) / duracao)
+    rolar(inicio + (destino - inicio) * easeInOutCubic(t))
+    if (t < 1) requestAnimationFrame(passo)
+  }
+  requestAnimationFrame(passo)
+}
+
+// Cor do botão do menu: "padrao" (verde se WhatsApp, escuro nos outros) ou a cor
+// principal/de destaque da própria página (`coresDaPagina` em templates.jsx).
+function corDoCta(menu, coresPagina) {
+  if (menu.cta_cor === 'principal' && coresPagina?.principal) return coresPagina.principal
+  if (menu.cta_cor === 'destaque' && coresPagina?.destaque) return coresPagina.destaque
+  return menu.cta_destino === 'whatsapp' ? '#25D366' : '#111827'
+}
+
 // `whatsapp`: config do botão de WhatsApp. A página pública já recebe `menu.cta_url` pronto
 // (calculado no backend, `config.publica`); o editor recebe a config completa e monta aqui.
-function MenuTopo({ logo, menu, whatsapp }) {
-  const ctaUrl = menu.cta_destino === 'whatsapp' && whatsapp?.numero
-    ? linkWhatsApp(whatsapp.numero, whatsapp.mensagem)
-    : menu.cta_url
+function MenuTopo({ logo, menu, whatsapp, coresPagina, onIrParaContato }) {
+  const vaiProContato = menu.cta_destino === 'contato'
+  const ctaUrl = vaiProContato
+    ? '#contato'
+    : menu.cta_destino === 'whatsapp' && whatsapp?.numero
+      ? linkWhatsApp(whatsapp.numero, whatsapp.mensagem)
+      : menu.cta_url
   const cta = menu.cta_texto && ctaUrl
   const ehWhatsapp = menu.cta_destino === 'whatsapp'
   return (
@@ -79,10 +124,11 @@ function MenuTopo({ logo, menu, whatsapp }) {
       {cta && (
         <a
           href={ctaUrl}
-          target="_blank"
-          rel="noopener noreferrer"
+          {...(vaiProContato
+            ? { onClick: (e) => { e.preventDefault(); onIrParaContato() } }
+            : { target: '_blank', rel: 'noopener noreferrer' })}
           className="hidden sm:inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-          style={{ background: ehWhatsapp ? '#25D366' : '#111827' }}
+          style={{ background: corDoCta(menu, coresPagina) }}
         >
           {ehWhatsapp && <IconeWhatsApp className="w-4 h-4" />}
           {menu.cta_texto}
@@ -94,7 +140,10 @@ function MenuTopo({ logo, menu, whatsapp }) {
 
 // `preview`: dentro do editor o botão fica preso ao canto da área de rolagem da
 // pré-visualização (sticky), em vez de `fixed` na janela inteira.
-export default function MolduraLandingPage({ configuracoes, preview = false, children }) {
+// `secaoContato`: id do bloco (`data-secao`) que é a seção de contato desta página;
+// `coresPagina`: { principal, destaque } desta página. Ambos vêm de templates.jsx.
+export default function MolduraLandingPage({ configuracoes, preview = false, secaoContato = null, coresPagina = null, children }) {
+  const raiz = useRef(null)
   const logo = configuracoes?.marca?.logo_url
   const w = configuracoes?.whatsapp
   const wpp = w?.ativo && w?.numero ? linkWhatsApp(w.numero, w.mensagem) : null
@@ -102,8 +151,18 @@ export default function MolduraLandingPage({ configuracoes, preview = false, chi
   const notificacao = w?.notificacao !== false
 
   return (
-    <div className="bg-white">
-      {menu?.ativo && <MenuTopo logo={logo} menu={menu} whatsapp={w} />}
+    <div ref={raiz} className="bg-white">
+      {menu?.ativo && (
+        <MenuTopo
+          logo={logo}
+          menu={menu}
+          whatsapp={w}
+          coresPagina={coresPagina}
+          onIrParaContato={() => rolarSuaveAte(
+            raiz.current?.querySelector(`[data-secao="${secaoContato}"]`) || raiz.current?.querySelector('form'),
+          )}
+        />
+      )}
       {!menu?.ativo && logo && (
         <header className="bg-white border-b border-gray-100 px-5 py-3 flex items-center justify-center">
           <img src={logo} alt="Logo" className="h-10 sm:h-12 w-auto max-w-[220px] object-contain" />

@@ -19,8 +19,10 @@ PADRAO = {
     },
     "marca": {"logo_url": None},
     # Menu no topo (v0.4.0): logo à esquerda + botão CTA à direita no desktop; só o
-    # logo centralizado no celular. cta_destino: "whatsapp" (número configurado) | "url".
-    "menu": {"ativo": False, "cta_texto": "Fale conosco", "cta_destino": "whatsapp", "cta_url": ""},
+    # logo centralizado no celular. cta_destino: "whatsapp" (número configurado) | "url" |
+    # "contato" (rola até a seção de contato da própria página, v0.5.0). cta_cor (v0.5.0):
+    # "padrao" | "principal" | "destaque" (cores da própria página, resolvidas no frontend).
+    "menu": {"ativo": False, "cta_texto": "Fale conosco", "cta_destino": "whatsapp", "cta_url": "", "cta_cor": "padrao"},
 }
 
 
@@ -69,6 +71,8 @@ def publica(cfg: dict) -> dict:
     m = cfg["menu"]
     if m["cta_destino"] == "whatsapp":
         cta_url = link_whatsapp(w["numero"], w["mensagem"]) if w["numero"] else ""
+    elif m["cta_destino"] == "contato":
+        cta_url = "#contato"  # o frontend intercepta e rola até a seção de contato
     else:
         cta_url = m["cta_url"]
     menu_ativo = bool(m["ativo"])
@@ -85,5 +89,6 @@ def publica(cfg: dict) -> dict:
             "cta_texto": m["cta_texto"] if menu_ativo and cta_url else "",
             "cta_destino": m["cta_destino"],
             "cta_url": cta_url if menu_ativo else "",
+            "cta_cor": m["cta_cor"],
         },
     }

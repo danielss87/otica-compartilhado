@@ -21,7 +21,7 @@ package.json                     # npm: otica-compartilhado (raiz do repo)
 
 ## Features
 
-### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.4.0, out/2026
+### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.5.0, out/2026
 Origem: 4 Olhos (ago/2026). Páginas de captura por template pronto com edição guiada (4 templates:
 `simples`, `promocao`, `agendar_consulta`, `greats`), página pública `/lp/:slug`, contagem de
 visualizações e captura de lead (nome + telefone + fbclid).
@@ -89,6 +89,22 @@ para todas as opções.
 8. Repo **público**: nunca commitar segredo, credencial, URL interna, dado de cliente ou telefone real.
 
 ## Changelog
+
+### v0.5.0 (19/10/2026)
+- **Botão do menu leva à seção de contato** (`menu.cta_destino = "contato"`): rola a página até a seção de
+  contato com **transição suave** (`rolarSuaveAte` em `Moldura.jsx`: easeInOutCubic, ~0,9s, rola o
+  ancestral rolável, que no editor é a pré-visualização; sem animação com `prefers-reduced-motion`).
+- **Seção de contato por página**: cada template declara `secoes` (blocos marcados com `data-secao` no
+  `Render`) e `secaoContatoPadrao`. No editor, o campo "Seção de contato" grava `conteudo.secao_contato`.
+  Sem escolha, vale o padrão do template. Resolver com `secaoContatoDaPagina`.
+- **Cor do botão do menu** (`menu.cta_cor`): `padrao` (verde se WhatsApp, escuro nos outros) | `principal`
+  | `destaque`, com as cores da própria página via `cores(conteudo)` do template (`coresDaPagina`; template
+  sem cor própria → escuro `#111827`).
+- **Greats: película escura do hero editável** (`hero_escurecimento`, 0–80%, padrão 25 = o antigo
+  `bg-black/25`, então páginas existentes não mudam). Campo novo do editor: `tipo: 'intensidade'`
+  (controle deslizante com min/max/passo/padrão/unidade e "Voltar ao padrão"), reutilizável.
+- **Template novo**: declarar `secoes` + `secaoContatoPadrao` (e `cores`, se tiver cor própria), e pôr
+  `data-secao` nos blocos do `Render`.
 
 ### v0.4.0 (19/10/2026)
 - **Menu no topo** (configuração `menu`): logo à esquerda e botão CTA à direita no desktop; só o logo,

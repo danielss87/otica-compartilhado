@@ -212,7 +212,7 @@ def test_configuracoes_padrao_desligadas(client):
     assert pub == {
         "whatsapp": {"ativo": False, "numero": "", "mensagem": "", "notificacao": False},
         "marca": {"logo_url": None},
-        "menu": {"ativo": False, "cta_texto": "", "cta_destino": "whatsapp", "cta_url": ""},
+        "menu": {"ativo": False, "cta_texto": "", "cta_destino": "whatsapp", "cta_url": "", "cta_cor": "padrao"},
     }
     assert cfg["whatsapp"]["notificacao"] is True and cfg["menu"]["ativo"] is False
 
@@ -270,10 +270,28 @@ def test_menu_cta_whatsapp_e_url(client):
     menu = client.get(f"/api/publico/landing-pages/{lp['slug']}").json()["configuracoes"]["menu"]
     # funciona mesmo com o botão flutuante desligado
     assert menu == {"ativo": True, "cta_texto": "Fale conosco", "cta_destino": "whatsapp",
-                    "cta_url": "https://wa.me/5511999998888?text=Ol%C3%A1%2C%20tudo%20bem%3F"}
+                    "cta_url": "https://wa.me/5511999998888?text=Ol%C3%A1%2C%20tudo%20bem%3F", "cta_cor": "padrao"}
     r = client.put("/api/landing-pages/configuracoes", headers=AUTH, json={"menu": {"ativo": True, "cta_texto": "Loja", "cta_destino": "url", "cta_url": ""}})
     assert r.status_code == 422
     client.put("/api/landing-pages/configuracoes", headers=AUTH, json={"menu": {"ativo": True, "cta_texto": "Loja", "cta_destino": "url", "cta_url": "loja.com.br/x"}})
     menu = client.get(f"/api/publico/landing-pages/{lp['slug']}").json()["configuracoes"]["menu"]
     assert menu["cta_url"] == "https://loja.com.br/x"
     assert client.put("/api/landing-pages/configuracoes", headers=AUTH, json={"menu": {"ativo": False, "cta_destino": "fax"}}).status_code == 422
+
+
+def test_menu_cta_secao_contato_e_cor_da_pagina(client):
+    r = client.put("/api/landing-pages/configuracoes", headers=AUTH, json={
+        "menu": {"ativo": True, "cta_texto": "Quero o meu", "cta_destino": "contato", "cta_cor": "principal"},
+    })
+    assert r.status_code == 200  # não exige número de WhatsApp nem link
+    lp = _publicar(client)
+    menu = client.get(f"/api/publico/landing-pages/{lp['slug']}").json()["configuracoes"]["menu"]
+    assert menu == {"ativo": True, "cta_texto": "Quero o meu", "cta_destino": "contato", "cta_url": "#contato", "cta_cor": "principal"}
+    r = client.put("/api/landing-pages/configuracoes", headers=AUTH, json={"menu": {"ativo": True, "cta_texto": "X", "cta_destino": "contato", "cta_cor": "roxo"}})
+    assert r.status_code == 422
+
+
+def test_secao_contato_e_escurecimento_salvos_no_conteudo(client):
+    lp = _criar(client, "Greats", template="greats")
+    r = client.put(f"/api/landing-pages/{lp['id']}", headers=AUTH, json={"conteudo": {"secao_contato": "colecoes", "hero_escurecimento": 60}})
+    assert r.json()["conteudo"] == {"secao_contato": "colecoes", "hero_escurecimento": 60}

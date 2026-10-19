@@ -207,7 +207,7 @@ export default function ModalConfiguracoes({ onClose }) {
                     <div>
                       <label className="text-xs font-medium text-gray-500 mb-1 block">O botão leva para</label>
                       <div className="flex gap-2">
-                        {[['whatsapp', 'WhatsApp'], ['url', 'Um link']].map(([valor, rotulo]) => (
+                        {[['whatsapp', 'WhatsApp'], ['contato', 'Seção de contato'], ['url', 'Um link']].map(([valor, rotulo]) => (
                           <button
                             key={valor}
                             type="button"
@@ -225,6 +225,33 @@ export default function ModalConfiguracoes({ onClose }) {
                           Usa o número e a mensagem da seção "Botão de WhatsApp" (funciona mesmo com o botão flutuante desligado).
                         </p>
                       )}
+                      {cfg.menu.cta_destino === 'contato' && (
+                        <p className="text-xs text-gray-400 mt-1">
+                          Rola a página, com transição suave, até a seção de contato. Cada página escolhe a sua no editor
+                          (campo "Seção de contato"); sem escolha, vai para o formulário do modelo.
+                        </p>
+                      )}
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-gray-500 mb-1 block">Cor do botão</label>
+                      <div className="grid grid-cols-3 gap-2">
+                        {[['padrao', 'Padrão'], ['principal', 'Cor principal da página'], ['destaque', 'Cor de destaque da página']].map(([valor, rotulo]) => (
+                          <button
+                            key={valor}
+                            type="button"
+                            onClick={() => setMenu('cta_cor', valor)}
+                            className={`rounded-lg border-2 px-2 py-2 text-xs font-medium leading-tight transition-colors ${
+                              (cfg.menu.cta_cor || 'padrao') === valor ? 'border-violet-500 bg-violet-50 text-violet-700' : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                            }`}
+                          >
+                            {rotulo}
+                          </button>
+                        ))}
+                      </div>
+                      <p className="text-xs text-gray-400 mt-1">
+                        Padrão: verde quando leva ao WhatsApp, escuro nos outros casos. As cores da página acompanham as
+                        cores escolhidas em cada landing page (modelos sem cor própria usam o escuro).
+                      </p>
                     </div>
                     {cfg.menu.cta_destino === 'url' && (
                       <div>

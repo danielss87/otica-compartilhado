@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Save, Play, Pause, Copy, Check, Upload, X, Plus, Trash2 } from 'lucide-react'
-import { LANDING_PAGE_TEMPLATES } from './templates'
+import { LANDING_PAGE_TEMPLATES, coresDaPagina, secaoContatoDaPagina } from './templates'
 import { getConfig } from './config'
 import MolduraLandingPage from './Moldura'
 import {
@@ -114,6 +114,24 @@ export default function LandingPageEditor() {
         <div className="space-y-4">
           <CamposPagina lp={lp} nome={nome} onNomeChange={handleNomeChange} onSalvo={setLp} rotaPublica={rotaPublica} />
 
+          {template.secoes?.length > 0 && (
+            <div>
+              <label className="text-xs font-medium text-gray-500 mb-1 block">Seção de contato</label>
+              <select
+                value={secaoContatoDaPagina(lp.template, conteudo) || ''}
+                onChange={e => handleCampoChange('secao_contato', e.target.value)}
+                className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-violet-400"
+              >
+                {template.secoes.map(sec => (
+                  <option key={sec.id} value={sec.id}>{sec.nome}</option>
+                ))}
+              </select>
+              <p className="text-xs text-gray-400 mt-1">
+                Para onde a página rola quando o botão do menu está configurado para "levar à seção de contato".
+              </p>
+            </div>
+          )}
+
           {template.campos.map(campo => (
             <CampoEditor key={campo.chave} campo={campo} valor={conteudo[campo.chave]} onChange={v => handleCampoChange(campo.chave, v)} />
           ))}
@@ -133,7 +151,12 @@ export default function LandingPageEditor() {
               <span className="w-2.5 h-2.5 rounded-full bg-green-300" />
             </div>
             <div className="max-h-[70vh] overflow-y-auto">
-              <MolduraLandingPage configuracoes={configuracoes} preview>
+              <MolduraLandingPage
+                configuracoes={configuracoes}
+                preview
+                secaoContato={secaoContatoDaPagina(lp.template, conteudo)}
+                coresPagina={coresDaPagina(lp.template, conteudo)}
+              >
                 <template.Render conteudo={conteudo} />
               </MolduraLandingPage>
             </div>
@@ -292,6 +315,9 @@ function CampoEditor({ campo, valor, onChange }) {
   if (campo.tipo === 'cor') {
     return <CampoCor campo={campo} valor={valor} onChange={onChange} />
   }
+  if (campo.tipo === 'intensidade') {
+    return <CampoIntensidade campo={campo} valor={valor} onChange={onChange} />
+  }
   if (campo.tipo === 'bloco') {
     return <CampoBloco campo={campo} valor={valor} onChange={onChange} />
   }
@@ -302,6 +328,38 @@ function CampoEditor({ campo, valor, onChange }) {
     return <CampoListaDepoimentos campo={campo} valor={valor} onChange={onChange} />
   }
   return null
+}
+
+// Controle deslizante numérico (ex: película escura do hero, em %). `valor` vazio = `campo.padrao`.
+function CampoIntensidade({ campo, valor, onChange }) {
+  const atual = valor === undefined || valor === null || valor === '' ? campo.padrao : Number(valor)
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-1">
+        <label className="text-xs font-medium text-gray-500">{campo.label}</label>
+        <span className="text-xs font-semibold text-gray-700 tabular-nums">{atual}{campo.unidade || ''}</span>
+      </div>
+      <input
+        type="range"
+        min={campo.min ?? 0}
+        max={campo.max ?? 100}
+        step={campo.passo ?? 1}
+        value={atual}
+        onChange={e => onChange(Number(e.target.value))}
+        className="w-full accent-violet-600"
+        aria-label={campo.label}
+      />
+      <div className="flex items-center justify-between text-[11px] text-gray-400">
+        <span>{campo.rotuloMin}</span>
+        {atual !== campo.padrao && (
+          <button type="button" onClick={() => onChange(campo.padrao)} className="text-violet-600 hover:text-violet-700">
+            Voltar ao padrão ({campo.padrao}{campo.unidade || ''})
+          </button>
+        )}
+        <span>{campo.rotuloMax}</span>
+      </div>
+    </div>
+  )
 }
 
 function CampoCor({ campo, valor, onChange }) {

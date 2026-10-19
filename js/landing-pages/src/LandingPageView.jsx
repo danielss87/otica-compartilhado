@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { LANDING_PAGE_TEMPLATES } from './templates'
+import { LANDING_PAGE_TEMPLATES, coresDaPagina, secaoContatoDaPagina } from './templates'
 import { buscarLandingPagePublica, registrarVisualizacao, enviarLeadLandingPage } from './api'
 import { getConfig } from './config'
 import MolduraLandingPage from './Moldura'
@@ -59,7 +59,11 @@ export default function LandingPageView() {
 
   return (
     <div className="min-h-screen bg-white">
-      <MolduraLandingPage configuracoes={lp.configuracoes}>
+      <MolduraLandingPage
+        configuracoes={lp.configuracoes}
+        secaoContato={secaoContatoDaPagina(lp.template, lp.conteudo)}
+        coresPagina={coresDaPagina(lp.template, lp.conteudo)}
+      >
         <template.Render conteudo={lp.conteudo || {}} onLead={handleLead} />
       </MolduraLandingPage>
     </div>

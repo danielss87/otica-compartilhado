@@ -13,6 +13,8 @@ export const LANDING_PAGE_TEMPLATES = {
   simples: {
     nome: 'Simples',
     descricao: 'Hero + texto livre + CTA — ideal para uma oferta única e direta.',
+    secoes: [{ id: 'hero', nome: 'Topo (título e imagem)' }, { id: 'texto', nome: 'Texto livre' }, { id: 'formulario', nome: 'Formulário de contato' }],
+    secaoContatoPadrao: 'formulario',
     campos: [
       { chave: 'titulo', label: 'Título (hero)', tipo: 'texto_curto', placeholder: 'Ex: Óculos completo a partir de R$ 250' },
       { chave: 'subtitulo', label: 'Subtítulo', tipo: 'texto_curto', placeholder: 'Ex: Armação + lente, com receita ou sem' },
@@ -22,13 +24,17 @@ export const LANDING_PAGE_TEMPLATES = {
     ],
     Render: ({ conteudo, onLead }) => (
       <div className="max-w-lg mx-auto px-5 py-10 text-center">
-        {conteudo.imagem_url && (
-          <img src={conteudo.imagem_url} alt="" className="w-full rounded-2xl mb-6 object-cover max-h-72" />
-        )}
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{conteudo.titulo || 'Título da oferta'}</h1>
-        {conteudo.subtitulo && <p className="text-base text-gray-500 mb-5">{conteudo.subtitulo}</p>}
-        {conteudo.texto && <p className="text-sm text-gray-600 whitespace-pre-wrap mb-8">{conteudo.texto}</p>}
-        <FormularioLead ctaTexto={conteudo.cta_texto} onLead={onLead} />
+        <div data-secao="hero">
+          {conteudo.imagem_url && (
+            <img src={conteudo.imagem_url} alt="" className="w-full rounded-2xl mb-6 object-cover max-h-72" />
+          )}
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{conteudo.titulo || 'Título da oferta'}</h1>
+          {conteudo.subtitulo && <p className="text-base text-gray-500 mb-5">{conteudo.subtitulo}</p>}
+        </div>
+        {conteudo.texto && <p data-secao="texto" className="text-sm text-gray-600 whitespace-pre-wrap mb-8">{conteudo.texto}</p>}
+        <div data-secao="formulario">
+          <FormularioLead ctaTexto={conteudo.cta_texto} onLead={onLead} />
+        </div>
       </div>
     ),
   },
@@ -36,6 +42,9 @@ export const LANDING_PAGE_TEMPLATES = {
   promocao: {
     nome: 'Promoção',
     descricao: 'Hero + imagem de produto + lista de benefícios + CTA.',
+    secoes: [{ id: 'hero', nome: 'Topo (título e imagem)' }, { id: 'beneficios', nome: 'Benefícios' }, { id: 'formulario', nome: 'Formulário de contato' }],
+    secaoContatoPadrao: 'formulario',
+    cores: () => ({ destaque: '#8B5CF6' }),
     campos: [
       { chave: 'titulo', label: 'Título (hero)', tipo: 'texto_curto', placeholder: 'Ex: Promoção de agosto' },
       { chave: 'subtitulo', label: 'Subtítulo', tipo: 'texto_curto' },
@@ -45,7 +54,7 @@ export const LANDING_PAGE_TEMPLATES = {
     ],
     Render: ({ conteudo, onLead }) => (
       <div className="max-w-lg mx-auto px-5 py-10">
-        <div className="text-center mb-6">
+        <div data-secao="hero" className="text-center mb-6">
           {conteudo.imagem_url && (
             <img src={conteudo.imagem_url} alt="" className="w-full rounded-2xl mb-6 object-cover max-h-72" />
           )}
@@ -53,7 +62,7 @@ export const LANDING_PAGE_TEMPLATES = {
           {conteudo.subtitulo && <p className="text-base text-gray-500">{conteudo.subtitulo}</p>}
         </div>
         {Array.isArray(conteudo.beneficios) && conteudo.beneficios.length > 0 && (
-          <ul className="space-y-2 mb-8">
+          <ul data-secao="beneficios" className="space-y-2 mb-8">
             {conteudo.beneficios.filter(Boolean).map((b, i) => (
               <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
                 <span className="mt-1 w-1.5 h-1.5 rounded-full bg-violet-500 shrink-0" />
@@ -62,7 +71,9 @@ export const LANDING_PAGE_TEMPLATES = {
             ))}
           </ul>
         )}
-        <FormularioLead ctaTexto={conteudo.cta_texto} onLead={onLead} />
+        <div data-secao="formulario">
+          <FormularioLead ctaTexto={conteudo.cta_texto} onLead={onLead} />
+        </div>
       </div>
     ),
   },
@@ -70,6 +81,9 @@ export const LANDING_PAGE_TEMPLATES = {
   agendar_consulta: {
     nome: 'Agendar consulta',
     descricao: 'Hero + CTA de WhatsApp + FAQ.',
+    secoes: [{ id: 'hero', nome: 'Topo (título e imagem)' }, { id: 'contato', nome: 'Botão de WhatsApp / formulário' }, { id: 'faq', nome: 'Perguntas frequentes' }],
+    secaoContatoPadrao: 'contato',
+    cores: () => ({ principal: '#059669' }),
     campos: [
       { chave: 'titulo', label: 'Título (hero)', tipo: 'texto_curto', placeholder: 'Ex: Agende sua consulta' },
       { chave: 'subtitulo', label: 'Subtítulo', tipo: 'texto_curto' },
@@ -85,13 +99,14 @@ export const LANDING_PAGE_TEMPLATES = {
         : null
       return (
         <div className="max-w-lg mx-auto px-5 py-10">
-          <div className="text-center mb-6">
+          <div data-secao="hero" className="text-center mb-6">
             {conteudo.imagem_url && (
               <img src={conteudo.imagem_url} alt="" className="w-full rounded-2xl mb-6 object-cover max-h-72" />
             )}
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{conteudo.titulo || 'Agende sua consulta'}</h1>
             {conteudo.subtitulo && <p className="text-base text-gray-500">{conteudo.subtitulo}</p>}
           </div>
+          <div data-secao="contato">
           {wppUrl ? (
             <a
               href={wppUrl}
@@ -105,8 +120,9 @@ export const LANDING_PAGE_TEMPLATES = {
           ) : (
             <FormularioLead ctaTexto={conteudo.cta_texto} onLead={onLead} />
           )}
+          </div>
           {Array.isArray(conteudo.faq) && conteudo.faq.length > 0 && (
-            <div className="mt-8 space-y-4">
+            <div data-secao="faq" className="mt-8 space-y-4">
               {conteudo.faq.filter(f => f?.pergunta).map((f, i) => (
                 <div key={i}>
                   <p className="text-sm font-semibold text-gray-900">{f.pergunta}</p>
@@ -128,12 +144,20 @@ export const LANDING_PAGE_TEMPLATES = {
   greats: {
     nome: 'Greats',
     descricao: 'Layout premium de e-commerce (hero, mosaico de fotos, CTAs) — fiel a uma referência real.',
+    secoes: [
+      { id: 'hero', nome: 'Hero' }, { id: 'selos', nome: 'Selos de confiança' }, { id: 'banner', nome: 'Imagem de destaque' },
+      { id: 'mosaico_1', nome: 'Mosaico 1' }, { id: 'faixa_cta', nome: 'Faixa de CTA' }, { id: 'mosaico_2', nome: 'Mosaico 2' },
+      { id: 'colecoes', nome: 'Coleções (coluna 1 / coluna 2)' }, { id: 'depoimentos', nome: 'Depoimentos' }, { id: 'rodape', nome: 'Rodapé' },
+    ],
+    secaoContatoPadrao: 'faixa_cta',
+    cores: (c) => ({ principal: c.cor_primaria || '#1E3A5F', destaque: c.cor_secundaria || '#E5B3A0' }),
     campos: [
       { chave: 'cor_primaria', label: 'Cor principal (títulos, botões)', tipo: 'cor', padrao: '#1E3A5F' },
       { chave: 'cor_secundaria', label: 'Cor de destaque (seção feminino)', tipo: 'cor', padrao: '#E5B3A0' },
 
       { chave: 'selo_texto', label: 'Selo no topo do hero', tipo: 'texto_curto', placeholder: 'Ex: SUA MARCA' },
       { chave: 'hero_imagem', label: 'Imagem de fundo do hero', tipo: 'imagem' },
+      { chave: 'hero_escurecimento', label: 'Película escura sobre a imagem do hero', tipo: 'intensidade', min: 0, max: 80, passo: 5, padrao: 25, unidade: '%', rotuloMin: 'Mais clara', rotuloMax: 'Mais escura' },
       { chave: 'hero_titulo', label: 'Título do hero', tipo: 'texto_curto', placeholder: 'Ex: O QUE PROCURAR EM ÓCULOS DE QUALIDADE' },
       { chave: 'hero_cta_texto', label: 'Texto do botão do hero', tipo: 'texto_curto', placeholder: 'Ex: VER COLEÇÃO' },
       { chave: 'hero_cta_url', label: 'Link do botão do hero', tipo: 'texto_curto', placeholder: 'https://...' },
@@ -169,6 +193,24 @@ export const LANDING_PAGE_TEMPLATES = {
     ],
     Render: ({ conteudo }) => <GreatsRender conteudo={conteudo} />,
   },
+}
+
+// `secoes`: blocos marcados com `data-secao` no Render — a página escolhe um como "seção de
+// contato" (conteudo.secao_contato), destino do botão do menu quando ele leva pro contato.
+export function secaoContatoDaPagina(templateId, conteudo) {
+  const t = LANDING_PAGE_TEMPLATES[templateId]
+  if (!t) return null
+  const escolhida = conteudo?.secao_contato
+  return t.secoes?.some(s => s.id === escolhida) ? escolhida : t.secaoContatoPadrao
+}
+
+// Cores da página pra "mesma cor da página" no botão do menu. Template sem cor própria
+// cai no escuro padrão dos botões dos templates (gray-900).
+const COR_PADRAO_PAGINA = '#111827'
+export function coresDaPagina(templateId, conteudo) {
+  const t = LANDING_PAGE_TEMPLATES[templateId]
+  const cores = t?.cores ? t.cores(conteudo || {}) : {}
+  return { principal: cores.principal || COR_PADRAO_PAGINA, destaque: cores.destaque || cores.principal || COR_PADRAO_PAGINA }
 }
 
 export const TEMPLATE_LIST = Object.entries(LANDING_PAGE_TEMPLATES).map(([id, t]) => ({
@@ -377,12 +419,17 @@ function GreatsBloco({ bloco, corPrimaria, fundo = 'branco', className = '' }) {
 }
 
 const GREATS_ICONES = [Gem, Footprints, RotateCcw]
+const GREATS_ESCURECIMENTO_PADRAO = 25
 
 function GreatsRender({ conteudo }) {
   useGreatsFont()
   const c = conteudo || {}
   const corPrimaria = c.cor_primaria || '#1E3A5F'
   const corSecundaria = c.cor_secundaria || '#E5B3A0'
+  // Película escura sobre a foto do hero, em % (0 = sem película). Padrão 25 = o
+  // bg-black/25 que a página tinha antes de virar campo editável.
+  const escurecimentoHero = Number.isFinite(Number(c.hero_escurecimento)) && c.hero_escurecimento !== ''
+    && c.hero_escurecimento != null ? Number(c.hero_escurecimento) : GREATS_ESCURECIMENTO_PADRAO
   const features = Array.isArray(c.features) && c.features.length > 0
     ? c.features
     : [
@@ -400,13 +447,13 @@ function GreatsRender({ conteudo }) {
   return (
     <div style={{ fontFamily: GREATS_FONT_STACK }} className="bg-white">
       {/* Hero */}
-      <div className="relative w-full min-h-[380px] sm:min-h-[440px] flex flex-col items-center justify-center text-center px-6 py-16 overflow-hidden">
+      <div data-secao="hero" className="relative w-full min-h-[380px] sm:min-h-[440px] flex flex-col items-center justify-center text-center px-6 py-16 overflow-hidden">
         {c.hero_imagem ? (
           <img src={c.hero_imagem} alt="" className="absolute inset-0 w-full h-full object-cover" />
         ) : (
           <div className="absolute inset-0 bg-gray-300" />
         )}
-        <div className="absolute inset-0 bg-black/25" />
+        <div className="absolute inset-0" style={{ background: `rgba(0, 0, 0, ${escurecimentoHero / 100})` }} />
         <div className="relative z-10 flex flex-col items-center gap-5">
           <span
             className="px-4 py-1.5 text-[11px] font-bold tracking-[0.2em] uppercase text-white"
@@ -422,7 +469,7 @@ function GreatsRender({ conteudo }) {
       </div>
 
       {/* Selos de confiança */}
-      <div className="grid grid-cols-3 gap-3 sm:gap-6 px-4 sm:px-10 py-10" style={{ background: '#F7F6F4' }}>
+      <div data-secao="selos" className="grid grid-cols-3 gap-3 sm:gap-6 px-4 sm:px-10 py-10" style={{ background: '#F7F6F4' }}>
         {features.slice(0, 3).map((f, i) => {
           const Icone = GREATS_ICONES[i % GREATS_ICONES.length]
           return (
@@ -438,7 +485,7 @@ function GreatsRender({ conteudo }) {
       </div>
 
       {/* Banner com detalhe do produto */}
-      <div className="relative w-full">
+      <div data-secao="banner" className="relative w-full">
         <GreatsImg src={c.banner_imagem} className="w-full h-56 sm:h-72 object-cover" />
         {c.banner_anotacao && (
           <div className="absolute left-3 bottom-3 sm:left-6 sm:bottom-6 bg-white/95 px-3 py-1.5 flex items-center gap-1.5 shadow-sm">
@@ -450,7 +497,7 @@ function GreatsRender({ conteudo }) {
       </div>
 
       {/* Mosaico 1: bloco texto / imagem / imagem / bloco navy / bloco */}
-      <div className="grid grid-cols-2">
+      <div data-secao="mosaico_1" className="grid grid-cols-2">
         <GreatsBloco bloco={c.bloco_1} corPrimaria={corPrimaria} fundo="branco" />
         <GreatsImg src={c.mosaico_1_imagem} className="w-full aspect-[4/5] object-cover" />
         <GreatsImg src={c.mosaico_2_imagem} className="w-full aspect-[4/5] object-cover" />
@@ -461,7 +508,7 @@ function GreatsRender({ conteudo }) {
       </div>
 
       {/* Faixa de CTA */}
-      <div className="grid grid-cols-2 items-stretch" style={{ background: '#F7F6F4' }}>
+      <div data-secao="faixa_cta" className="grid grid-cols-2 items-stretch" style={{ background: '#F7F6F4' }}>
         <div className="flex flex-col justify-center gap-3 p-8 sm:p-10">
           <h3 className="text-lg sm:text-2xl font-extrabold uppercase tracking-tight" style={{ color: corPrimaria }}>
             {c.cta2_bloco?.titulo || 'Confira nossa coleção'}
@@ -475,7 +522,7 @@ function GreatsRender({ conteudo }) {
       </div>
 
       {/* Mosaico 2: bloco navy / imagem / imagem / bloco branco */}
-      <div className="grid grid-cols-2">
+      <div data-secao="mosaico_2" className="grid grid-cols-2">
         <GreatsBloco bloco={c.bloco_4} corPrimaria={corPrimaria} fundo="escuro" />
         <GreatsImg src={c.mosaico_3_imagem} className="w-full aspect-square object-cover" />
         <GreatsImg src={c.mosaico_4_imagem} className="w-full aspect-square object-cover" />
@@ -483,7 +530,7 @@ function GreatsRender({ conteudo }) {
       </div>
 
       {/* Masculino / Feminino */}
-      <div className="grid grid-cols-2">
+      <div data-secao="colecoes" className="grid grid-cols-2">
         <div className="flex flex-col items-center justify-center gap-3 py-14 px-4" style={{ background: corPrimaria }}>
           <h3 className="text-white text-lg sm:text-xl font-extrabold uppercase tracking-wide">
             {c.men_titulo || 'MASCULINO'}
@@ -499,7 +546,7 @@ function GreatsRender({ conteudo }) {
       </div>
 
       {/* Depoimentos */}
-      <div className="grid grid-cols-2 gap-4 sm:gap-8 px-4 sm:px-10 py-12 text-center">
+      <div data-secao="depoimentos" className="grid grid-cols-2 gap-4 sm:gap-8 px-4 sm:px-10 py-12 text-center">
         {depoimentos.slice(0, 2).map((d, i) => (
           <div key={i} className="flex flex-col items-center gap-2">
             <Quote size={16} className="text-gray-300" fill="currentColor" />
@@ -515,7 +562,7 @@ function GreatsRender({ conteudo }) {
       </div>
 
       {/* Rodapé */}
-      <div className="text-center text-[11px] text-gray-400 py-6 border-t border-gray-100">
+      <div data-secao="rodape" className="text-center text-[11px] text-gray-400 py-6 border-t border-gray-100">
         {c.rodape_texto || `© ${new Date().getFullYear()} Todos os direitos reservados.`}
       </div>
     </div>

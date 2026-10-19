@@ -39,6 +39,8 @@ var LANDING_PAGE_TEMPLATES = {
   simples: {
     nome: "Simples",
     descricao: "Hero + texto livre + CTA \u2014 ideal para uma oferta \xFAnica e direta.",
+    secoes: [{ id: "hero", nome: "Topo (t\xEDtulo e imagem)" }, { id: "texto", nome: "Texto livre" }, { id: "formulario", nome: "Formul\xE1rio de contato" }],
+    secaoContatoPadrao: "formulario",
     campos: [
       { chave: "titulo", label: "T\xEDtulo (hero)", tipo: "texto_curto", placeholder: "Ex: \xD3culos completo a partir de R$ 250" },
       { chave: "subtitulo", label: "Subt\xEDtulo", tipo: "texto_curto", placeholder: "Ex: Arma\xE7\xE3o + lente, com receita ou sem" },
@@ -47,16 +49,21 @@ var LANDING_PAGE_TEMPLATES = {
       { chave: "cta_texto", label: "Texto do bot\xE3o", tipo: "texto_curto", placeholder: "Ex: Quero garantir o meu" }
     ],
     Render: ({ conteudo, onLead }) => /* @__PURE__ */ jsxs("div", { className: "max-w-lg mx-auto px-5 py-10 text-center", children: [
-      conteudo.imagem_url && /* @__PURE__ */ jsx("img", { src: conteudo.imagem_url, alt: "", className: "w-full rounded-2xl mb-6 object-cover max-h-72" }),
-      /* @__PURE__ */ jsx("h1", { className: "text-2xl sm:text-3xl font-bold text-gray-900 mb-2", children: conteudo.titulo || "T\xEDtulo da oferta" }),
-      conteudo.subtitulo && /* @__PURE__ */ jsx("p", { className: "text-base text-gray-500 mb-5", children: conteudo.subtitulo }),
-      conteudo.texto && /* @__PURE__ */ jsx("p", { className: "text-sm text-gray-600 whitespace-pre-wrap mb-8", children: conteudo.texto }),
-      /* @__PURE__ */ jsx(FormularioLead, { ctaTexto: conteudo.cta_texto, onLead })
+      /* @__PURE__ */ jsxs("div", { "data-secao": "hero", children: [
+        conteudo.imagem_url && /* @__PURE__ */ jsx("img", { src: conteudo.imagem_url, alt: "", className: "w-full rounded-2xl mb-6 object-cover max-h-72" }),
+        /* @__PURE__ */ jsx("h1", { className: "text-2xl sm:text-3xl font-bold text-gray-900 mb-2", children: conteudo.titulo || "T\xEDtulo da oferta" }),
+        conteudo.subtitulo && /* @__PURE__ */ jsx("p", { className: "text-base text-gray-500 mb-5", children: conteudo.subtitulo })
+      ] }),
+      conteudo.texto && /* @__PURE__ */ jsx("p", { "data-secao": "texto", className: "text-sm text-gray-600 whitespace-pre-wrap mb-8", children: conteudo.texto }),
+      /* @__PURE__ */ jsx("div", { "data-secao": "formulario", children: /* @__PURE__ */ jsx(FormularioLead, { ctaTexto: conteudo.cta_texto, onLead }) })
     ] })
   },
   promocao: {
     nome: "Promo\xE7\xE3o",
     descricao: "Hero + imagem de produto + lista de benef\xEDcios + CTA.",
+    secoes: [{ id: "hero", nome: "Topo (t\xEDtulo e imagem)" }, { id: "beneficios", nome: "Benef\xEDcios" }, { id: "formulario", nome: "Formul\xE1rio de contato" }],
+    secaoContatoPadrao: "formulario",
+    cores: () => ({ destaque: "#8B5CF6" }),
     campos: [
       { chave: "titulo", label: "T\xEDtulo (hero)", tipo: "texto_curto", placeholder: "Ex: Promo\xE7\xE3o de agosto" },
       { chave: "subtitulo", label: "Subt\xEDtulo", tipo: "texto_curto" },
@@ -65,21 +72,24 @@ var LANDING_PAGE_TEMPLATES = {
       { chave: "cta_texto", label: "Texto do bot\xE3o", tipo: "texto_curto", placeholder: "Ex: Quero aproveitar" }
     ],
     Render: ({ conteudo, onLead }) => /* @__PURE__ */ jsxs("div", { className: "max-w-lg mx-auto px-5 py-10", children: [
-      /* @__PURE__ */ jsxs("div", { className: "text-center mb-6", children: [
+      /* @__PURE__ */ jsxs("div", { "data-secao": "hero", className: "text-center mb-6", children: [
         conteudo.imagem_url && /* @__PURE__ */ jsx("img", { src: conteudo.imagem_url, alt: "", className: "w-full rounded-2xl mb-6 object-cover max-h-72" }),
         /* @__PURE__ */ jsx("h1", { className: "text-2xl sm:text-3xl font-bold text-gray-900 mb-2", children: conteudo.titulo || "T\xEDtulo da promo\xE7\xE3o" }),
         conteudo.subtitulo && /* @__PURE__ */ jsx("p", { className: "text-base text-gray-500", children: conteudo.subtitulo })
       ] }),
-      Array.isArray(conteudo.beneficios) && conteudo.beneficios.length > 0 && /* @__PURE__ */ jsx("ul", { className: "space-y-2 mb-8", children: conteudo.beneficios.filter(Boolean).map((b, i) => /* @__PURE__ */ jsxs("li", { className: "flex items-start gap-2 text-sm text-gray-700", children: [
+      Array.isArray(conteudo.beneficios) && conteudo.beneficios.length > 0 && /* @__PURE__ */ jsx("ul", { "data-secao": "beneficios", className: "space-y-2 mb-8", children: conteudo.beneficios.filter(Boolean).map((b, i) => /* @__PURE__ */ jsxs("li", { className: "flex items-start gap-2 text-sm text-gray-700", children: [
         /* @__PURE__ */ jsx("span", { className: "mt-1 w-1.5 h-1.5 rounded-full bg-violet-500 shrink-0" }),
         b
       ] }, i)) }),
-      /* @__PURE__ */ jsx(FormularioLead, { ctaTexto: conteudo.cta_texto, onLead })
+      /* @__PURE__ */ jsx("div", { "data-secao": "formulario", children: /* @__PURE__ */ jsx(FormularioLead, { ctaTexto: conteudo.cta_texto, onLead }) })
     ] })
   },
   agendar_consulta: {
     nome: "Agendar consulta",
     descricao: "Hero + CTA de WhatsApp + FAQ.",
+    secoes: [{ id: "hero", nome: "Topo (t\xEDtulo e imagem)" }, { id: "contato", nome: "Bot\xE3o de WhatsApp / formul\xE1rio" }, { id: "faq", nome: "Perguntas frequentes" }],
+    secaoContatoPadrao: "contato",
+    cores: () => ({ principal: "#059669" }),
     campos: [
       { chave: "titulo", label: "T\xEDtulo (hero)", tipo: "texto_curto", placeholder: "Ex: Agende sua consulta" },
       { chave: "subtitulo", label: "Subt\xEDtulo", tipo: "texto_curto" },
@@ -92,12 +102,12 @@ var LANDING_PAGE_TEMPLATES = {
     Render: ({ conteudo, onLead }) => {
       const wppUrl = conteudo.whatsapp_numero ? `https://wa.me/${conteudo.whatsapp_numero}?text=${encodeURIComponent(conteudo.whatsapp_mensagem || "Ol\xE1, quero agendar uma consulta")}` : null;
       return /* @__PURE__ */ jsxs("div", { className: "max-w-lg mx-auto px-5 py-10", children: [
-        /* @__PURE__ */ jsxs("div", { className: "text-center mb-6", children: [
+        /* @__PURE__ */ jsxs("div", { "data-secao": "hero", className: "text-center mb-6", children: [
           conteudo.imagem_url && /* @__PURE__ */ jsx("img", { src: conteudo.imagem_url, alt: "", className: "w-full rounded-2xl mb-6 object-cover max-h-72" }),
           /* @__PURE__ */ jsx("h1", { className: "text-2xl sm:text-3xl font-bold text-gray-900 mb-2", children: conteudo.titulo || "Agende sua consulta" }),
           conteudo.subtitulo && /* @__PURE__ */ jsx("p", { className: "text-base text-gray-500", children: conteudo.subtitulo })
         ] }),
-        wppUrl ? /* @__PURE__ */ jsxs(
+        /* @__PURE__ */ jsx("div", { "data-secao": "contato", children: wppUrl ? /* @__PURE__ */ jsxs(
           "a",
           {
             href: wppUrl,
@@ -109,8 +119,8 @@ var LANDING_PAGE_TEMPLATES = {
               conteudo.cta_texto || "Agendar pelo WhatsApp"
             ]
           }
-        ) : /* @__PURE__ */ jsx(FormularioLead, { ctaTexto: conteudo.cta_texto, onLead }),
-        Array.isArray(conteudo.faq) && conteudo.faq.length > 0 && /* @__PURE__ */ jsx("div", { className: "mt-8 space-y-4", children: conteudo.faq.filter((f) => f?.pergunta).map((f, i) => /* @__PURE__ */ jsxs("div", { children: [
+        ) : /* @__PURE__ */ jsx(FormularioLead, { ctaTexto: conteudo.cta_texto, onLead }) }),
+        Array.isArray(conteudo.faq) && conteudo.faq.length > 0 && /* @__PURE__ */ jsx("div", { "data-secao": "faq", className: "mt-8 space-y-4", children: conteudo.faq.filter((f) => f?.pergunta).map((f, i) => /* @__PURE__ */ jsxs("div", { children: [
           /* @__PURE__ */ jsx("p", { className: "text-sm font-semibold text-gray-900", children: f.pergunta }),
           /* @__PURE__ */ jsx("p", { className: "text-sm text-gray-500 mt-0.5", children: f.resposta })
         ] }, i)) })
@@ -125,11 +135,25 @@ var LANDING_PAGE_TEMPLATES = {
   greats: {
     nome: "Greats",
     descricao: "Layout premium de e-commerce (hero, mosaico de fotos, CTAs) \u2014 fiel a uma refer\xEAncia real.",
+    secoes: [
+      { id: "hero", nome: "Hero" },
+      { id: "selos", nome: "Selos de confian\xE7a" },
+      { id: "banner", nome: "Imagem de destaque" },
+      { id: "mosaico_1", nome: "Mosaico 1" },
+      { id: "faixa_cta", nome: "Faixa de CTA" },
+      { id: "mosaico_2", nome: "Mosaico 2" },
+      { id: "colecoes", nome: "Cole\xE7\xF5es (coluna 1 / coluna 2)" },
+      { id: "depoimentos", nome: "Depoimentos" },
+      { id: "rodape", nome: "Rodap\xE9" }
+    ],
+    secaoContatoPadrao: "faixa_cta",
+    cores: (c) => ({ principal: c.cor_primaria || "#1E3A5F", destaque: c.cor_secundaria || "#E5B3A0" }),
     campos: [
       { chave: "cor_primaria", label: "Cor principal (t\xEDtulos, bot\xF5es)", tipo: "cor", padrao: "#1E3A5F" },
       { chave: "cor_secundaria", label: "Cor de destaque (se\xE7\xE3o feminino)", tipo: "cor", padrao: "#E5B3A0" },
       { chave: "selo_texto", label: "Selo no topo do hero", tipo: "texto_curto", placeholder: "Ex: SUA MARCA" },
       { chave: "hero_imagem", label: "Imagem de fundo do hero", tipo: "imagem" },
+      { chave: "hero_escurecimento", label: "Pel\xEDcula escura sobre a imagem do hero", tipo: "intensidade", min: 0, max: 80, passo: 5, padrao: 25, unidade: "%", rotuloMin: "Mais clara", rotuloMax: "Mais escura" },
       { chave: "hero_titulo", label: "T\xEDtulo do hero", tipo: "texto_curto", placeholder: "Ex: O QUE PROCURAR EM \xD3CULOS DE QUALIDADE" },
       { chave: "hero_cta_texto", label: "Texto do bot\xE3o do hero", tipo: "texto_curto", placeholder: "Ex: VER COLE\xC7\xC3O" },
       { chave: "hero_cta_url", label: "Link do bot\xE3o do hero", tipo: "texto_curto", placeholder: "https://..." },
@@ -159,6 +183,18 @@ var LANDING_PAGE_TEMPLATES = {
     Render: ({ conteudo }) => /* @__PURE__ */ jsx(GreatsRender, { conteudo })
   }
 };
+function secaoContatoDaPagina(templateId, conteudo) {
+  const t = LANDING_PAGE_TEMPLATES[templateId];
+  if (!t) return null;
+  const escolhida = conteudo?.secao_contato;
+  return t.secoes?.some((s) => s.id === escolhida) ? escolhida : t.secaoContatoPadrao;
+}
+var COR_PADRAO_PAGINA = "#111827";
+function coresDaPagina(templateId, conteudo) {
+  const t = LANDING_PAGE_TEMPLATES[templateId];
+  const cores = t?.cores ? t.cores(conteudo || {}) : {};
+  return { principal: cores.principal || COR_PADRAO_PAGINA, destaque: cores.destaque || cores.principal || COR_PADRAO_PAGINA };
+}
 var TEMPLATE_LIST = Object.entries(LANDING_PAGE_TEMPLATES).map(([id, t]) => ({
   id,
   nome: t.nome,
@@ -321,11 +357,13 @@ function GreatsBloco({ bloco, corPrimaria, fundo = "branco", className = "" }) {
   );
 }
 var GREATS_ICONES = [Gem, Footprints, RotateCcw];
+var GREATS_ESCURECIMENTO_PADRAO = 25;
 function GreatsRender({ conteudo }) {
   useGreatsFont();
   const c = conteudo || {};
   const corPrimaria = c.cor_primaria || "#1E3A5F";
   const corSecundaria = c.cor_secundaria || "#E5B3A0";
+  const escurecimentoHero = Number.isFinite(Number(c.hero_escurecimento)) && c.hero_escurecimento !== "" && c.hero_escurecimento != null ? Number(c.hero_escurecimento) : GREATS_ESCURECIMENTO_PADRAO;
   const features = Array.isArray(c.features) && c.features.length > 0 ? c.features : [
     { titulo: "FEITOS \xC0 M\xC3O", descricao: "Produzidos com aten\xE7\xE3o aos m\xEDnimos detalhes, por artes\xE3os experientes." },
     { titulo: "MATERIAIS PREMIUM", descricao: "Usamos apenas materiais de alta qualidade, por dentro e por fora." },
@@ -336,9 +374,9 @@ function GreatsRender({ conteudo }) {
     { texto: "Chegou r\xE1pido e \xE9 ainda melhor do que nas fotos.", nome: "Cliente satisfeito" }
   ];
   return /* @__PURE__ */ jsxs("div", { style: { fontFamily: GREATS_FONT_STACK }, className: "bg-white", children: [
-    /* @__PURE__ */ jsxs("div", { className: "relative w-full min-h-[380px] sm:min-h-[440px] flex flex-col items-center justify-center text-center px-6 py-16 overflow-hidden", children: [
+    /* @__PURE__ */ jsxs("div", { "data-secao": "hero", className: "relative w-full min-h-[380px] sm:min-h-[440px] flex flex-col items-center justify-center text-center px-6 py-16 overflow-hidden", children: [
       c.hero_imagem ? /* @__PURE__ */ jsx("img", { src: c.hero_imagem, alt: "", className: "absolute inset-0 w-full h-full object-cover" }) : /* @__PURE__ */ jsx("div", { className: "absolute inset-0 bg-gray-300" }),
-      /* @__PURE__ */ jsx("div", { className: "absolute inset-0 bg-black/25" }),
+      /* @__PURE__ */ jsx("div", { className: "absolute inset-0", style: { background: `rgba(0, 0, 0, ${escurecimentoHero / 100})` } }),
       /* @__PURE__ */ jsxs("div", { className: "relative z-10 flex flex-col items-center gap-5", children: [
         /* @__PURE__ */ jsx(
           "span",
@@ -352,7 +390,7 @@ function GreatsRender({ conteudo }) {
         /* @__PURE__ */ jsx(GreatsBotao, { texto: c.hero_cta_texto || "SAIBA MAIS", url: c.hero_cta_url, variante: "escuro", cor: corPrimaria })
       ] })
     ] }),
-    /* @__PURE__ */ jsx("div", { className: "grid grid-cols-3 gap-3 sm:gap-6 px-4 sm:px-10 py-10", style: { background: "#F7F6F4" }, children: features.slice(0, 3).map((f, i) => {
+    /* @__PURE__ */ jsx("div", { "data-secao": "selos", className: "grid grid-cols-3 gap-3 sm:gap-6 px-4 sm:px-10 py-10", style: { background: "#F7F6F4" }, children: features.slice(0, 3).map((f, i) => {
       const Icone = GREATS_ICONES[i % GREATS_ICONES.length];
       return /* @__PURE__ */ jsxs("div", { className: "flex flex-col gap-1.5", children: [
         /* @__PURE__ */ jsx(Icone, { size: 22, style: { color: corPrimaria }, strokeWidth: 1.75 }),
@@ -360,18 +398,18 @@ function GreatsRender({ conteudo }) {
         /* @__PURE__ */ jsx("p", { className: "text-[11px] sm:text-xs text-gray-500 leading-snug", children: f.descricao })
       ] }, i);
     }) }),
-    /* @__PURE__ */ jsxs("div", { className: "relative w-full", children: [
+    /* @__PURE__ */ jsxs("div", { "data-secao": "banner", className: "relative w-full", children: [
       /* @__PURE__ */ jsx(GreatsImg, { src: c.banner_imagem, className: "w-full h-56 sm:h-72 object-cover" }),
       c.banner_anotacao && /* @__PURE__ */ jsx("div", { className: "absolute left-3 bottom-3 sm:left-6 sm:bottom-6 bg-white/95 px-3 py-1.5 flex items-center gap-1.5 shadow-sm", children: /* @__PURE__ */ jsx("span", { className: "text-gray-900 text-[11px] sm:text-xs font-bold uppercase tracking-wide", children: c.banner_anotacao }) })
     ] }),
-    /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-2", children: [
+    /* @__PURE__ */ jsxs("div", { "data-secao": "mosaico_1", className: "grid grid-cols-2", children: [
       /* @__PURE__ */ jsx(GreatsBloco, { bloco: c.bloco_1, corPrimaria, fundo: "branco" }),
       /* @__PURE__ */ jsx(GreatsImg, { src: c.mosaico_1_imagem, className: "w-full aspect-[4/5] object-cover" }),
       /* @__PURE__ */ jsx(GreatsImg, { src: c.mosaico_2_imagem, className: "w-full aspect-[4/5] object-cover" }),
       /* @__PURE__ */ jsx(GreatsBloco, { bloco: c.bloco_2, corPrimaria, fundo: "escuro" }),
       /* @__PURE__ */ jsx("div", { className: "col-span-2 sm:col-span-1 sm:col-start-2", children: /* @__PURE__ */ jsx(GreatsBloco, { bloco: c.bloco_3, corPrimaria, fundo: "cinza" }) })
     ] }),
-    /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-2 items-stretch", style: { background: "#F7F6F4" }, children: [
+    /* @__PURE__ */ jsxs("div", { "data-secao": "faixa_cta", className: "grid grid-cols-2 items-stretch", style: { background: "#F7F6F4" }, children: [
       /* @__PURE__ */ jsxs("div", { className: "flex flex-col justify-center gap-3 p-8 sm:p-10", children: [
         /* @__PURE__ */ jsx("h3", { className: "text-lg sm:text-2xl font-extrabold uppercase tracking-tight", style: { color: corPrimaria }, children: c.cta2_bloco?.titulo || "Confira nossa cole\xE7\xE3o" }),
         c.cta2_bloco?.texto && /* @__PURE__ */ jsx("p", { className: "text-sm text-gray-500", children: c.cta2_bloco.texto }),
@@ -379,13 +417,13 @@ function GreatsRender({ conteudo }) {
       ] }),
       /* @__PURE__ */ jsx(GreatsImg, { src: c.cta2_imagem, className: "w-full h-full min-h-[220px] object-cover" })
     ] }),
-    /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-2", children: [
+    /* @__PURE__ */ jsxs("div", { "data-secao": "mosaico_2", className: "grid grid-cols-2", children: [
       /* @__PURE__ */ jsx(GreatsBloco, { bloco: c.bloco_4, corPrimaria, fundo: "escuro" }),
       /* @__PURE__ */ jsx(GreatsImg, { src: c.mosaico_3_imagem, className: "w-full aspect-square object-cover" }),
       /* @__PURE__ */ jsx(GreatsImg, { src: c.mosaico_4_imagem, className: "w-full aspect-square object-cover" }),
       /* @__PURE__ */ jsx(GreatsBloco, { bloco: c.bloco_5, corPrimaria, fundo: "branco" })
     ] }),
-    /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-2", children: [
+    /* @__PURE__ */ jsxs("div", { "data-secao": "colecoes", className: "grid grid-cols-2", children: [
       /* @__PURE__ */ jsxs("div", { className: "flex flex-col items-center justify-center gap-3 py-14 px-4", style: { background: corPrimaria }, children: [
         /* @__PURE__ */ jsx("h3", { className: "text-white text-lg sm:text-xl font-extrabold uppercase tracking-wide", children: c.men_titulo || "MASCULINO" }),
         /* @__PURE__ */ jsx(GreatsBotao, { texto: c.men_cta_texto || "VER AGORA", url: c.men_cta_url, variante: "claro", cor: corPrimaria })
@@ -395,13 +433,13 @@ function GreatsRender({ conteudo }) {
         /* @__PURE__ */ jsx(GreatsBotao, { texto: c.women_cta_texto || "VER AGORA", url: c.women_cta_url, variante: "claro", cor: corSecundaria })
       ] })
     ] }),
-    /* @__PURE__ */ jsx("div", { className: "grid grid-cols-2 gap-4 sm:gap-8 px-4 sm:px-10 py-12 text-center", children: depoimentos.slice(0, 2).map((d, i) => /* @__PURE__ */ jsxs("div", { className: "flex flex-col items-center gap-2", children: [
+    /* @__PURE__ */ jsx("div", { "data-secao": "depoimentos", className: "grid grid-cols-2 gap-4 sm:gap-8 px-4 sm:px-10 py-12 text-center", children: depoimentos.slice(0, 2).map((d, i) => /* @__PURE__ */ jsxs("div", { className: "flex flex-col items-center gap-2", children: [
       /* @__PURE__ */ jsx(Quote, { size: 16, className: "text-gray-300", fill: "currentColor" }),
       /* @__PURE__ */ jsx("div", { className: "flex gap-0.5", children: Array.from({ length: 5 }).map((_, j) => /* @__PURE__ */ jsx(Star, { size: 13, className: "text-amber-400", fill: "currentColor" }, j)) }),
       /* @__PURE__ */ jsx("p", { className: "text-xs sm:text-sm text-gray-600 leading-relaxed", children: d.texto }),
       /* @__PURE__ */ jsx("p", { className: "text-xs font-bold", style: { color: corPrimaria }, children: d.nome })
     ] }, i)) }),
-    /* @__PURE__ */ jsx("div", { className: "text-center text-[11px] text-gray-400 py-6 border-t border-gray-100", children: c.rodape_texto || `\xA9 ${(/* @__PURE__ */ new Date()).getFullYear()} Todos os direitos reservados.` })
+    /* @__PURE__ */ jsx("div", { "data-secao": "rodape", className: "text-center text-[11px] text-gray-400 py-6 border-t border-gray-100", children: c.rodape_texto || `\xA9 ${(/* @__PURE__ */ new Date()).getFullYear()} Todos os direitos reservados.` })
   ] });
 }
 
@@ -411,7 +449,7 @@ import { useNavigate } from "react-router-dom";
 import { Rocket, Plus, X as X2, Copy, CopyPlus, Trash2 as Trash22, Eye, Users, ExternalLink, Play, Pause, Check, Settings } from "lucide-react";
 
 // js/landing-pages/src/ModalConfiguracoes.jsx
-import { useEffect as useEffect2, useRef, useState as useState2 } from "react";
+import { useEffect as useEffect2, useRef as useRef2, useState as useState2 } from "react";
 import { X, Upload, Trash2 } from "lucide-react";
 
 // js/landing-pages/src/api.js
@@ -538,6 +576,7 @@ async function salvarConfiguracoes(payload) {
 }
 
 // js/landing-pages/src/Moldura.jsx
+import { useRef } from "react";
 import { jsx as jsx2, jsxs as jsxs2 } from "react/jsx-runtime";
 var WHATSAPP_PATH = "M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z";
 function IconeWhatsApp({ className = "w-7 h-7" }) {
@@ -588,8 +627,39 @@ function BotaoWhatsApp({ href, notificacao }) {
     }
   );
 }
-function MenuTopo({ logo, menu, whatsapp }) {
-  const ctaUrl = menu.cta_destino === "whatsapp" && whatsapp?.numero ? linkWhatsApp(whatsapp.numero, whatsapp.mensagem) : menu.cta_url;
+function ancestralRolavel(el) {
+  for (let p = el.parentElement; p; p = p.parentElement) {
+    const { overflowY } = getComputedStyle(p);
+    if ((overflowY === "auto" || overflowY === "scroll") && p.scrollHeight > p.clientHeight) return p;
+  }
+  return null;
+}
+function rolarSuaveAte(el, { duracao = 900, folga = 16 } = {}) {
+  if (!el) return;
+  const caixa = ancestralRolavel(el);
+  const inicio = caixa ? caixa.scrollTop : window.scrollY;
+  const topoRelativo = caixa ? el.getBoundingClientRect().top - caixa.getBoundingClientRect().top : el.getBoundingClientRect().top;
+  const maximo = caixa ? caixa.scrollHeight - caixa.clientHeight : document.documentElement.scrollHeight - window.innerHeight;
+  const destino = Math.max(0, Math.min(maximo, inicio + topoRelativo - folga));
+  const rolar = (y) => caixa ? caixa.scrollTop = y : window.scrollTo(0, y);
+  if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return rolar(destino);
+  const easeInOutCubic = (t) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  const t0 = performance.now();
+  const passo = (agora) => {
+    const t = Math.min(1, (agora - t0) / duracao);
+    rolar(inicio + (destino - inicio) * easeInOutCubic(t));
+    if (t < 1) requestAnimationFrame(passo);
+  };
+  requestAnimationFrame(passo);
+}
+function corDoCta(menu, coresPagina) {
+  if (menu.cta_cor === "principal" && coresPagina?.principal) return coresPagina.principal;
+  if (menu.cta_cor === "destaque" && coresPagina?.destaque) return coresPagina.destaque;
+  return menu.cta_destino === "whatsapp" ? "#25D366" : "#111827";
+}
+function MenuTopo({ logo, menu, whatsapp, coresPagina, onIrParaContato }) {
+  const vaiProContato = menu.cta_destino === "contato";
+  const ctaUrl = vaiProContato ? "#contato" : menu.cta_destino === "whatsapp" && whatsapp?.numero ? linkWhatsApp(whatsapp.numero, whatsapp.mensagem) : menu.cta_url;
   const cta = menu.cta_texto && ctaUrl;
   const ehWhatsapp = menu.cta_destino === "whatsapp";
   return /* @__PURE__ */ jsxs2("header", { className: "bg-white border-b border-gray-100 px-5 sm:px-8 py-3 flex items-center justify-center sm:justify-between gap-4 min-h-[64px]", children: [
@@ -598,10 +668,12 @@ function MenuTopo({ logo, menu, whatsapp }) {
       "a",
       {
         href: ctaUrl,
-        target: "_blank",
-        rel: "noopener noreferrer",
+        ...vaiProContato ? { onClick: (e) => {
+          e.preventDefault();
+          onIrParaContato();
+        } } : { target: "_blank", rel: "noopener noreferrer" },
         className: "hidden sm:inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90",
-        style: { background: ehWhatsapp ? "#25D366" : "#111827" },
+        style: { background: corDoCta(menu, coresPagina) },
         children: [
           ehWhatsapp && /* @__PURE__ */ jsx2(IconeWhatsApp, { className: "w-4 h-4" }),
           menu.cta_texto
@@ -610,14 +682,26 @@ function MenuTopo({ logo, menu, whatsapp }) {
     )
   ] });
 }
-function MolduraLandingPage({ configuracoes, preview = false, children }) {
+function MolduraLandingPage({ configuracoes, preview = false, secaoContato = null, coresPagina = null, children }) {
+  const raiz = useRef(null);
   const logo = configuracoes?.marca?.logo_url;
   const w = configuracoes?.whatsapp;
   const wpp = w?.ativo && w?.numero ? linkWhatsApp(w.numero, w.mensagem) : null;
   const menu = configuracoes?.menu;
   const notificacao = w?.notificacao !== false;
-  return /* @__PURE__ */ jsxs2("div", { className: "bg-white", children: [
-    menu?.ativo && /* @__PURE__ */ jsx2(MenuTopo, { logo, menu, whatsapp: w }),
+  return /* @__PURE__ */ jsxs2("div", { ref: raiz, className: "bg-white", children: [
+    menu?.ativo && /* @__PURE__ */ jsx2(
+      MenuTopo,
+      {
+        logo,
+        menu,
+        whatsapp: w,
+        coresPagina,
+        onIrParaContato: () => rolarSuaveAte(
+          raiz.current?.querySelector(`[data-secao="${secaoContato}"]`) || raiz.current?.querySelector("form")
+        )
+      }
+    ),
     !menu?.ativo && logo && /* @__PURE__ */ jsx2("header", { className: "bg-white border-b border-gray-100 px-5 py-3 flex items-center justify-center", children: /* @__PURE__ */ jsx2("img", { src: logo, alt: "Logo", className: "h-10 sm:h-12 w-auto max-w-[220px] object-contain" }) }),
     children,
     wpp && (preview ? /* @__PURE__ */ jsx2("div", { className: "sticky bottom-0 h-0", children: /* @__PURE__ */ jsx2("div", { className: "absolute bottom-4 right-4", children: /* @__PURE__ */ jsx2(BotaoWhatsApp, { href: wpp, notificacao }) }) }) : /* @__PURE__ */ jsx2("div", { className: "fixed bottom-5 right-5 z-50", children: /* @__PURE__ */ jsx2(BotaoWhatsApp, { href: wpp, notificacao }) }))
@@ -648,7 +732,7 @@ function ModalConfiguracoes({ onClose }) {
   const [enviandoLogo, setEnviandoLogo] = useState2(false);
   const [erro, setErro] = useState2("");
   const [salvo, setSalvo] = useState2(false);
-  const inputLogo = useRef(null);
+  const inputLogo = useRef2(null);
   useEffect2(() => {
     obterConfiguracoes().then(setCfg).catch((e) => setErroCarregar(e.message));
   }, []);
@@ -811,7 +895,7 @@ function ModalConfiguracoes({ onClose }) {
               ] }),
               /* @__PURE__ */ jsxs3("div", { children: [
                 /* @__PURE__ */ jsx3("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: "O bot\xE3o leva para" }),
-                /* @__PURE__ */ jsx3("div", { className: "flex gap-2", children: [["whatsapp", "WhatsApp"], ["url", "Um link"]].map(([valor, rotulo]) => /* @__PURE__ */ jsx3(
+                /* @__PURE__ */ jsx3("div", { className: "flex gap-2", children: [["whatsapp", "WhatsApp"], ["contato", "Se\xE7\xE3o de contato"], ["url", "Um link"]].map(([valor, rotulo]) => /* @__PURE__ */ jsx3(
                   "button",
                   {
                     type: "button",
@@ -821,7 +905,22 @@ function ModalConfiguracoes({ onClose }) {
                   },
                   valor
                 )) }),
-                cfg.menu.cta_destino === "whatsapp" && /* @__PURE__ */ jsx3("p", { className: "text-xs text-gray-400 mt-1", children: 'Usa o n\xFAmero e a mensagem da se\xE7\xE3o "Bot\xE3o de WhatsApp" (funciona mesmo com o bot\xE3o flutuante desligado).' })
+                cfg.menu.cta_destino === "whatsapp" && /* @__PURE__ */ jsx3("p", { className: "text-xs text-gray-400 mt-1", children: 'Usa o n\xFAmero e a mensagem da se\xE7\xE3o "Bot\xE3o de WhatsApp" (funciona mesmo com o bot\xE3o flutuante desligado).' }),
+                cfg.menu.cta_destino === "contato" && /* @__PURE__ */ jsx3("p", { className: "text-xs text-gray-400 mt-1", children: 'Rola a p\xE1gina, com transi\xE7\xE3o suave, at\xE9 a se\xE7\xE3o de contato. Cada p\xE1gina escolhe a sua no editor (campo "Se\xE7\xE3o de contato"); sem escolha, vai para o formul\xE1rio do modelo.' })
+              ] }),
+              /* @__PURE__ */ jsxs3("div", { children: [
+                /* @__PURE__ */ jsx3("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: "Cor do bot\xE3o" }),
+                /* @__PURE__ */ jsx3("div", { className: "grid grid-cols-3 gap-2", children: [["padrao", "Padr\xE3o"], ["principal", "Cor principal da p\xE1gina"], ["destaque", "Cor de destaque da p\xE1gina"]].map(([valor, rotulo]) => /* @__PURE__ */ jsx3(
+                  "button",
+                  {
+                    type: "button",
+                    onClick: () => setMenu("cta_cor", valor),
+                    className: `rounded-lg border-2 px-2 py-2 text-xs font-medium leading-tight transition-colors ${(cfg.menu.cta_cor || "padrao") === valor ? "border-violet-500 bg-violet-50 text-violet-700" : "border-gray-200 text-gray-600 hover:border-gray-300"}`,
+                    children: rotulo
+                  },
+                  valor
+                )) }),
+                /* @__PURE__ */ jsx3("p", { className: "text-xs text-gray-400 mt-1", children: "Padr\xE3o: verde quando leva ao WhatsApp, escuro nos outros casos. As cores da p\xE1gina acompanham as cores escolhidas em cada landing page (modelos sem cor pr\xF3pria usam o escuro)." })
               ] }),
               cfg.menu.cta_destino === "url" && /* @__PURE__ */ jsxs3("div", { children: [
                 /* @__PURE__ */ jsx3("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: "Link" }),
@@ -1093,7 +1192,7 @@ function ModalEscolherTemplate({ onClose, onCriado }) {
 }
 
 // js/landing-pages/src/LandingPageEditor.jsx
-import { useEffect as useEffect4, useState as useState4, useRef as useRef2, useCallback } from "react";
+import { useEffect as useEffect4, useState as useState4, useRef as useRef3, useCallback } from "react";
 import { useParams, useNavigate as useNavigate2 } from "react-router-dom";
 import { ArrowLeft, Save, Play as Play2, Pause as Pause2, Copy as Copy2, Check as Check2, Upload as Upload2, X as X3, Plus as Plus2, Trash2 as Trash23 } from "lucide-react";
 import { Fragment as Fragment3, jsx as jsx5, jsxs as jsxs5 } from "react/jsx-runtime";
@@ -1107,7 +1206,7 @@ function LandingPageEditor() {
   const [carregando, setCarregando] = useState4(true);
   const [salvando, setSalvando] = useState4(false);
   const [copiado, setCopiado] = useState4(false);
-  const saveTimeout = useRef2(null);
+  const saveTimeout = useRef3(null);
   const [configuracoes, setConfiguracoes] = useState4(null);
   useEffect4(() => {
     obterConfiguracoes().then(setConfiguracoes).catch(() => {
@@ -1190,6 +1289,19 @@ function LandingPageEditor() {
     /* @__PURE__ */ jsxs5("div", { className: "flex-1 max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-0 lg:gap-6 p-4 sm:p-6", children: [
       /* @__PURE__ */ jsxs5("div", { className: "space-y-4", children: [
         /* @__PURE__ */ jsx5(CamposPagina, { lp, nome, onNomeChange: handleNomeChange, onSalvo: setLp, rotaPublica }),
+        template.secoes?.length > 0 && /* @__PURE__ */ jsxs5("div", { children: [
+          /* @__PURE__ */ jsx5("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: "Se\xE7\xE3o de contato" }),
+          /* @__PURE__ */ jsx5(
+            "select",
+            {
+              value: secaoContatoDaPagina(lp.template, conteudo) || "",
+              onChange: (e) => handleCampoChange("secao_contato", e.target.value),
+              className: "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-violet-400",
+              children: template.secoes.map((sec) => /* @__PURE__ */ jsx5("option", { value: sec.id, children: sec.nome }, sec.id))
+            }
+          ),
+          /* @__PURE__ */ jsx5("p", { className: "text-xs text-gray-400 mt-1", children: 'Para onde a p\xE1gina rola quando o bot\xE3o do menu est\xE1 configurado para "levar \xE0 se\xE7\xE3o de contato".' })
+        ] }),
         template.campos.map((campo) => /* @__PURE__ */ jsx5(CampoEditor, { campo, valor: conteudo[campo.chave], onChange: (v) => handleCampoChange(campo.chave, v) }, campo.chave)),
         /* @__PURE__ */ jsxs5("div", { className: "pt-4 border-t border-gray-200 space-y-3", children: [
           /* @__PURE__ */ jsx5("p", { className: "text-xs font-medium text-gray-500", children: "SEO (aba do navegador)" }),
@@ -1204,7 +1316,16 @@ function LandingPageEditor() {
             /* @__PURE__ */ jsx5("span", { className: "w-2.5 h-2.5 rounded-full bg-yellow-300" }),
             /* @__PURE__ */ jsx5("span", { className: "w-2.5 h-2.5 rounded-full bg-green-300" })
           ] }),
-          /* @__PURE__ */ jsx5("div", { className: "max-h-[70vh] overflow-y-auto", children: /* @__PURE__ */ jsx5(MolduraLandingPage, { configuracoes, preview: true, children: /* @__PURE__ */ jsx5(template.Render, { conteudo }) }) })
+          /* @__PURE__ */ jsx5("div", { className: "max-h-[70vh] overflow-y-auto", children: /* @__PURE__ */ jsx5(
+            MolduraLandingPage,
+            {
+              configuracoes,
+              preview: true,
+              secaoContato: secaoContatoDaPagina(lp.template, conteudo),
+              coresPagina: coresDaPagina(lp.template, conteudo),
+              children: /* @__PURE__ */ jsx5(template.Render, { conteudo })
+            }
+          ) })
         ] })
       ] })
     ] })
@@ -1297,7 +1418,7 @@ function CamposPagina({ lp, nome, onNomeChange, onSalvo, rotaPublica }) {
 function MetaCampos({ lp, onSalvo }) {
   const [metaTitulo, setMetaTitulo] = useState4(lp.meta_titulo || "");
   const [metaDescricao, setMetaDescricao] = useState4(lp.meta_descricao || "");
-  const timeout = useRef2(null);
+  const timeout = useRef3(null);
   function agendar(novoTitulo, novaDescricao) {
     if (timeout.current) clearTimeout(timeout.current);
     timeout.current = setTimeout(() => {
@@ -1375,6 +1496,9 @@ function CampoEditor({ campo, valor, onChange }) {
   if (campo.tipo === "cor") {
     return /* @__PURE__ */ jsx5(CampoCor, { campo, valor, onChange });
   }
+  if (campo.tipo === "intensidade") {
+    return /* @__PURE__ */ jsx5(CampoIntensidade, { campo, valor, onChange });
+  }
   if (campo.tipo === "bloco") {
     return /* @__PURE__ */ jsx5(CampoBloco, { campo, valor, onChange });
   }
@@ -1385,6 +1509,41 @@ function CampoEditor({ campo, valor, onChange }) {
     return /* @__PURE__ */ jsx5(CampoListaDepoimentos, { campo, valor, onChange });
   }
   return null;
+}
+function CampoIntensidade({ campo, valor, onChange }) {
+  const atual = valor === void 0 || valor === null || valor === "" ? campo.padrao : Number(valor);
+  return /* @__PURE__ */ jsxs5("div", { children: [
+    /* @__PURE__ */ jsxs5("div", { className: "flex items-center justify-between mb-1", children: [
+      /* @__PURE__ */ jsx5("label", { className: "text-xs font-medium text-gray-500", children: campo.label }),
+      /* @__PURE__ */ jsxs5("span", { className: "text-xs font-semibold text-gray-700 tabular-nums", children: [
+        atual,
+        campo.unidade || ""
+      ] })
+    ] }),
+    /* @__PURE__ */ jsx5(
+      "input",
+      {
+        type: "range",
+        min: campo.min ?? 0,
+        max: campo.max ?? 100,
+        step: campo.passo ?? 1,
+        value: atual,
+        onChange: (e) => onChange(Number(e.target.value)),
+        className: "w-full accent-violet-600",
+        "aria-label": campo.label
+      }
+    ),
+    /* @__PURE__ */ jsxs5("div", { className: "flex items-center justify-between text-[11px] text-gray-400", children: [
+      /* @__PURE__ */ jsx5("span", { children: campo.rotuloMin }),
+      atual !== campo.padrao && /* @__PURE__ */ jsxs5("button", { type: "button", onClick: () => onChange(campo.padrao), className: "text-violet-600 hover:text-violet-700", children: [
+        "Voltar ao padr\xE3o (",
+        campo.padrao,
+        campo.unidade || "",
+        ")"
+      ] }),
+      /* @__PURE__ */ jsx5("span", { children: campo.rotuloMax })
+    ] })
+  ] });
 }
 function CampoCor({ campo, valor, onChange }) {
   const cor = valor || campo.padrao || "#000000";
@@ -1565,7 +1724,7 @@ function CampoListaDepoimentos({ campo, valor, onChange }) {
 }
 function CampoImagem({ campo, valor, onChange }) {
   const [enviando, setEnviando] = useState4(false);
-  const inputRef = useRef2(null);
+  const inputRef = useRef3(null);
   async function handleFile(file) {
     if (!file) return;
     setEnviando(true);
@@ -1738,7 +1897,15 @@ function LandingPageView() {
   if (!template) {
     return /* @__PURE__ */ jsx6("div", { className: "min-h-screen flex items-center justify-center text-center px-6", children: /* @__PURE__ */ jsx6("p", { className: "text-sm text-gray-500", children: "Essa p\xE1gina n\xE3o est\xE1 mais dispon\xEDvel." }) });
   }
-  return /* @__PURE__ */ jsx6("div", { className: "min-h-screen bg-white", children: /* @__PURE__ */ jsx6(MolduraLandingPage, { configuracoes: lp.configuracoes, children: /* @__PURE__ */ jsx6(template.Render, { conteudo: lp.conteudo || {}, onLead: handleLead }) }) });
+  return /* @__PURE__ */ jsx6("div", { className: "min-h-screen bg-white", children: /* @__PURE__ */ jsx6(
+    MolduraLandingPage,
+    {
+      configuracoes: lp.configuracoes,
+      secaoContato: secaoContatoDaPagina(lp.template, lp.conteudo),
+      coresPagina: coresDaPagina(lp.template, lp.conteudo),
+      children: /* @__PURE__ */ jsx6(template.Render, { conteudo: lp.conteudo || {}, onLead: handleLead })
+    }
+  ) });
 }
 export {
   LANDING_PAGE_TEMPLATES,

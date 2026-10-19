@@ -179,8 +179,10 @@ def criar_routers(
         if "menu" in novo:
             m = atual["menu"]
             m["cta_texto"] = (m.get("cta_texto") or "").strip()
-            if m["cta_destino"] not in ("whatsapp", "url"):
+            if m["cta_destino"] not in ("whatsapp", "url", "contato"):
                 raise HTTPException(422, "Destino do botão do menu inválido.")
+            if m.get("cta_cor") not in ("padrao", "principal", "destaque"):
+                raise HTTPException(422, "Cor do botão do menu inválida.")
             m["cta_url"] = cfg_lp.normalizar_url(m.get("cta_url"))
             if m["ativo"]:
                 if not m["cta_texto"]:

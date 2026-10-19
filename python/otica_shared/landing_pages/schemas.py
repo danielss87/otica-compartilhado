@@ -51,8 +51,9 @@ class ConfigMarca(BaseModel):
 class ConfigMenu(BaseModel):
     ativo: bool = False
     cta_texto: str = ""
-    cta_destino: str = "whatsapp"  # whatsapp | url
+    cta_destino: str = "whatsapp"  # whatsapp | url | contato
     cta_url: str = ""
+    cta_cor: str = "padrao"  # padrao | principal | destaque
 
 
 class LandingPagesConfigOut(BaseModel):
