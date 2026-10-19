@@ -41,21 +41,31 @@ class ConfigWhatsapp(BaseModel):
     ativo: bool = False
     numero: str = ""
     mensagem: str = ""
+    notificacao: bool = True
 
 
 class ConfigMarca(BaseModel):
     logo_url: Optional[str] = None
 
 
+class ConfigMenu(BaseModel):
+    ativo: bool = False
+    cta_texto: str = ""
+    cta_destino: str = "whatsapp"  # whatsapp | url
+    cta_url: str = ""
+
+
 class LandingPagesConfigOut(BaseModel):
     """Configurações que valem para todas as landing pages."""
     whatsapp: ConfigWhatsapp
     marca: ConfigMarca
+    menu: ConfigMenu
 
 
 class LandingPagesConfigUpdate(BaseModel):
     whatsapp: Optional[ConfigWhatsapp] = None
     marca: Optional[ConfigMarca] = None
+    menu: Optional[ConfigMenu] = None
 
 
 class LandingPagePublicaOut(BaseModel):

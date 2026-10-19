@@ -40,6 +40,11 @@ export default function ModalConfiguracoes({ onClose }) {
     setSalvo(false)
   }
 
+  function setMenu(campo, valor) {
+    setCfg(c => ({ ...c, menu: { ...c.menu, [campo]: valor } }))
+    setSalvo(false)
+  }
+
   function setLogo(url) {
     setCfg(c => ({ ...c, marca: { ...c.marca, logo_url: url } }))
     setSalvo(false)
@@ -64,7 +69,7 @@ export default function ModalConfiguracoes({ onClose }) {
     setSalvando(true)
     setErro('')
     try {
-      const atualizado = await salvarConfiguracoes({ whatsapp: cfg.whatsapp, marca: cfg.marca })
+      const atualizado = await salvarConfiguracoes({ whatsapp: cfg.whatsapp, marca: cfg.marca, menu: cfg.menu })
       setCfg(atualizado)
       setSalvo(true)
     } catch (e) {
@@ -102,13 +107,12 @@ export default function ModalConfiguracoes({ onClose }) {
                     </span>
                     <div>
                       <p className="text-sm font-semibold text-gray-900">Botão de WhatsApp</p>
-                      <p className="text-xs text-gray-500">Botão verde no canto inferior direito de todas as páginas.</p>
+                      <p className="text-xs text-gray-500">Botão verde flutuante no canto inferior direito de todas as páginas.</p>
                     </div>
                   </div>
                   <Interruptor ligado={cfg.whatsapp.ativo} onChange={v => setWhatsapp('ativo', v)} label="Ativar botão de WhatsApp" />
                 </div>
-                {cfg.whatsapp.ativo && (
-                  <div className="space-y-3 pl-0 sm:pl-10">
+                <div className="space-y-3 pl-0 sm:pl-10">
                     <div>
                       <label className="text-xs font-medium text-gray-500 mb-1 block">Número do WhatsApp (com DDD)</label>
                       <input
@@ -130,8 +134,16 @@ export default function ModalConfiguracoes({ onClose }) {
                       />
                       <p className="text-xs text-gray-400 mt-1">Já vem escrita quando o visitante abre a conversa.</p>
                     </div>
-                  </div>
-                )}
+                    {cfg.whatsapp.ativo && (
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <p className="text-xs font-medium text-gray-700">Bolinha de notificação</p>
+                        <p className="text-xs text-gray-400">Círculo vermelho pulsando no botão, como uma mensagem nova.</p>
+                      </div>
+                      <Interruptor ligado={cfg.whatsapp.notificacao !== false} onChange={v => setWhatsapp('notificacao', v)} label="Mostrar bolinha de notificação" />
+                    </div>
+                    )}
+                </div>
               </section>
 
               <section className="space-y-3 pt-5 border-t border-gray-100">
@@ -166,6 +178,67 @@ export default function ModalConfiguracoes({ onClose }) {
                 )}
                 <p className="text-xs text-gray-400">Dica: PNG com fundo transparente fica melhor.</p>
                 <input ref={inputLogo} type="file" accept="image/*" className="hidden" onChange={e => handleLogo(e.target.files?.[0])} />
+              </section>
+
+              <section className="space-y-3 pt-5 border-t border-gray-100">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900">Menu no topo</p>
+                    <p className="text-xs text-gray-500">
+                      No computador: logo à esquerda e um botão à direita. No celular: só o logo, centralizado.
+                    </p>
+                  </div>
+                  <Interruptor ligado={cfg.menu.ativo} onChange={v => setMenu('ativo', v)} label="Ativar menu no topo" />
+                </div>
+                {cfg.menu.ativo && (
+                  <div className="space-y-3">
+                    {!cfg.marca.logo_url && (
+                      <p className="text-xs text-amber-700">Envie o logo em "Identidade de marca" para ele aparecer no menu.</p>
+                    )}
+                    <div>
+                      <label className="text-xs font-medium text-gray-500 mb-1 block">Texto do botão</label>
+                      <input
+                        value={cfg.menu.cta_texto}
+                        onChange={e => setMenu('cta_texto', e.target.value)}
+                        placeholder="Ex: Fale conosco"
+                        className={inputCls}
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-gray-500 mb-1 block">O botão leva para</label>
+                      <div className="flex gap-2">
+                        {[['whatsapp', 'WhatsApp'], ['url', 'Um link']].map(([valor, rotulo]) => (
+                          <button
+                            key={valor}
+                            type="button"
+                            onClick={() => setMenu('cta_destino', valor)}
+                            className={`flex-1 rounded-lg border-2 px-3 py-2 text-sm font-medium transition-colors ${
+                              cfg.menu.cta_destino === valor ? 'border-violet-500 bg-violet-50 text-violet-700' : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                            }`}
+                          >
+                            {rotulo}
+                          </button>
+                        ))}
+                      </div>
+                      {cfg.menu.cta_destino === 'whatsapp' && (
+                        <p className="text-xs text-gray-400 mt-1">
+                          Usa o número e a mensagem da seção "Botão de WhatsApp" (funciona mesmo com o botão flutuante desligado).
+                        </p>
+                      )}
+                    </div>
+                    {cfg.menu.cta_destino === 'url' && (
+                      <div>
+                        <label className="text-xs font-medium text-gray-500 mb-1 block">Link</label>
+                        <input
+                          value={cfg.menu.cta_url}
+                          onChange={e => setMenu('cta_url', e.target.value)}
+                          placeholder="https://..."
+                          className={inputCls}
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
               </section>
             </>
           )}

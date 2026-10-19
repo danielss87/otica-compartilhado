@@ -546,8 +546,32 @@ function IconeWhatsApp({ className = "w-7 h-7" }) {
 function linkWhatsApp(numero, mensagem) {
   return `https://wa.me/${numero}${mensagem ? `?text=${encodeURIComponent(mensagem)}` : ""}`;
 }
-function BotaoWhatsApp({ href }) {
-  return /* @__PURE__ */ jsx2(
+var ESTILO_PULSO = `
+@keyframes otica-lp-pulso {
+  0% { transform: scale(1); opacity: .55; }
+  70% { transform: scale(2.1); opacity: 0; }
+  100% { transform: scale(2.1); opacity: 0; }
+}
+.otica-lp-pulso { animation: otica-lp-pulso 2.2s ease-out infinite; }
+@media (prefers-reduced-motion: reduce) { .otica-lp-pulso { animation: none; opacity: 0; } }
+`;
+var COR_NOTIFICACAO = "#FF4B2B";
+function BolinhaNotificacao() {
+  return /* @__PURE__ */ jsxs2("span", { className: "absolute -top-0.5 -right-0.5 flex h-5 w-5", "aria-hidden": "true", children: [
+    /* @__PURE__ */ jsx2("style", { children: ESTILO_PULSO }),
+    /* @__PURE__ */ jsx2("span", { className: "otica-lp-pulso absolute inline-flex h-full w-full rounded-full", style: { background: COR_NOTIFICACAO } }),
+    /* @__PURE__ */ jsx2(
+      "span",
+      {
+        className: "relative inline-flex h-5 w-5 items-center justify-center rounded-full text-[11px] font-bold leading-none text-white ring-2 ring-white",
+        style: { background: COR_NOTIFICACAO },
+        children: "1"
+      }
+    )
+  ] });
+}
+function BotaoWhatsApp({ href, notificacao }) {
+  return /* @__PURE__ */ jsxs2(
     "a",
     {
       href,
@@ -555,20 +579,48 @@ function BotaoWhatsApp({ href }) {
       rel: "noopener noreferrer",
       "aria-label": "Falar no WhatsApp",
       title: "Falar no WhatsApp",
-      className: "flex items-center justify-center w-14 h-14 rounded-full text-white shadow-lg transition-transform hover:scale-105",
+      className: "relative flex items-center justify-center w-14 h-14 rounded-full text-white shadow-lg transition-transform hover:scale-105",
       style: { background: "#25D366" },
-      children: /* @__PURE__ */ jsx2(IconeWhatsApp, {})
+      children: [
+        /* @__PURE__ */ jsx2(IconeWhatsApp, {}),
+        notificacao && /* @__PURE__ */ jsx2(BolinhaNotificacao, {})
+      ]
     }
   );
+}
+function MenuTopo({ logo, menu, whatsapp }) {
+  const ctaUrl = menu.cta_destino === "whatsapp" && whatsapp?.numero ? linkWhatsApp(whatsapp.numero, whatsapp.mensagem) : menu.cta_url;
+  const cta = menu.cta_texto && ctaUrl;
+  const ehWhatsapp = menu.cta_destino === "whatsapp";
+  return /* @__PURE__ */ jsxs2("header", { className: "bg-white border-b border-gray-100 px-5 sm:px-8 py-3 flex items-center justify-center sm:justify-between gap-4 min-h-[64px]", children: [
+    logo ? /* @__PURE__ */ jsx2("img", { src: logo, alt: "Logo", className: "h-10 sm:h-11 w-auto max-w-[200px] object-contain" }) : /* @__PURE__ */ jsx2("span", {}),
+    cta && /* @__PURE__ */ jsxs2(
+      "a",
+      {
+        href: ctaUrl,
+        target: "_blank",
+        rel: "noopener noreferrer",
+        className: "hidden sm:inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90",
+        style: { background: ehWhatsapp ? "#25D366" : "#111827" },
+        children: [
+          ehWhatsapp && /* @__PURE__ */ jsx2(IconeWhatsApp, { className: "w-4 h-4" }),
+          menu.cta_texto
+        ]
+      }
+    )
+  ] });
 }
 function MolduraLandingPage({ configuracoes, preview = false, children }) {
   const logo = configuracoes?.marca?.logo_url;
   const w = configuracoes?.whatsapp;
   const wpp = w?.ativo && w?.numero ? linkWhatsApp(w.numero, w.mensagem) : null;
+  const menu = configuracoes?.menu;
+  const notificacao = w?.notificacao !== false;
   return /* @__PURE__ */ jsxs2("div", { className: "bg-white", children: [
-    logo && /* @__PURE__ */ jsx2("header", { className: "bg-white border-b border-gray-100 px-5 py-3 flex items-center justify-center", children: /* @__PURE__ */ jsx2("img", { src: logo, alt: "Logo", className: "h-10 sm:h-12 w-auto max-w-[220px] object-contain" }) }),
+    menu?.ativo && /* @__PURE__ */ jsx2(MenuTopo, { logo, menu, whatsapp: w }),
+    !menu?.ativo && logo && /* @__PURE__ */ jsx2("header", { className: "bg-white border-b border-gray-100 px-5 py-3 flex items-center justify-center", children: /* @__PURE__ */ jsx2("img", { src: logo, alt: "Logo", className: "h-10 sm:h-12 w-auto max-w-[220px] object-contain" }) }),
     children,
-    wpp && (preview ? /* @__PURE__ */ jsx2("div", { className: "sticky bottom-0 h-0", children: /* @__PURE__ */ jsx2("div", { className: "absolute bottom-4 right-4", children: /* @__PURE__ */ jsx2(BotaoWhatsApp, { href: wpp }) }) }) : /* @__PURE__ */ jsx2("div", { className: "fixed bottom-5 right-5 z-50", children: /* @__PURE__ */ jsx2(BotaoWhatsApp, { href: wpp }) }))
+    wpp && (preview ? /* @__PURE__ */ jsx2("div", { className: "sticky bottom-0 h-0", children: /* @__PURE__ */ jsx2("div", { className: "absolute bottom-4 right-4", children: /* @__PURE__ */ jsx2(BotaoWhatsApp, { href: wpp, notificacao }) }) }) : /* @__PURE__ */ jsx2("div", { className: "fixed bottom-5 right-5 z-50", children: /* @__PURE__ */ jsx2(BotaoWhatsApp, { href: wpp, notificacao }) }))
   ] });
 }
 
@@ -604,6 +656,10 @@ function ModalConfiguracoes({ onClose }) {
     setCfg((c) => ({ ...c, whatsapp: { ...c.whatsapp, [campo]: valor } }));
     setSalvo(false);
   }
+  function setMenu(campo, valor) {
+    setCfg((c) => ({ ...c, menu: { ...c.menu, [campo]: valor } }));
+    setSalvo(false);
+  }
   function setLogo(url) {
     setCfg((c) => ({ ...c, marca: { ...c.marca, logo_url: url } }));
     setSalvo(false);
@@ -626,7 +682,7 @@ function ModalConfiguracoes({ onClose }) {
     setSalvando(true);
     setErro("");
     try {
-      const atualizado = await salvarConfiguracoes({ whatsapp: cfg.whatsapp, marca: cfg.marca });
+      const atualizado = await salvarConfiguracoes({ whatsapp: cfg.whatsapp, marca: cfg.marca, menu: cfg.menu });
       setCfg(atualizado);
       setSalvo(true);
     } catch (e) {
@@ -655,12 +711,12 @@ function ModalConfiguracoes({ onClose }) {
                 /* @__PURE__ */ jsx3("span", { className: "flex items-center justify-center w-8 h-8 rounded-full text-white", style: { background: "#25D366" }, children: /* @__PURE__ */ jsx3(IconeWhatsApp, { className: "w-4 h-4" }) }),
                 /* @__PURE__ */ jsxs3("div", { children: [
                   /* @__PURE__ */ jsx3("p", { className: "text-sm font-semibold text-gray-900", children: "Bot\xE3o de WhatsApp" }),
-                  /* @__PURE__ */ jsx3("p", { className: "text-xs text-gray-500", children: "Bot\xE3o verde no canto inferior direito de todas as p\xE1ginas." })
+                  /* @__PURE__ */ jsx3("p", { className: "text-xs text-gray-500", children: "Bot\xE3o verde flutuante no canto inferior direito de todas as p\xE1ginas." })
                 ] })
               ] }),
               /* @__PURE__ */ jsx3(Interruptor, { ligado: cfg.whatsapp.ativo, onChange: (v) => setWhatsapp("ativo", v), label: "Ativar bot\xE3o de WhatsApp" })
             ] }),
-            cfg.whatsapp.ativo && /* @__PURE__ */ jsxs3("div", { className: "space-y-3 pl-0 sm:pl-10", children: [
+            /* @__PURE__ */ jsxs3("div", { className: "space-y-3 pl-0 sm:pl-10", children: [
               /* @__PURE__ */ jsxs3("div", { children: [
                 /* @__PURE__ */ jsx3("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: "N\xFAmero do WhatsApp (com DDD)" }),
                 /* @__PURE__ */ jsx3(
@@ -687,6 +743,13 @@ function ModalConfiguracoes({ onClose }) {
                   }
                 ),
                 /* @__PURE__ */ jsx3("p", { className: "text-xs text-gray-400 mt-1", children: "J\xE1 vem escrita quando o visitante abre a conversa." })
+              ] }),
+              cfg.whatsapp.ativo && /* @__PURE__ */ jsxs3("div", { className: "flex items-center justify-between gap-3", children: [
+                /* @__PURE__ */ jsxs3("div", { children: [
+                  /* @__PURE__ */ jsx3("p", { className: "text-xs font-medium text-gray-700", children: "Bolinha de notifica\xE7\xE3o" }),
+                  /* @__PURE__ */ jsx3("p", { className: "text-xs text-gray-400", children: "C\xEDrculo vermelho pulsando no bot\xE3o, como uma mensagem nova." })
+                ] }),
+                /* @__PURE__ */ jsx3(Interruptor, { ligado: cfg.whatsapp.notificacao !== false, onChange: (v) => setWhatsapp("notificacao", v), label: "Mostrar bolinha de notifica\xE7\xE3o" })
               ] })
             ] })
           ] }),
@@ -723,6 +786,56 @@ function ModalConfiguracoes({ onClose }) {
             ),
             /* @__PURE__ */ jsx3("p", { className: "text-xs text-gray-400", children: "Dica: PNG com fundo transparente fica melhor." }),
             /* @__PURE__ */ jsx3("input", { ref: inputLogo, type: "file", accept: "image/*", className: "hidden", onChange: (e) => handleLogo(e.target.files?.[0]) })
+          ] }),
+          /* @__PURE__ */ jsxs3("section", { className: "space-y-3 pt-5 border-t border-gray-100", children: [
+            /* @__PURE__ */ jsxs3("div", { className: "flex items-center justify-between gap-3", children: [
+              /* @__PURE__ */ jsxs3("div", { children: [
+                /* @__PURE__ */ jsx3("p", { className: "text-sm font-semibold text-gray-900", children: "Menu no topo" }),
+                /* @__PURE__ */ jsx3("p", { className: "text-xs text-gray-500", children: "No computador: logo \xE0 esquerda e um bot\xE3o \xE0 direita. No celular: s\xF3 o logo, centralizado." })
+              ] }),
+              /* @__PURE__ */ jsx3(Interruptor, { ligado: cfg.menu.ativo, onChange: (v) => setMenu("ativo", v), label: "Ativar menu no topo" })
+            ] }),
+            cfg.menu.ativo && /* @__PURE__ */ jsxs3("div", { className: "space-y-3", children: [
+              !cfg.marca.logo_url && /* @__PURE__ */ jsx3("p", { className: "text-xs text-amber-700", children: 'Envie o logo em "Identidade de marca" para ele aparecer no menu.' }),
+              /* @__PURE__ */ jsxs3("div", { children: [
+                /* @__PURE__ */ jsx3("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: "Texto do bot\xE3o" }),
+                /* @__PURE__ */ jsx3(
+                  "input",
+                  {
+                    value: cfg.menu.cta_texto,
+                    onChange: (e) => setMenu("cta_texto", e.target.value),
+                    placeholder: "Ex: Fale conosco",
+                    className: inputCls
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ jsxs3("div", { children: [
+                /* @__PURE__ */ jsx3("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: "O bot\xE3o leva para" }),
+                /* @__PURE__ */ jsx3("div", { className: "flex gap-2", children: [["whatsapp", "WhatsApp"], ["url", "Um link"]].map(([valor, rotulo]) => /* @__PURE__ */ jsx3(
+                  "button",
+                  {
+                    type: "button",
+                    onClick: () => setMenu("cta_destino", valor),
+                    className: `flex-1 rounded-lg border-2 px-3 py-2 text-sm font-medium transition-colors ${cfg.menu.cta_destino === valor ? "border-violet-500 bg-violet-50 text-violet-700" : "border-gray-200 text-gray-600 hover:border-gray-300"}`,
+                    children: rotulo
+                  },
+                  valor
+                )) }),
+                cfg.menu.cta_destino === "whatsapp" && /* @__PURE__ */ jsx3("p", { className: "text-xs text-gray-400 mt-1", children: 'Usa o n\xFAmero e a mensagem da se\xE7\xE3o "Bot\xE3o de WhatsApp" (funciona mesmo com o bot\xE3o flutuante desligado).' })
+              ] }),
+              cfg.menu.cta_destino === "url" && /* @__PURE__ */ jsxs3("div", { children: [
+                /* @__PURE__ */ jsx3("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: "Link" }),
+                /* @__PURE__ */ jsx3(
+                  "input",
+                  {
+                    value: cfg.menu.cta_url,
+                    onChange: (e) => setMenu("cta_url", e.target.value),
+                    placeholder: "https://...",
+                    className: inputCls
+                  }
+                )
+              ] })
+            ] })
           ] })
         ] }),
         erro && /* @__PURE__ */ jsx3("p", { className: "text-xs text-red-600", children: erro })

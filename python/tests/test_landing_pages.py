@@ -209,7 +209,12 @@ def test_configuracoes_padrao_desligadas(client):
     assert cfg["whatsapp"]["ativo"] is False and cfg["marca"]["logo_url"] is None
     lp = _publicar(client)
     pub = client.get(f"/api/publico/landing-pages/{lp['slug']}").json()["configuracoes"]
-    assert pub == {"whatsapp": {"ativo": False, "numero": "", "mensagem": ""}, "marca": {"logo_url": None}}
+    assert pub == {
+        "whatsapp": {"ativo": False, "numero": "", "mensagem": "", "notificacao": False},
+        "marca": {"logo_url": None},
+        "menu": {"ativo": False, "cta_texto": "", "cta_destino": "whatsapp", "cta_url": ""},
+    }
+    assert cfg["whatsapp"]["notificacao"] is True and cfg["menu"]["ativo"] is False
 
 
 def test_configuracoes_whatsapp_e_logo(client):
@@ -217,13 +222,13 @@ def test_configuracoes_whatsapp_e_logo(client):
         "whatsapp": {"ativo": True, "numero": "(11) 99999-8888", "mensagem": "  Oi!  "},
     })
     assert r.status_code == 200
-    assert r.json()["whatsapp"] == {"ativo": True, "numero": "5511999998888", "mensagem": "Oi!"}
+    assert r.json()["whatsapp"] == {"ativo": True, "numero": "5511999998888", "mensagem": "Oi!", "notificacao": True}
     # atualizar só a marca não mexe no WhatsApp
     r = client.put("/api/landing-pages/configuracoes", headers=AUTH, json={"marca": {"logo_url": "https://cdn/logo.png"}})
     assert r.json()["whatsapp"]["ativo"] is True
     lp = _publicar(client)
     pub = client.get(f"/api/publico/landing-pages/{lp['slug']}").json()["configuracoes"]
-    assert pub["whatsapp"] == {"ativo": True, "numero": "5511999998888", "mensagem": "Oi!"}
+    assert pub["whatsapp"] == {"ativo": True, "numero": "5511999998888", "mensagem": "Oi!", "notificacao": True}
     assert pub["marca"]["logo_url"] == "https://cdn/logo.png"
     # desligar esconde o número da página pública
     client.put("/api/landing-pages/configuracoes", headers=AUTH, json={"whatsapp": {"ativo": False, "numero": "5511999998888", "mensagem": "Oi!"}})
@@ -240,3 +245,35 @@ def test_rota_configuracoes_nao_conflita_com_id(client):
     lp = _criar(client)
     assert client.get(f"/api/landing-pages/{lp['id']}", headers=AUTH).status_code == 200
     assert client.get("/api/landing-pages/configuracoes", headers=AUTH).status_code == 200
+
+
+def test_notificacao_ligada_para_config_antiga_salva(client):
+    # config salva antes da v0.4.0 (sem a chave) → notificação nasce ligada
+    db = SessionLocal()
+    db.add(LandingPagesConfig(id=1, dados='{"whatsapp": {"ativo": true, "numero": "5511999998888", "mensagem": "Oi"}}'))
+    db.commit(); db.close()
+    lp = _publicar(client)
+    pub = client.get(f"/api/publico/landing-pages/{lp['slug']}").json()["configuracoes"]
+    assert pub["whatsapp"]["notificacao"] is True
+    r = client.put("/api/landing-pages/configuracoes", headers=AUTH, json={"whatsapp": {"ativo": True, "numero": "5511999998888", "mensagem": "Oi", "notificacao": False}})
+    assert r.json()["whatsapp"]["notificacao"] is False
+
+
+def test_menu_cta_whatsapp_e_url(client):
+    # menu com WhatsApp sem número → 422
+    r = client.put("/api/landing-pages/configuracoes", headers=AUTH, json={"menu": {"ativo": True, "cta_texto": "Fale", "cta_destino": "whatsapp"}})
+    assert r.status_code == 422
+    client.put("/api/landing-pages/configuracoes", headers=AUTH, json={"whatsapp": {"ativo": False, "numero": "11999998888", "mensagem": "Olá, tudo bem?"}})
+    r = client.put("/api/landing-pages/configuracoes", headers=AUTH, json={"menu": {"ativo": True, "cta_texto": " Fale conosco ", "cta_destino": "whatsapp"}})
+    assert r.status_code == 200
+    lp = _publicar(client)
+    menu = client.get(f"/api/publico/landing-pages/{lp['slug']}").json()["configuracoes"]["menu"]
+    # funciona mesmo com o botão flutuante desligado
+    assert menu == {"ativo": True, "cta_texto": "Fale conosco", "cta_destino": "whatsapp",
+                    "cta_url": "https://wa.me/5511999998888?text=Ol%C3%A1%2C%20tudo%20bem%3F"}
+    r = client.put("/api/landing-pages/configuracoes", headers=AUTH, json={"menu": {"ativo": True, "cta_texto": "Loja", "cta_destino": "url", "cta_url": ""}})
+    assert r.status_code == 422
+    client.put("/api/landing-pages/configuracoes", headers=AUTH, json={"menu": {"ativo": True, "cta_texto": "Loja", "cta_destino": "url", "cta_url": "loja.com.br/x"}})
+    menu = client.get(f"/api/publico/landing-pages/{lp['slug']}").json()["configuracoes"]["menu"]
+    assert menu["cta_url"] == "https://loja.com.br/x"
+    assert client.put("/api/landing-pages/configuracoes", headers=AUTH, json={"menu": {"ativo": False, "cta_destino": "fax"}}).status_code == 422

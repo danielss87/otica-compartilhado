@@ -21,7 +21,7 @@ package.json                     # npm: otica-compartilhado (raiz do repo)
 
 ## Features
 
-### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.3.0, out/2026
+### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.4.0, out/2026
 Origem: 4 Olhos (ago/2026). Páginas de captura por template pronto com edição guiada (4 templates:
 `simples`, `promocao`, `agendar_consulta`, `greats`), página pública `/lp/:slug`, contagem de
 visualizações e captura de lead (nome + telefone + fbclid).
@@ -89,6 +89,19 @@ para todas as opções.
 8. Repo **público**: nunca commitar segredo, credencial, URL interna, dado de cliente ou telefone real.
 
 ## Changelog
+
+### v0.4.0 (19/10/2026)
+- **Menu no topo** (configuração `menu`): logo à esquerda e botão CTA à direita no desktop; só o logo,
+  centralizado, no celular (o CTA é `hidden sm:inline-flex`). O destino do CTA é o WhatsApp configurado
+  (funciona mesmo com o botão flutuante desligado) ou um link. O link final vem pronto na rota pública
+  (`config.publica` → `menu.cta_url`); no editor, o `Moldura.jsx` monta a partir da config completa.
+  Com o menu desligado, continua a faixa só com o logo centralizado.
+- **Bolinha de notificação** no botão flutuante de WhatsApp: círculo vermelho-alaranjado com "1" e pulso
+  suave (keyframes próprios em `Moldura.jsx`, sem animação com `prefers-reduced-motion`).
+  `whatsapp.notificacao` é **ligada por padrão**, inclusive para config salva antes desta versão, e dá
+  para desligar no modal.
+- No modal, o número e a mensagem do WhatsApp ficam sempre visíveis, porque o CTA do menu também os usa.
+  O interruptor controla só o botão flutuante.
 
 ### v0.3.0 (19/10/2026)
 - **Configurações gerais** (valem para todas as landing pages): botão "Configurações" na listagem abre

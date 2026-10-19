@@ -19,7 +19,35 @@ export function linkWhatsApp(numero, mensagem) {
   return `https://wa.me/${numero}${mensagem ? `?text=${encodeURIComponent(mensagem)}` : ''}`
 }
 
-function BotaoWhatsApp({ href }) {
+// Pulso suave da bolinha de notificação — keyframes próprios (mais lento e discreto
+// que o animate-ping do Tailwind) e desligado pra quem pede menos movimento.
+const ESTILO_PULSO = `
+@keyframes otica-lp-pulso {
+  0% { transform: scale(1); opacity: .55; }
+  70% { transform: scale(2.1); opacity: 0; }
+  100% { transform: scale(2.1); opacity: 0; }
+}
+.otica-lp-pulso { animation: otica-lp-pulso 2.2s ease-out infinite; }
+@media (prefers-reduced-motion: reduce) { .otica-lp-pulso { animation: none; opacity: 0; } }
+`
+const COR_NOTIFICACAO = '#FF4B2B'
+
+function BolinhaNotificacao() {
+  return (
+    <span className="absolute -top-0.5 -right-0.5 flex h-5 w-5" aria-hidden="true">
+      <style>{ESTILO_PULSO}</style>
+      <span className="otica-lp-pulso absolute inline-flex h-full w-full rounded-full" style={{ background: COR_NOTIFICACAO }} />
+      <span
+        className="relative inline-flex h-5 w-5 items-center justify-center rounded-full text-[11px] font-bold leading-none text-white ring-2 ring-white"
+        style={{ background: COR_NOTIFICACAO }}
+      >
+        1
+      </span>
+    </span>
+  )
+}
+
+function BotaoWhatsApp({ href, notificacao }) {
   return (
     <a
       href={href}
@@ -27,11 +55,40 @@ function BotaoWhatsApp({ href }) {
       rel="noopener noreferrer"
       aria-label="Falar no WhatsApp"
       title="Falar no WhatsApp"
-      className="flex items-center justify-center w-14 h-14 rounded-full text-white shadow-lg transition-transform hover:scale-105"
+      className="relative flex items-center justify-center w-14 h-14 rounded-full text-white shadow-lg transition-transform hover:scale-105"
       style={{ background: '#25D366' }}
     >
       <IconeWhatsApp />
+      {notificacao && <BolinhaNotificacao />}
     </a>
+  )
+}
+
+// Menu no topo: logo à esquerda + CTA à direita no desktop; só o logo, centralizado, no celular.
+// `whatsapp`: config do botão de WhatsApp. A página pública já recebe `menu.cta_url` pronto
+// (calculado no backend, `config.publica`); o editor recebe a config completa e monta aqui.
+function MenuTopo({ logo, menu, whatsapp }) {
+  const ctaUrl = menu.cta_destino === 'whatsapp' && whatsapp?.numero
+    ? linkWhatsApp(whatsapp.numero, whatsapp.mensagem)
+    : menu.cta_url
+  const cta = menu.cta_texto && ctaUrl
+  const ehWhatsapp = menu.cta_destino === 'whatsapp'
+  return (
+    <header className="bg-white border-b border-gray-100 px-5 sm:px-8 py-3 flex items-center justify-center sm:justify-between gap-4 min-h-[64px]">
+      {logo ? <img src={logo} alt="Logo" className="h-10 sm:h-11 w-auto max-w-[200px] object-contain" /> : <span />}
+      {cta && (
+        <a
+          href={ctaUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hidden sm:inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+          style={{ background: ehWhatsapp ? '#25D366' : '#111827' }}
+        >
+          {ehWhatsapp && <IconeWhatsApp className="w-4 h-4" />}
+          {menu.cta_texto}
+        </a>
+      )}
+    </header>
   )
 }
 
@@ -41,10 +98,13 @@ export default function MolduraLandingPage({ configuracoes, preview = false, chi
   const logo = configuracoes?.marca?.logo_url
   const w = configuracoes?.whatsapp
   const wpp = w?.ativo && w?.numero ? linkWhatsApp(w.numero, w.mensagem) : null
+  const menu = configuracoes?.menu
+  const notificacao = w?.notificacao !== false
 
   return (
     <div className="bg-white">
-      {logo && (
+      {menu?.ativo && <MenuTopo logo={logo} menu={menu} whatsapp={w} />}
+      {!menu?.ativo && logo && (
         <header className="bg-white border-b border-gray-100 px-5 py-3 flex items-center justify-center">
           <img src={logo} alt="Logo" className="h-10 sm:h-12 w-auto max-w-[220px] object-contain" />
         </header>
@@ -53,12 +113,12 @@ export default function MolduraLandingPage({ configuracoes, preview = false, chi
       {wpp && (preview ? (
         <div className="sticky bottom-0 h-0">
           <div className="absolute bottom-4 right-4">
-            <BotaoWhatsApp href={wpp} />
+            <BotaoWhatsApp href={wpp} notificacao={notificacao} />
           </div>
         </div>
       ) : (
         <div className="fixed bottom-5 right-5 z-50">
-          <BotaoWhatsApp href={wpp} />
+          <BotaoWhatsApp href={wpp} notificacao={notificacao} />
         </div>
       ))}
     </div>

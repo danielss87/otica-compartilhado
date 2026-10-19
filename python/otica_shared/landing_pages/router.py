@@ -176,6 +176,19 @@ def criar_routers(
             novo["marca"]["logo_url"] = (novo["marca"].get("logo_url") or "").strip() or None
         for secao, valores in novo.items():
             atual[secao].update(valores)
+        if "menu" in novo:
+            m = atual["menu"]
+            m["cta_texto"] = (m.get("cta_texto") or "").strip()
+            if m["cta_destino"] not in ("whatsapp", "url"):
+                raise HTTPException(422, "Destino do botão do menu inválido.")
+            m["cta_url"] = cfg_lp.normalizar_url(m.get("cta_url"))
+            if m["ativo"]:
+                if not m["cta_texto"]:
+                    raise HTTPException(422, "Informe o texto do botão do menu.")
+                if m["cta_destino"] == "url" and not m["cta_url"]:
+                    raise HTTPException(422, "Informe o link do botão do menu.")
+                if m["cta_destino"] == "whatsapp" and not atual["whatsapp"]["numero"]:
+                    raise HTTPException(422, "Para o botão do menu abrir o WhatsApp, preencha o número na seção Botão de WhatsApp.")
         linha = db.query(LandingPagesConfig).filter(LandingPagesConfig.id == 1).first()
         if not linha:
             linha = LandingPagesConfig(id=1)
