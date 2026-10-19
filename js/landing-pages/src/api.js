@@ -116,3 +116,17 @@ export async function enviarLeadLandingPage(slug, payload) {
     body: JSON.stringify(payload),
   }))
 }
+
+// ─── Configurações gerais (valem para todas as landing pages) ──────────────
+
+export async function obterConfiguracoes() {
+  return handle(await req(`${base()}/configuracoes`, { headers: headers() }))
+}
+
+export async function salvarConfiguracoes(payload) {
+  return handle(await req(`${base()}/configuracoes`, {
+    method: 'PUT',
+    headers: headers({ 'Content-Type': 'application/json' }),
+    body: JSON.stringify(payload),
+  }))
+}

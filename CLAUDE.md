@@ -21,13 +21,14 @@ package.json                     # npm: otica-compartilhado (raiz do repo)
 
 ## Features
 
-### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.2.0, out/2026
+### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.3.0, out/2026
 Origem: 4 Olhos (ago/2026). Páginas de captura por template pronto com edição guiada (4 templates:
 `simples`, `promocao`, `agendar_consulta`, `greats`), página pública `/lp/:slug`, contagem de
 visualizações e captura de lead (nome + telefone + fbclid).
 
 **Backend** — `criar_modelos(Base, tabela_usuarios=..., modelo_usuario=...)` e
-`criar_routers(LandingPage, LandingPageLead, get_db=..., get_usuario_atual=..., upload_imagem=..., info_criador=None)`
+`criar_modelo_config(Base)` e
+`criar_routers(LandingPage, LandingPageLead, get_db=..., get_usuario_atual=..., upload_imagem=..., info_criador=None, LandingPagesConfig=...)`
 → `(router, router_publico)`. O app registra os dois com `prefix="/api"`, **o público antes**.
 
 - Tabelas `landing_pages` e `landing_page_leads`: nomes e colunas **idênticos** ao que a 4 Olhos já tinha
@@ -39,6 +40,14 @@ visualizações e captura de lead (nome + telefone + fbclid).
   nunca é recalculado. A regra existe em dois lugares: `_slug` (router.py) e `normalizarSlug`
   (LandingPageEditor.jsx).
 - A definição visual dos templates mora **só no frontend**; o backend guarda `conteudo` como JSON solto.
+- **Configurações gerais** (v0.3.0, `landing_pages_config`, uma linha com JSON):
+  - Configuração nova = chave nova em `config.PADRAO` (Python) + campo no `ModalConfiguracoes.jsx` +
+    uso em `Moldura.jsx`. **Sem ALTER TABLE**: a leitura sempre mescla com o padrão.
+  - Sempre nascer **desligada** por padrão, para não mudar páginas já publicadas de nenhum dos sistemas.
+  - O que a página pública pode ver passa por `config.publica()`. Nunca devolver a config inteira na
+    rota pública.
+- Upload de logo/imagem: o Ariel recusa SVG (risco de script num SVG servido pelo próprio backend).
+  Não sugerir SVG na interface.
 
 **Frontend** — `configurarLandingPages({...})` uma vez no `main.jsx`, depois usar as páginas:
 `LandingPagesLista` (painel), `LandingPageEditor` (rota `${rotaPainel}/:id`) e `LandingPageView`
@@ -80,6 +89,21 @@ para todas as opções.
 8. Repo **público**: nunca commitar segredo, credencial, URL interna, dado de cliente ou telefone real.
 
 ## Changelog
+
+### v0.3.0 (19/10/2026)
+- **Configurações gerais** (valem para todas as landing pages): botão "Configurações" na listagem abre
+  `ModalConfiguracoes.jsx`, com duas seções:
+  - **Botão de WhatsApp:** ativar, número (normalizado para só dígitos com DDI; 10/11 dígitos ganham 55)
+    e mensagem padrão.
+  - **Identidade de marca:** upload do logo, que usa o mesmo `/upload-imagem`.
+- Tabela nova `landing_pages_config` (uma linha, `dados` em JSON, formato em `python/.../config.py`).
+  Rotas `GET`/`PUT /landing-pages/configuracoes`. A página pública recebe `configuracoes` (só a parte
+  pública; o número só vai quando o botão está ativo).
+- `Moldura.jsx` (`MolduraLandingPage`): logo no topo e botão verde flutuante, usado na página pública
+  (`fixed`) e na pré-visualização do editor (`sticky`).
+- **Apps precisam:** `LandingPagesConfig = criar_modelo_config(Base)` e passar
+  `LandingPagesConfig=...` em `criar_routers`. Sem isso as rotas de configuração dão 404 e as páginas
+  saem sem logo e sem botão. Tudo vem desligado por padrão: subir de versão não muda nenhuma página.
 
 ### v0.2.0 (19/10/2026)
 - Editor: bloco "Página" no topo do formulário, com o **nome** (autosave) e o **endereço/slug** editáveis.

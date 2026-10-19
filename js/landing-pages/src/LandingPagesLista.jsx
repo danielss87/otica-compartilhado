@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Rocket, Plus, X, Copy, CopyPlus, Trash2, Eye, Users, ExternalLink, Play, Pause, Check } from 'lucide-react'
+import { Rocket, Plus, X, Copy, CopyPlus, Trash2, Eye, Users, ExternalLink, Play, Pause, Check, Settings } from 'lucide-react'
 import { TEMPLATE_LIST, TemplateCardPreview } from './templates'
 import { getConfig } from './config'
+import ModalConfiguracoes from './ModalConfiguracoes'
 import {
   listarLandingPages, criarLandingPage, publicarLandingPage, pausarLandingPage,
   duplicarLandingPage, deletarLandingPage,
@@ -31,6 +32,7 @@ export default function LandingPagesLista() {
   const [itens, setItens] = useState([])
   const [carregando, setCarregando] = useState(true)
   const [modalCriar, setModalCriar] = useState(false)
+  const [modalConfig, setModalConfig] = useState(false)
   const [copiado, setCopiado] = useState(null)
 
   function carregar() {
@@ -84,6 +86,14 @@ export default function LandingPagesLista() {
               <p className="text-xs text-gray-400 hidden sm:block">Páginas de captura por template</p>
             </div>
           </div>
+          <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={() => setModalConfig(true)}
+            className="flex items-center gap-2 border border-gray-200 bg-white text-gray-700 px-3 sm:px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
+          >
+            <Settings size={15} />
+            <span className="hidden sm:inline">Configurações</span>
+          </button>
           <button
             onClick={() => setModalCriar(true)}
             className="flex items-center gap-2 bg-violet-600 text-white px-3 sm:px-4 py-2 rounded-lg text-sm font-medium hover:bg-violet-700 transition-colors shrink-0"
@@ -92,6 +102,7 @@ export default function LandingPagesLista() {
             <span className="hidden sm:inline">Nova landing page</span>
             <span className="sm:hidden">Nova</span>
           </button>
+          </div>
         </div>
       </div>
 
@@ -163,6 +174,8 @@ export default function LandingPagesLista() {
           </div>
         )}
       </div>
+
+      {modalConfig && <ModalConfiguracoes onClose={() => setModalConfig(false)} />}
 
       {modalCriar && (
         <ModalEscolherTemplate

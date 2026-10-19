@@ -3,9 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Save, Play, Pause, Copy, Check, Upload, X, Plus, Trash2 } from 'lucide-react'
 import { LANDING_PAGE_TEMPLATES } from './templates'
 import { getConfig } from './config'
+import MolduraLandingPage from './Moldura'
 import {
   obterLandingPage, atualizarLandingPage, publicarLandingPage, pausarLandingPage,
-  uploadImagemLandingPage,
+  uploadImagemLandingPage, obterConfiguracoes,
 } from './api'
 
 export default function LandingPageEditor() {
@@ -19,6 +20,12 @@ export default function LandingPageEditor() {
   const [salvando, setSalvando] = useState(false)
   const [copiado, setCopiado] = useState(false)
   const saveTimeout = useRef(null)
+  // Configurações gerais (logo, botão de WhatsApp) — só pra pré-visualização ficar igual à página pública.
+  const [configuracoes, setConfiguracoes] = useState(null)
+
+  useEffect(() => {
+    obterConfiguracoes().then(setConfiguracoes).catch(() => {})
+  }, [])
 
   useEffect(() => {
     obterLandingPage(id).then(data => {
@@ -126,7 +133,9 @@ export default function LandingPageEditor() {
               <span className="w-2.5 h-2.5 rounded-full bg-green-300" />
             </div>
             <div className="max-h-[70vh] overflow-y-auto">
-              <template.Render conteudo={conteudo} />
+              <MolduraLandingPage configuracoes={configuracoes} preview>
+                <template.Render conteudo={conteudo} />
+              </MolduraLandingPage>
             </div>
           </div>
         </div>

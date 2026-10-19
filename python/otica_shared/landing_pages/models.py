@@ -57,3 +57,21 @@ def criar_modelos(Base, *, tabela_usuarios: str, modelo_usuario: str):
         landing_page = relationship("LandingPage", back_populates="leads")
 
     return LandingPage, LandingPageLead
+
+
+def criar_modelo_config(Base):
+    """Configurações que valem para TODAS as landing pages (uma linha só, id=1).
+
+    `dados` é JSON solto (formato em `config.py`) de propósito: configuração
+    nova entra sem ALTER TABLE em nenhum dos apps. Tabela nova
+    `landing_pages_config`, criada pelo create_all de cada app.
+    """
+
+    class LandingPagesConfig(Base):
+        __tablename__ = "landing_pages_config"
+
+        id            = Column(Integer, primary_key=True)
+        dados         = Column(Text, nullable=False, default="{}")
+        atualizado_em = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    return LandingPagesConfig

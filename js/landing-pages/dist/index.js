@@ -406,9 +406,13 @@ function GreatsRender({ conteudo }) {
 }
 
 // js/landing-pages/src/LandingPagesLista.jsx
-import { useEffect as useEffect2, useState as useState2 } from "react";
+import { useEffect as useEffect3, useState as useState3 } from "react";
 import { useNavigate } from "react-router-dom";
-import { Rocket, Plus, X, Copy, CopyPlus, Trash2, Eye, Users, ExternalLink, Play, Pause, Check } from "lucide-react";
+import { Rocket, Plus, X as X2, Copy, CopyPlus, Trash2 as Trash22, Eye, Users, ExternalLink, Play, Pause, Check, Settings } from "lucide-react";
+
+// js/landing-pages/src/ModalConfiguracoes.jsx
+import { useEffect as useEffect2, useRef, useState as useState2 } from "react";
+import { X, Upload, Trash2 } from "lucide-react";
 
 // js/landing-pages/src/api.js
 var api_exports = {};
@@ -422,10 +426,12 @@ __export(api_exports, {
   listarLandingPages: () => listarLandingPages,
   listarLeadsLandingPage: () => listarLeadsLandingPage,
   listarTemplates: () => listarTemplates,
+  obterConfiguracoes: () => obterConfiguracoes,
   obterLandingPage: () => obterLandingPage,
   pausarLandingPage: () => pausarLandingPage,
   publicarLandingPage: () => publicarLandingPage,
   registrarVisualizacao: () => registrarVisualizacao,
+  salvarConfiguracoes: () => salvarConfiguracoes,
   uploadImagemLandingPage: () => uploadImagemLandingPage
 });
 function base() {
@@ -520,9 +526,227 @@ async function enviarLeadLandingPage(slug, payload) {
     body: JSON.stringify(payload)
   }));
 }
+async function obterConfiguracoes() {
+  return handle(await req(`${base()}/configuracoes`, { headers: headers() }));
+}
+async function salvarConfiguracoes(payload) {
+  return handle(await req(`${base()}/configuracoes`, {
+    method: "PUT",
+    headers: headers({ "Content-Type": "application/json" }),
+    body: JSON.stringify(payload)
+  }));
+}
+
+// js/landing-pages/src/Moldura.jsx
+import { jsx as jsx2, jsxs as jsxs2 } from "react/jsx-runtime";
+var WHATSAPP_PATH = "M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z";
+function IconeWhatsApp({ className = "w-7 h-7" }) {
+  return /* @__PURE__ */ jsx2("svg", { viewBox: "0 0 24 24", className, fill: "currentColor", "aria-hidden": "true", children: /* @__PURE__ */ jsx2("path", { d: WHATSAPP_PATH }) });
+}
+function linkWhatsApp(numero, mensagem) {
+  return `https://wa.me/${numero}${mensagem ? `?text=${encodeURIComponent(mensagem)}` : ""}`;
+}
+function BotaoWhatsApp({ href }) {
+  return /* @__PURE__ */ jsx2(
+    "a",
+    {
+      href,
+      target: "_blank",
+      rel: "noopener noreferrer",
+      "aria-label": "Falar no WhatsApp",
+      title: "Falar no WhatsApp",
+      className: "flex items-center justify-center w-14 h-14 rounded-full text-white shadow-lg transition-transform hover:scale-105",
+      style: { background: "#25D366" },
+      children: /* @__PURE__ */ jsx2(IconeWhatsApp, {})
+    }
+  );
+}
+function MolduraLandingPage({ configuracoes, preview = false, children }) {
+  const logo = configuracoes?.marca?.logo_url;
+  const w = configuracoes?.whatsapp;
+  const wpp = w?.ativo && w?.numero ? linkWhatsApp(w.numero, w.mensagem) : null;
+  return /* @__PURE__ */ jsxs2("div", { className: "bg-white", children: [
+    logo && /* @__PURE__ */ jsx2("header", { className: "bg-white border-b border-gray-100 px-5 py-3 flex items-center justify-center", children: /* @__PURE__ */ jsx2("img", { src: logo, alt: "Logo", className: "h-10 sm:h-12 w-auto max-w-[220px] object-contain" }) }),
+    children,
+    wpp && (preview ? /* @__PURE__ */ jsx2("div", { className: "sticky bottom-0 h-0", children: /* @__PURE__ */ jsx2("div", { className: "absolute bottom-4 right-4", children: /* @__PURE__ */ jsx2(BotaoWhatsApp, { href: wpp }) }) }) : /* @__PURE__ */ jsx2("div", { className: "fixed bottom-5 right-5 z-50", children: /* @__PURE__ */ jsx2(BotaoWhatsApp, { href: wpp }) }))
+  ] });
+}
+
+// js/landing-pages/src/ModalConfiguracoes.jsx
+import { Fragment, jsx as jsx3, jsxs as jsxs3 } from "react/jsx-runtime";
+var inputCls = "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400";
+function Interruptor({ ligado, onChange, label }) {
+  return /* @__PURE__ */ jsx3(
+    "button",
+    {
+      type: "button",
+      role: "switch",
+      "aria-checked": ligado,
+      "aria-label": label,
+      onClick: () => onChange(!ligado),
+      className: `relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors ${ligado ? "bg-emerald-500" : "bg-gray-300"}`,
+      children: /* @__PURE__ */ jsx3("span", { className: `inline-block h-5 w-5 rounded-full bg-white shadow transition-transform ${ligado ? "translate-x-5" : "translate-x-0.5"}` })
+    }
+  );
+}
+function ModalConfiguracoes({ onClose }) {
+  const [cfg, setCfg] = useState2(null);
+  const [erroCarregar, setErroCarregar] = useState2("");
+  const [salvando, setSalvando] = useState2(false);
+  const [enviandoLogo, setEnviandoLogo] = useState2(false);
+  const [erro, setErro] = useState2("");
+  const [salvo, setSalvo] = useState2(false);
+  const inputLogo = useRef(null);
+  useEffect2(() => {
+    obterConfiguracoes().then(setCfg).catch((e) => setErroCarregar(e.message));
+  }, []);
+  function setWhatsapp(campo, valor) {
+    setCfg((c) => ({ ...c, whatsapp: { ...c.whatsapp, [campo]: valor } }));
+    setSalvo(false);
+  }
+  function setLogo(url) {
+    setCfg((c) => ({ ...c, marca: { ...c.marca, logo_url: url } }));
+    setSalvo(false);
+  }
+  async function handleLogo(file) {
+    if (!file) return;
+    setEnviandoLogo(true);
+    setErro("");
+    try {
+      const { url } = await uploadImagemLandingPage(file);
+      setLogo(url);
+    } catch (e) {
+      setErro(e.message);
+    } finally {
+      setEnviandoLogo(false);
+      if (inputLogo.current) inputLogo.current.value = "";
+    }
+  }
+  async function handleSalvar() {
+    setSalvando(true);
+    setErro("");
+    try {
+      const atualizado = await salvarConfiguracoes({ whatsapp: cfg.whatsapp, marca: cfg.marca });
+      setCfg(atualizado);
+      setSalvo(true);
+    } catch (e) {
+      setErro(e.message);
+    } finally {
+      setSalvando(false);
+    }
+  }
+  return /* @__PURE__ */ jsxs3("div", { className: "fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4", children: [
+    /* @__PURE__ */ jsx3("div", { className: "absolute inset-0 bg-black/50 backdrop-blur-sm", onClick: onClose }),
+    /* @__PURE__ */ jsxs3("div", { className: "relative bg-white w-full sm:max-w-lg sm:rounded-2xl rounded-t-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92dvh]", children: [
+      /* @__PURE__ */ jsxs3("div", { className: "flex items-center justify-between px-5 py-4 border-b border-gray-100", children: [
+        /* @__PURE__ */ jsxs3("div", { children: [
+          /* @__PURE__ */ jsx3("h2", { className: "text-base font-bold text-gray-900", children: "Configura\xE7\xF5es" }),
+          /* @__PURE__ */ jsx3("p", { className: "text-xs text-gray-400", children: "Valem para todas as landing pages" })
+        ] }),
+        /* @__PURE__ */ jsx3("button", { onClick: onClose, className: "p-1.5 rounded-lg hover:bg-gray-100 text-gray-400", "aria-label": "Fechar", children: /* @__PURE__ */ jsx3(X, { size: 18 }) })
+      ] }),
+      /* @__PURE__ */ jsxs3("div", { className: "p-5 overflow-y-auto space-y-6", children: [
+        !cfg && !erroCarregar && /* @__PURE__ */ jsx3("p", { className: "text-sm text-gray-400 text-center py-6", children: "Carregando..." }),
+        erroCarregar && /* @__PURE__ */ jsx3("p", { className: "text-sm text-red-600 text-center py-6", children: erroCarregar }),
+        cfg && /* @__PURE__ */ jsxs3(Fragment, { children: [
+          /* @__PURE__ */ jsxs3("section", { className: "space-y-3", children: [
+            /* @__PURE__ */ jsxs3("div", { className: "flex items-center justify-between gap-3", children: [
+              /* @__PURE__ */ jsxs3("div", { className: "flex items-center gap-2.5", children: [
+                /* @__PURE__ */ jsx3("span", { className: "flex items-center justify-center w-8 h-8 rounded-full text-white", style: { background: "#25D366" }, children: /* @__PURE__ */ jsx3(IconeWhatsApp, { className: "w-4 h-4" }) }),
+                /* @__PURE__ */ jsxs3("div", { children: [
+                  /* @__PURE__ */ jsx3("p", { className: "text-sm font-semibold text-gray-900", children: "Bot\xE3o de WhatsApp" }),
+                  /* @__PURE__ */ jsx3("p", { className: "text-xs text-gray-500", children: "Bot\xE3o verde no canto inferior direito de todas as p\xE1ginas." })
+                ] })
+              ] }),
+              /* @__PURE__ */ jsx3(Interruptor, { ligado: cfg.whatsapp.ativo, onChange: (v) => setWhatsapp("ativo", v), label: "Ativar bot\xE3o de WhatsApp" })
+            ] }),
+            cfg.whatsapp.ativo && /* @__PURE__ */ jsxs3("div", { className: "space-y-3 pl-0 sm:pl-10", children: [
+              /* @__PURE__ */ jsxs3("div", { children: [
+                /* @__PURE__ */ jsx3("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: "N\xFAmero do WhatsApp (com DDD)" }),
+                /* @__PURE__ */ jsx3(
+                  "input",
+                  {
+                    value: cfg.whatsapp.numero,
+                    onChange: (e) => setWhatsapp("numero", e.target.value),
+                    placeholder: "(11) 99999-9999",
+                    inputMode: "tel",
+                    className: inputCls
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ jsxs3("div", { children: [
+                /* @__PURE__ */ jsx3("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: "Mensagem padr\xE3o" }),
+                /* @__PURE__ */ jsx3(
+                  "textarea",
+                  {
+                    value: cfg.whatsapp.mensagem,
+                    onChange: (e) => setWhatsapp("mensagem", e.target.value),
+                    rows: 3,
+                    placeholder: "Ol\xE1! Vim pela p\xE1gina e gostaria de mais informa\xE7\xF5es.",
+                    className: `${inputCls} resize-none`
+                  }
+                ),
+                /* @__PURE__ */ jsx3("p", { className: "text-xs text-gray-400 mt-1", children: "J\xE1 vem escrita quando o visitante abre a conversa." })
+              ] })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxs3("section", { className: "space-y-3 pt-5 border-t border-gray-100", children: [
+            /* @__PURE__ */ jsxs3("div", { children: [
+              /* @__PURE__ */ jsx3("p", { className: "text-sm font-semibold text-gray-900", children: "Identidade de marca" }),
+              /* @__PURE__ */ jsx3("p", { className: "text-xs text-gray-500", children: "O logo aparece no topo de todas as p\xE1ginas." })
+            ] }),
+            cfg.marca.logo_url ? /* @__PURE__ */ jsxs3("div", { className: "flex items-center gap-3", children: [
+              /* @__PURE__ */ jsx3("div", { className: "flex items-center justify-center rounded-lg border border-gray-200 bg-white px-4 py-3", children: /* @__PURE__ */ jsx3("img", { src: cfg.marca.logo_url, alt: "Logo", className: "h-12 w-auto max-w-[200px] object-contain" }) }),
+              /* @__PURE__ */ jsxs3("div", { className: "flex flex-col gap-1.5", children: [
+                /* @__PURE__ */ jsxs3("button", { type: "button", onClick: () => inputLogo.current?.click(), disabled: enviandoLogo, className: "flex items-center gap-1.5 text-xs font-medium text-violet-600 hover:text-violet-700", children: [
+                  /* @__PURE__ */ jsx3(Upload, { size: 13 }),
+                  " ",
+                  enviandoLogo ? "Enviando..." : "Trocar logo"
+                ] }),
+                /* @__PURE__ */ jsxs3("button", { type: "button", onClick: () => setLogo(null), className: "flex items-center gap-1.5 text-xs font-medium text-red-500 hover:text-red-600", children: [
+                  /* @__PURE__ */ jsx3(Trash2, { size: 13 }),
+                  " Remover"
+                ] })
+              ] })
+            ] }) : /* @__PURE__ */ jsxs3(
+              "button",
+              {
+                type: "button",
+                onClick: () => inputLogo.current?.click(),
+                disabled: enviandoLogo,
+                className: "flex items-center gap-2 px-3 py-2 rounded-lg border border-dashed border-gray-300 text-sm text-gray-500 hover:border-violet-400 hover:text-violet-600",
+                children: [
+                  /* @__PURE__ */ jsx3(Upload, { size: 14 }),
+                  enviandoLogo ? "Enviando..." : "Enviar logo"
+                ]
+              }
+            ),
+            /* @__PURE__ */ jsx3("p", { className: "text-xs text-gray-400", children: "Dica: PNG com fundo transparente fica melhor." }),
+            /* @__PURE__ */ jsx3("input", { ref: inputLogo, type: "file", accept: "image/*", className: "hidden", onChange: (e) => handleLogo(e.target.files?.[0]) })
+          ] })
+        ] }),
+        erro && /* @__PURE__ */ jsx3("p", { className: "text-xs text-red-600", children: erro })
+      ] }),
+      /* @__PURE__ */ jsxs3("div", { className: "px-5 py-4 border-t border-gray-100 flex items-center justify-end gap-2", children: [
+        salvo && /* @__PURE__ */ jsx3("span", { className: "text-xs text-emerald-600 mr-auto", children: "Configura\xE7\xF5es salvas" }),
+        /* @__PURE__ */ jsx3("button", { type: "button", onClick: onClose, className: "px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100", children: "Fechar" }),
+        /* @__PURE__ */ jsx3(
+          "button",
+          {
+            type: "button",
+            onClick: handleSalvar,
+            disabled: !cfg || salvando || enviandoLogo,
+            className: "px-4 py-2 rounded-lg text-sm font-medium bg-violet-600 text-white hover:bg-violet-700 disabled:opacity-50",
+            children: salvando ? "Salvando..." : "Salvar"
+          }
+        )
+      ] })
+    ] })
+  ] });
+}
 
 // js/landing-pages/src/LandingPagesLista.jsx
-import { Fragment, jsx as jsx2, jsxs as jsxs2 } from "react/jsx-runtime";
+import { Fragment as Fragment2, jsx as jsx4, jsxs as jsxs4 } from "react/jsx-runtime";
 var STATUS_ESTILO = {
   rascunho: "bg-gray-100 text-gray-600",
   publicada: "bg-emerald-100 text-emerald-700",
@@ -531,22 +755,23 @@ var STATUS_ESTILO = {
 var STATUS_LABEL = { rascunho: "Rascunho", publicada: "Publicada", pausada: "Pausada" };
 function AvatarIniciais({ nome }) {
   const iniciais = (nome ?? "?").split(" ").slice(0, 2).map((p) => p[0]).join("").toUpperCase();
-  return /* @__PURE__ */ jsx2("div", { className: "w-5 h-5 text-[10px] rounded-full bg-violet-100 text-violet-700 font-semibold flex items-center justify-center shrink-0", children: iniciais });
+  return /* @__PURE__ */ jsx4("div", { className: "w-5 h-5 text-[10px] rounded-full bg-violet-100 text-violet-700 font-semibold flex items-center justify-center shrink-0", children: iniciais });
 }
 function LandingPagesLista() {
   const navigate = useNavigate();
   const { rotaPainel, rotaPublica } = getConfig();
   const Avatar = getConfig().Avatar || AvatarIniciais;
-  const [itens, setItens] = useState2([]);
-  const [carregando, setCarregando] = useState2(true);
-  const [modalCriar, setModalCriar] = useState2(false);
-  const [copiado, setCopiado] = useState2(null);
+  const [itens, setItens] = useState3([]);
+  const [carregando, setCarregando] = useState3(true);
+  const [modalCriar, setModalCriar] = useState3(false);
+  const [modalConfig, setModalConfig] = useState3(false);
+  const [copiado, setCopiado] = useState3(null);
   function carregar() {
     setCarregando(true);
     listarLandingPages().then(setItens).catch(() => {
     }).finally(() => setCarregando(false));
   }
-  useEffect2(() => {
+  useEffect3(() => {
     carregar();
   }, []);
   async function handlePublicarPausar(lp) {
@@ -582,42 +807,55 @@ function LandingPagesLista() {
     setCopiado(slug);
     setTimeout(() => setCopiado(null), 1500);
   }
-  return /* @__PURE__ */ jsxs2("div", { className: "min-h-full bg-gray-50", children: [
-    /* @__PURE__ */ jsx2("div", { className: "bg-white border-b border-gray-200 px-4 sm:px-6 py-4", children: /* @__PURE__ */ jsxs2("div", { className: "max-w-5xl mx-auto flex items-center justify-between gap-3", children: [
-      /* @__PURE__ */ jsxs2("div", { className: "flex items-center gap-2.5 min-w-0", children: [
-        /* @__PURE__ */ jsx2("div", { className: "p-2 rounded-xl bg-violet-50 shrink-0", children: /* @__PURE__ */ jsx2(Rocket, { size: 18, className: "text-violet-600", strokeWidth: 2 }) }),
-        /* @__PURE__ */ jsxs2("div", { className: "min-w-0", children: [
-          /* @__PURE__ */ jsx2("h1", { className: "text-base font-bold text-gray-900 leading-tight", children: "Landing Pages" }),
-          /* @__PURE__ */ jsx2("p", { className: "text-xs text-gray-400 hidden sm:block", children: "P\xE1ginas de captura por template" })
+  return /* @__PURE__ */ jsxs4("div", { className: "min-h-full bg-gray-50", children: [
+    /* @__PURE__ */ jsx4("div", { className: "bg-white border-b border-gray-200 px-4 sm:px-6 py-4", children: /* @__PURE__ */ jsxs4("div", { className: "max-w-5xl mx-auto flex items-center justify-between gap-3", children: [
+      /* @__PURE__ */ jsxs4("div", { className: "flex items-center gap-2.5 min-w-0", children: [
+        /* @__PURE__ */ jsx4("div", { className: "p-2 rounded-xl bg-violet-50 shrink-0", children: /* @__PURE__ */ jsx4(Rocket, { size: 18, className: "text-violet-600", strokeWidth: 2 }) }),
+        /* @__PURE__ */ jsxs4("div", { className: "min-w-0", children: [
+          /* @__PURE__ */ jsx4("h1", { className: "text-base font-bold text-gray-900 leading-tight", children: "Landing Pages" }),
+          /* @__PURE__ */ jsx4("p", { className: "text-xs text-gray-400 hidden sm:block", children: "P\xE1ginas de captura por template" })
         ] })
       ] }),
-      /* @__PURE__ */ jsxs2(
-        "button",
-        {
-          onClick: () => setModalCriar(true),
-          className: "flex items-center gap-2 bg-violet-600 text-white px-3 sm:px-4 py-2 rounded-lg text-sm font-medium hover:bg-violet-700 transition-colors shrink-0",
-          children: [
-            /* @__PURE__ */ jsx2(Plus, { size: 15, strokeWidth: 2.5 }),
-            /* @__PURE__ */ jsx2("span", { className: "hidden sm:inline", children: "Nova landing page" }),
-            /* @__PURE__ */ jsx2("span", { className: "sm:hidden", children: "Nova" })
-          ]
-        }
-      )
+      /* @__PURE__ */ jsxs4("div", { className: "flex items-center gap-2 shrink-0", children: [
+        /* @__PURE__ */ jsxs4(
+          "button",
+          {
+            onClick: () => setModalConfig(true),
+            className: "flex items-center gap-2 border border-gray-200 bg-white text-gray-700 px-3 sm:px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors",
+            children: [
+              /* @__PURE__ */ jsx4(Settings, { size: 15 }),
+              /* @__PURE__ */ jsx4("span", { className: "hidden sm:inline", children: "Configura\xE7\xF5es" })
+            ]
+          }
+        ),
+        /* @__PURE__ */ jsxs4(
+          "button",
+          {
+            onClick: () => setModalCriar(true),
+            className: "flex items-center gap-2 bg-violet-600 text-white px-3 sm:px-4 py-2 rounded-lg text-sm font-medium hover:bg-violet-700 transition-colors shrink-0",
+            children: [
+              /* @__PURE__ */ jsx4(Plus, { size: 15, strokeWidth: 2.5 }),
+              /* @__PURE__ */ jsx4("span", { className: "hidden sm:inline", children: "Nova landing page" }),
+              /* @__PURE__ */ jsx4("span", { className: "sm:hidden", children: "Nova" })
+            ]
+          }
+        )
+      ] })
     ] }) }),
-    /* @__PURE__ */ jsx2("div", { className: "max-w-5xl mx-auto p-4 sm:p-6", children: carregando ? /* @__PURE__ */ jsx2("p", { className: "text-sm text-gray-400 text-center py-10", children: "Carregando..." }) : itens.length === 0 ? /* @__PURE__ */ jsxs2("div", { className: "text-center py-16", children: [
-      /* @__PURE__ */ jsx2(Rocket, { size: 32, className: "mx-auto text-gray-300 mb-3" }),
-      /* @__PURE__ */ jsx2("p", { className: "text-sm text-gray-500", children: "Nenhuma landing page ainda." }),
-      /* @__PURE__ */ jsx2("button", { onClick: () => setModalCriar(true), className: "mt-3 text-sm font-medium text-violet-600 hover:text-violet-700", children: "Criar a primeira" })
-    ] }) : /* @__PURE__ */ jsx2("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4", children: itens.map((lp) => /* @__PURE__ */ jsxs2("div", { className: "bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex flex-col gap-3", children: [
-      /* @__PURE__ */ jsxs2("div", { className: "flex items-start justify-between gap-2", children: [
-        /* @__PURE__ */ jsxs2(
+    /* @__PURE__ */ jsx4("div", { className: "max-w-5xl mx-auto p-4 sm:p-6", children: carregando ? /* @__PURE__ */ jsx4("p", { className: "text-sm text-gray-400 text-center py-10", children: "Carregando..." }) : itens.length === 0 ? /* @__PURE__ */ jsxs4("div", { className: "text-center py-16", children: [
+      /* @__PURE__ */ jsx4(Rocket, { size: 32, className: "mx-auto text-gray-300 mb-3" }),
+      /* @__PURE__ */ jsx4("p", { className: "text-sm text-gray-500", children: "Nenhuma landing page ainda." }),
+      /* @__PURE__ */ jsx4("button", { onClick: () => setModalCriar(true), className: "mt-3 text-sm font-medium text-violet-600 hover:text-violet-700", children: "Criar a primeira" })
+    ] }) : /* @__PURE__ */ jsx4("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4", children: itens.map((lp) => /* @__PURE__ */ jsxs4("div", { className: "bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex flex-col gap-3", children: [
+      /* @__PURE__ */ jsxs4("div", { className: "flex items-start justify-between gap-2", children: [
+        /* @__PURE__ */ jsxs4(
           "button",
           {
             onClick: () => navigate(`${rotaPainel}/${lp.id}`),
             className: "text-left min-w-0",
             children: [
-              /* @__PURE__ */ jsx2("p", { className: "text-sm font-semibold text-gray-900 truncate hover:text-violet-600", children: lp.nome }),
-              /* @__PURE__ */ jsxs2("p", { className: "text-xs text-gray-400 truncate", children: [
+              /* @__PURE__ */ jsx4("p", { className: "text-sm font-semibold text-gray-900 truncate hover:text-violet-600", children: lp.nome }),
+              /* @__PURE__ */ jsxs4("p", { className: "text-xs text-gray-400 truncate", children: [
                 rotaPublica,
                 "/",
                 lp.slug
@@ -625,40 +863,41 @@ function LandingPagesLista() {
             ]
           }
         ),
-        /* @__PURE__ */ jsx2("span", { className: `text-[11px] font-medium px-2 py-0.5 rounded-full shrink-0 ${STATUS_ESTILO[lp.status]}`, children: STATUS_LABEL[lp.status] })
+        /* @__PURE__ */ jsx4("span", { className: `text-[11px] font-medium px-2 py-0.5 rounded-full shrink-0 ${STATUS_ESTILO[lp.status]}`, children: STATUS_LABEL[lp.status] })
       ] }),
-      /* @__PURE__ */ jsxs2("div", { className: "flex items-center gap-4 text-xs text-gray-500", children: [
-        /* @__PURE__ */ jsxs2("span", { className: "flex items-center gap-1", children: [
-          /* @__PURE__ */ jsx2(Eye, { size: 13 }),
+      /* @__PURE__ */ jsxs4("div", { className: "flex items-center gap-4 text-xs text-gray-500", children: [
+        /* @__PURE__ */ jsxs4("span", { className: "flex items-center gap-1", children: [
+          /* @__PURE__ */ jsx4(Eye, { size: 13 }),
           " ",
           lp.visualizacoes
         ] }),
-        /* @__PURE__ */ jsxs2("span", { className: "flex items-center gap-1", children: [
-          /* @__PURE__ */ jsx2(Users, { size: 13 }),
+        /* @__PURE__ */ jsxs4("span", { className: "flex items-center gap-1", children: [
+          /* @__PURE__ */ jsx4(Users, { size: 13 }),
           " ",
           lp.total_leads
         ] }),
-        lp.criado_por_nome && /* @__PURE__ */ jsx2("span", { className: "flex items-center gap-1.5 ml-auto", children: /* @__PURE__ */ jsx2(Avatar, { nome: lp.criado_por_nome, fotoUrl: lp.criado_por_foto_url, size: "xs" }) })
+        lp.criado_por_nome && /* @__PURE__ */ jsx4("span", { className: "flex items-center gap-1.5 ml-auto", children: /* @__PURE__ */ jsx4(Avatar, { nome: lp.criado_por_nome, fotoUrl: lp.criado_por_foto_url, size: "xs" }) })
       ] }),
-      /* @__PURE__ */ jsxs2("div", { className: "flex items-center gap-1.5 pt-2 border-t border-gray-100", children: [
-        /* @__PURE__ */ jsx2(
+      /* @__PURE__ */ jsxs4("div", { className: "flex items-center gap-1.5 pt-2 border-t border-gray-100", children: [
+        /* @__PURE__ */ jsx4(
           "button",
           {
             onClick: () => handlePublicarPausar(lp),
             title: lp.status === "publicada" ? "Pausar" : "Publicar",
             className: "p-1.5 rounded-lg hover:bg-gray-100 text-gray-500",
-            children: lp.status === "publicada" ? /* @__PURE__ */ jsx2(Pause, { size: 14 }) : /* @__PURE__ */ jsx2(Play, { size: 14 })
+            children: lp.status === "publicada" ? /* @__PURE__ */ jsx4(Pause, { size: 14 }) : /* @__PURE__ */ jsx4(Play, { size: 14 })
           }
         ),
-        lp.status === "publicada" && /* @__PURE__ */ jsxs2(Fragment, { children: [
-          /* @__PURE__ */ jsx2("button", { onClick: () => copiarLink(lp.slug), title: "Copiar link", className: "p-1.5 rounded-lg hover:bg-gray-100 text-gray-500", children: copiado === lp.slug ? /* @__PURE__ */ jsx2(Check, { size: 14, className: "text-emerald-600" }) : /* @__PURE__ */ jsx2(Copy, { size: 14 }) }),
-          /* @__PURE__ */ jsx2("a", { href: `${rotaPublica}/${lp.slug}`, target: "_blank", rel: "noopener noreferrer", title: "Abrir p\xE1gina", className: "p-1.5 rounded-lg hover:bg-gray-100 text-gray-500", children: /* @__PURE__ */ jsx2(ExternalLink, { size: 14 }) })
+        lp.status === "publicada" && /* @__PURE__ */ jsxs4(Fragment2, { children: [
+          /* @__PURE__ */ jsx4("button", { onClick: () => copiarLink(lp.slug), title: "Copiar link", className: "p-1.5 rounded-lg hover:bg-gray-100 text-gray-500", children: copiado === lp.slug ? /* @__PURE__ */ jsx4(Check, { size: 14, className: "text-emerald-600" }) : /* @__PURE__ */ jsx4(Copy, { size: 14 }) }),
+          /* @__PURE__ */ jsx4("a", { href: `${rotaPublica}/${lp.slug}`, target: "_blank", rel: "noopener noreferrer", title: "Abrir p\xE1gina", className: "p-1.5 rounded-lg hover:bg-gray-100 text-gray-500", children: /* @__PURE__ */ jsx4(ExternalLink, { size: 14 }) })
         ] }),
-        /* @__PURE__ */ jsx2("button", { onClick: () => handleDuplicar(lp), title: "Duplicar", className: "p-1.5 rounded-lg hover:bg-gray-100 text-gray-500", children: /* @__PURE__ */ jsx2(CopyPlus, { size: 14 }) }),
-        /* @__PURE__ */ jsx2("button", { onClick: () => handleExcluir(lp), title: "Excluir", className: "p-1.5 rounded-lg hover:bg-red-50 text-red-500 ml-auto", children: /* @__PURE__ */ jsx2(Trash2, { size: 14 }) })
+        /* @__PURE__ */ jsx4("button", { onClick: () => handleDuplicar(lp), title: "Duplicar", className: "p-1.5 rounded-lg hover:bg-gray-100 text-gray-500", children: /* @__PURE__ */ jsx4(CopyPlus, { size: 14 }) }),
+        /* @__PURE__ */ jsx4("button", { onClick: () => handleExcluir(lp), title: "Excluir", className: "p-1.5 rounded-lg hover:bg-red-50 text-red-500 ml-auto", children: /* @__PURE__ */ jsx4(Trash22, { size: 14 }) })
       ] })
     ] }, lp.id)) }) }),
-    modalCriar && /* @__PURE__ */ jsx2(
+    modalConfig && /* @__PURE__ */ jsx4(ModalConfiguracoes, { onClose: () => setModalConfig(false) }),
+    modalCriar && /* @__PURE__ */ jsx4(
       ModalEscolherTemplate,
       {
         onClose: () => setModalCriar(false),
@@ -668,10 +907,10 @@ function LandingPagesLista() {
   ] });
 }
 function ModalEscolherTemplate({ onClose, onCriado }) {
-  const [nome, setNome] = useState2("");
-  const [templateId, setTemplateId] = useState2(null);
-  const [salvando, setSalvando] = useState2(false);
-  const [erro, setErro] = useState2("");
+  const [nome, setNome] = useState3("");
+  const [templateId, setTemplateId] = useState3(null);
+  const [salvando, setSalvando] = useState3(false);
+  const [erro, setErro] = useState3("");
   async function handleCriar() {
     if (!nome.trim() || !templateId) return;
     setSalvando(true);
@@ -685,17 +924,17 @@ function ModalEscolherTemplate({ onClose, onCriado }) {
       setSalvando(false);
     }
   }
-  return /* @__PURE__ */ jsxs2("div", { className: "fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4", children: [
-    /* @__PURE__ */ jsx2("div", { className: "absolute inset-0 bg-black/50 backdrop-blur-sm", onClick: onClose }),
-    /* @__PURE__ */ jsxs2("div", { className: "relative bg-white w-full sm:max-w-xl sm:rounded-2xl rounded-t-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92dvh]", children: [
-      /* @__PURE__ */ jsxs2("div", { className: "flex items-center justify-between px-5 py-4 border-b border-gray-100", children: [
-        /* @__PURE__ */ jsx2("h2", { className: "text-base font-bold text-gray-900", children: "Nova landing page" }),
-        /* @__PURE__ */ jsx2("button", { onClick: onClose, className: "p-1.5 rounded-lg hover:bg-gray-100 text-gray-400", children: /* @__PURE__ */ jsx2(X, { size: 18 }) })
+  return /* @__PURE__ */ jsxs4("div", { className: "fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4", children: [
+    /* @__PURE__ */ jsx4("div", { className: "absolute inset-0 bg-black/50 backdrop-blur-sm", onClick: onClose }),
+    /* @__PURE__ */ jsxs4("div", { className: "relative bg-white w-full sm:max-w-xl sm:rounded-2xl rounded-t-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92dvh]", children: [
+      /* @__PURE__ */ jsxs4("div", { className: "flex items-center justify-between px-5 py-4 border-b border-gray-100", children: [
+        /* @__PURE__ */ jsx4("h2", { className: "text-base font-bold text-gray-900", children: "Nova landing page" }),
+        /* @__PURE__ */ jsx4("button", { onClick: onClose, className: "p-1.5 rounded-lg hover:bg-gray-100 text-gray-400", children: /* @__PURE__ */ jsx4(X2, { size: 18 }) })
       ] }),
-      /* @__PURE__ */ jsxs2("div", { className: "p-5 overflow-y-auto space-y-4", children: [
-        /* @__PURE__ */ jsxs2("div", { children: [
-          /* @__PURE__ */ jsx2("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: "Nome da p\xE1gina" }),
-          /* @__PURE__ */ jsx2(
+      /* @__PURE__ */ jsxs4("div", { className: "p-5 overflow-y-auto space-y-4", children: [
+        /* @__PURE__ */ jsxs4("div", { children: [
+          /* @__PURE__ */ jsx4("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: "Nome da p\xE1gina" }),
+          /* @__PURE__ */ jsx4(
             "input",
             {
               value: nome,
@@ -705,27 +944,27 @@ function ModalEscolherTemplate({ onClose, onCriado }) {
             }
           )
         ] }),
-        /* @__PURE__ */ jsxs2("div", { children: [
-          /* @__PURE__ */ jsx2("label", { className: "text-xs font-medium text-gray-500 mb-2 block", children: "Escolha um template" }),
-          /* @__PURE__ */ jsx2("div", { className: "grid grid-cols-1 sm:grid-cols-3 gap-3", children: TEMPLATE_LIST.map((t) => /* @__PURE__ */ jsxs2(
+        /* @__PURE__ */ jsxs4("div", { children: [
+          /* @__PURE__ */ jsx4("label", { className: "text-xs font-medium text-gray-500 mb-2 block", children: "Escolha um template" }),
+          /* @__PURE__ */ jsx4("div", { className: "grid grid-cols-1 sm:grid-cols-3 gap-3", children: TEMPLATE_LIST.map((t) => /* @__PURE__ */ jsxs4(
             "button",
             {
               onClick: () => setTemplateId(t.id),
               className: `text-left rounded-xl border-2 p-3 transition-colors ${templateId === t.id ? "border-violet-500 bg-violet-50" : "border-gray-200 hover:border-gray-300"}`,
               children: [
-                /* @__PURE__ */ jsx2(TemplateCardPreview, { templateId: t.id }),
-                /* @__PURE__ */ jsx2("p", { className: "text-sm font-semibold text-gray-900 mt-2", children: t.nome }),
-                /* @__PURE__ */ jsx2("p", { className: "text-xs text-gray-500 mt-0.5", children: t.descricao })
+                /* @__PURE__ */ jsx4(TemplateCardPreview, { templateId: t.id }),
+                /* @__PURE__ */ jsx4("p", { className: "text-sm font-semibold text-gray-900 mt-2", children: t.nome }),
+                /* @__PURE__ */ jsx4("p", { className: "text-xs text-gray-500 mt-0.5", children: t.descricao })
               ]
             },
             t.id
           )) })
         ] }),
-        erro && /* @__PURE__ */ jsx2("p", { className: "text-xs text-red-600", children: erro })
+        erro && /* @__PURE__ */ jsx4("p", { className: "text-xs text-red-600", children: erro })
       ] }),
-      /* @__PURE__ */ jsxs2("div", { className: "px-5 py-4 border-t border-gray-100 flex justify-end gap-2", children: [
-        /* @__PURE__ */ jsx2("button", { type: "button", onClick: onClose, className: "px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100", children: "Cancelar" }),
-        /* @__PURE__ */ jsx2(
+      /* @__PURE__ */ jsxs4("div", { className: "px-5 py-4 border-t border-gray-100 flex justify-end gap-2", children: [
+        /* @__PURE__ */ jsx4("button", { type: "button", onClick: onClose, className: "px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100", children: "Cancelar" }),
+        /* @__PURE__ */ jsx4(
           "button",
           {
             type: "button",
@@ -741,22 +980,27 @@ function ModalEscolherTemplate({ onClose, onCriado }) {
 }
 
 // js/landing-pages/src/LandingPageEditor.jsx
-import { useEffect as useEffect3, useState as useState3, useRef, useCallback } from "react";
+import { useEffect as useEffect4, useState as useState4, useRef as useRef2, useCallback } from "react";
 import { useParams, useNavigate as useNavigate2 } from "react-router-dom";
-import { ArrowLeft, Save, Play as Play2, Pause as Pause2, Copy as Copy2, Check as Check2, Upload, X as X2, Plus as Plus2, Trash2 as Trash22 } from "lucide-react";
-import { Fragment as Fragment2, jsx as jsx3, jsxs as jsxs3 } from "react/jsx-runtime";
+import { ArrowLeft, Save, Play as Play2, Pause as Pause2, Copy as Copy2, Check as Check2, Upload as Upload2, X as X3, Plus as Plus2, Trash2 as Trash23 } from "lucide-react";
+import { Fragment as Fragment3, jsx as jsx5, jsxs as jsxs5 } from "react/jsx-runtime";
 function LandingPageEditor() {
   const { id } = useParams();
   const navigate = useNavigate2();
   const { rotaPainel, rotaPublica } = getConfig();
-  const [lp, setLp] = useState3(null);
-  const [nome, setNome] = useState3("");
-  const [conteudo, setConteudo] = useState3({});
-  const [carregando, setCarregando] = useState3(true);
-  const [salvando, setSalvando] = useState3(false);
-  const [copiado, setCopiado] = useState3(false);
-  const saveTimeout = useRef(null);
-  useEffect3(() => {
+  const [lp, setLp] = useState4(null);
+  const [nome, setNome] = useState4("");
+  const [conteudo, setConteudo] = useState4({});
+  const [carregando, setCarregando] = useState4(true);
+  const [salvando, setSalvando] = useState4(false);
+  const [copiado, setCopiado] = useState4(false);
+  const saveTimeout = useRef2(null);
+  const [configuracoes, setConfiguracoes] = useState4(null);
+  useEffect4(() => {
+    obterConfiguracoes().then(setConfiguracoes).catch(() => {
+    });
+  }, []);
+  useEffect4(() => {
     obterLandingPage(id).then((data) => {
       setLp(data);
       setNome(data.nome);
@@ -795,14 +1039,14 @@ function LandingPageEditor() {
     setCopiado(true);
     setTimeout(() => setCopiado(false), 1500);
   }
-  if (carregando) return /* @__PURE__ */ jsx3("div", { className: "p-10 text-center text-sm text-gray-400", children: "Carregando..." });
-  if (!lp) return /* @__PURE__ */ jsx3("div", { className: "p-10 text-center text-sm text-gray-400", children: "Landing page n\xE3o encontrada." });
+  if (carregando) return /* @__PURE__ */ jsx5("div", { className: "p-10 text-center text-sm text-gray-400", children: "Carregando..." });
+  if (!lp) return /* @__PURE__ */ jsx5("div", { className: "p-10 text-center text-sm text-gray-400", children: "Landing page n\xE3o encontrada." });
   const template = LANDING_PAGE_TEMPLATES[lp.template];
-  return /* @__PURE__ */ jsxs3("div", { className: "min-h-full bg-gray-50 flex flex-col", children: [
-    /* @__PURE__ */ jsx3("div", { className: "bg-white border-b border-gray-200 px-4 sm:px-6 py-3 sticky top-0 z-10", children: /* @__PURE__ */ jsxs3("div", { className: "max-w-6xl mx-auto flex items-center justify-between gap-3", children: [
-      /* @__PURE__ */ jsxs3("div", { className: "flex items-center gap-2 min-w-0", children: [
-        /* @__PURE__ */ jsx3("button", { onClick: () => navigate(rotaPainel), className: "p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 shrink-0", children: /* @__PURE__ */ jsx3(ArrowLeft, { size: 18 }) }),
-        /* @__PURE__ */ jsx3(
+  return /* @__PURE__ */ jsxs5("div", { className: "min-h-full bg-gray-50 flex flex-col", children: [
+    /* @__PURE__ */ jsx5("div", { className: "bg-white border-b border-gray-200 px-4 sm:px-6 py-3 sticky top-0 z-10", children: /* @__PURE__ */ jsxs5("div", { className: "max-w-6xl mx-auto flex items-center justify-between gap-3", children: [
+      /* @__PURE__ */ jsxs5("div", { className: "flex items-center gap-2 min-w-0", children: [
+        /* @__PURE__ */ jsx5("button", { onClick: () => navigate(rotaPainel), className: "p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 shrink-0", children: /* @__PURE__ */ jsx5(ArrowLeft, { size: 18 }) }),
+        /* @__PURE__ */ jsx5(
           "input",
           {
             value: nome,
@@ -811,43 +1055,43 @@ function LandingPageEditor() {
           }
         )
       ] }),
-      /* @__PURE__ */ jsxs3("div", { className: "flex items-center gap-2 shrink-0", children: [
-        /* @__PURE__ */ jsx3("span", { className: "text-xs text-gray-400 hidden sm:inline", children: salvando ? "Salvando..." : "Salvo" }),
-        lp.status === "publicada" && /* @__PURE__ */ jsx3("button", { onClick: copiarLink, className: "p-1.5 rounded-lg hover:bg-gray-100 text-gray-500", title: "Copiar link p\xFAblico", children: copiado ? /* @__PURE__ */ jsx3(Check2, { size: 16, className: "text-emerald-600" }) : /* @__PURE__ */ jsx3(Copy2, { size: 16 }) }),
-        /* @__PURE__ */ jsx3(
+      /* @__PURE__ */ jsxs5("div", { className: "flex items-center gap-2 shrink-0", children: [
+        /* @__PURE__ */ jsx5("span", { className: "text-xs text-gray-400 hidden sm:inline", children: salvando ? "Salvando..." : "Salvo" }),
+        lp.status === "publicada" && /* @__PURE__ */ jsx5("button", { onClick: copiarLink, className: "p-1.5 rounded-lg hover:bg-gray-100 text-gray-500", title: "Copiar link p\xFAblico", children: copiado ? /* @__PURE__ */ jsx5(Check2, { size: 16, className: "text-emerald-600" }) : /* @__PURE__ */ jsx5(Copy2, { size: 16 }) }),
+        /* @__PURE__ */ jsx5(
           "button",
           {
             onClick: handlePublicarPausar,
             className: `flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${lp.status === "publicada" ? "bg-amber-100 text-amber-700 hover:bg-amber-200" : "bg-emerald-600 text-white hover:bg-emerald-700"}`,
-            children: lp.status === "publicada" ? /* @__PURE__ */ jsxs3(Fragment2, { children: [
-              /* @__PURE__ */ jsx3(Pause2, { size: 14 }),
+            children: lp.status === "publicada" ? /* @__PURE__ */ jsxs5(Fragment3, { children: [
+              /* @__PURE__ */ jsx5(Pause2, { size: 14 }),
               " Pausar"
-            ] }) : /* @__PURE__ */ jsxs3(Fragment2, { children: [
-              /* @__PURE__ */ jsx3(Play2, { size: 14 }),
+            ] }) : /* @__PURE__ */ jsxs5(Fragment3, { children: [
+              /* @__PURE__ */ jsx5(Play2, { size: 14 }),
               " Publicar"
             ] })
           }
         )
       ] })
     ] }) }),
-    /* @__PURE__ */ jsxs3("div", { className: "flex-1 max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-0 lg:gap-6 p-4 sm:p-6", children: [
-      /* @__PURE__ */ jsxs3("div", { className: "space-y-4", children: [
-        /* @__PURE__ */ jsx3(CamposPagina, { lp, nome, onNomeChange: handleNomeChange, onSalvo: setLp, rotaPublica }),
-        template.campos.map((campo) => /* @__PURE__ */ jsx3(CampoEditor, { campo, valor: conteudo[campo.chave], onChange: (v) => handleCampoChange(campo.chave, v) }, campo.chave)),
-        /* @__PURE__ */ jsxs3("div", { className: "pt-4 border-t border-gray-200 space-y-3", children: [
-          /* @__PURE__ */ jsx3("p", { className: "text-xs font-medium text-gray-500", children: "SEO (aba do navegador)" }),
-          /* @__PURE__ */ jsx3(MetaCampos, { lp, onSalvo: setLp })
+    /* @__PURE__ */ jsxs5("div", { className: "flex-1 max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-0 lg:gap-6 p-4 sm:p-6", children: [
+      /* @__PURE__ */ jsxs5("div", { className: "space-y-4", children: [
+        /* @__PURE__ */ jsx5(CamposPagina, { lp, nome, onNomeChange: handleNomeChange, onSalvo: setLp, rotaPublica }),
+        template.campos.map((campo) => /* @__PURE__ */ jsx5(CampoEditor, { campo, valor: conteudo[campo.chave], onChange: (v) => handleCampoChange(campo.chave, v) }, campo.chave)),
+        /* @__PURE__ */ jsxs5("div", { className: "pt-4 border-t border-gray-200 space-y-3", children: [
+          /* @__PURE__ */ jsx5("p", { className: "text-xs font-medium text-gray-500", children: "SEO (aba do navegador)" }),
+          /* @__PURE__ */ jsx5(MetaCampos, { lp, onSalvo: setLp })
         ] })
       ] }),
-      /* @__PURE__ */ jsxs3("div", { className: "mt-4 lg:mt-0", children: [
-        /* @__PURE__ */ jsx3("p", { className: "text-xs font-medium text-gray-500 mb-2", children: "Pr\xE9-visualiza\xE7\xE3o" }),
-        /* @__PURE__ */ jsxs3("div", { className: "bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden", children: [
-          /* @__PURE__ */ jsxs3("div", { className: "bg-gray-100 px-3 py-2 flex items-center gap-1.5 border-b border-gray-200", children: [
-            /* @__PURE__ */ jsx3("span", { className: "w-2.5 h-2.5 rounded-full bg-red-300" }),
-            /* @__PURE__ */ jsx3("span", { className: "w-2.5 h-2.5 rounded-full bg-yellow-300" }),
-            /* @__PURE__ */ jsx3("span", { className: "w-2.5 h-2.5 rounded-full bg-green-300" })
+      /* @__PURE__ */ jsxs5("div", { className: "mt-4 lg:mt-0", children: [
+        /* @__PURE__ */ jsx5("p", { className: "text-xs font-medium text-gray-500 mb-2", children: "Pr\xE9-visualiza\xE7\xE3o" }),
+        /* @__PURE__ */ jsxs5("div", { className: "bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden", children: [
+          /* @__PURE__ */ jsxs5("div", { className: "bg-gray-100 px-3 py-2 flex items-center gap-1.5 border-b border-gray-200", children: [
+            /* @__PURE__ */ jsx5("span", { className: "w-2.5 h-2.5 rounded-full bg-red-300" }),
+            /* @__PURE__ */ jsx5("span", { className: "w-2.5 h-2.5 rounded-full bg-yellow-300" }),
+            /* @__PURE__ */ jsx5("span", { className: "w-2.5 h-2.5 rounded-full bg-green-300" })
           ] }),
-          /* @__PURE__ */ jsx3("div", { className: "max-h-[70vh] overflow-y-auto", children: /* @__PURE__ */ jsx3(template.Render, { conteudo }) })
+          /* @__PURE__ */ jsx5("div", { className: "max-h-[70vh] overflow-y-auto", children: /* @__PURE__ */ jsx5(MolduraLandingPage, { configuracoes, preview: true, children: /* @__PURE__ */ jsx5(template.Render, { conteudo }) }) })
         ] })
       ] })
     ] })
@@ -859,9 +1103,9 @@ function normalizarSlug(texto, final = false) {
   return s;
 }
 function CamposPagina({ lp, nome, onNomeChange, onSalvo, rotaPublica }) {
-  const [slug, setSlug] = useState3(lp.slug);
-  const [salvandoSlug, setSalvandoSlug] = useState3(false);
-  const [erroSlug, setErroSlug] = useState3("");
+  const [slug, setSlug] = useState4(lp.slug);
+  const [salvandoSlug, setSalvandoSlug] = useState4(false);
+  const [erroSlug, setErroSlug] = useState4("");
   const slugFinal = normalizarSlug(slug, true);
   const mudou = slugFinal && slugFinal !== lp.slug;
   async function salvarSlug() {
@@ -878,10 +1122,10 @@ function CamposPagina({ lp, nome, onNomeChange, onSalvo, rotaPublica }) {
       setSalvandoSlug(false);
     }
   }
-  return /* @__PURE__ */ jsxs3("div", { className: "rounded-lg border border-gray-200 bg-white p-3 space-y-3", children: [
-    /* @__PURE__ */ jsxs3("div", { children: [
-      /* @__PURE__ */ jsx3("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: "Nome da p\xE1gina" }),
-      /* @__PURE__ */ jsx3(
+  return /* @__PURE__ */ jsxs5("div", { className: "rounded-lg border border-gray-200 bg-white p-3 space-y-3", children: [
+    /* @__PURE__ */ jsxs5("div", { children: [
+      /* @__PURE__ */ jsx5("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: "Nome da p\xE1gina" }),
+      /* @__PURE__ */ jsx5(
         "input",
         {
           value: nome,
@@ -891,15 +1135,15 @@ function CamposPagina({ lp, nome, onNomeChange, onSalvo, rotaPublica }) {
         }
       )
     ] }),
-    /* @__PURE__ */ jsxs3("div", { children: [
-      /* @__PURE__ */ jsx3("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: "Endere\xE7o da p\xE1gina" }),
-      /* @__PURE__ */ jsxs3("div", { className: "flex flex-col sm:flex-row gap-2", children: [
-        /* @__PURE__ */ jsxs3("div", { className: "flex flex-1 min-w-0 items-center rounded-lg border border-gray-200 focus-within:ring-2 focus-within:ring-violet-400", children: [
-          /* @__PURE__ */ jsxs3("span", { className: "pl-3 text-sm text-gray-400 whitespace-nowrap", children: [
+    /* @__PURE__ */ jsxs5("div", { children: [
+      /* @__PURE__ */ jsx5("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: "Endere\xE7o da p\xE1gina" }),
+      /* @__PURE__ */ jsxs5("div", { className: "flex flex-col sm:flex-row gap-2", children: [
+        /* @__PURE__ */ jsxs5("div", { className: "flex flex-1 min-w-0 items-center rounded-lg border border-gray-200 focus-within:ring-2 focus-within:ring-violet-400", children: [
+          /* @__PURE__ */ jsxs5("span", { className: "pl-3 text-sm text-gray-400 whitespace-nowrap", children: [
             rotaPublica,
             "/"
           ] }),
-          /* @__PURE__ */ jsx3(
+          /* @__PURE__ */ jsx5(
             "input",
             {
               value: slug,
@@ -915,7 +1159,7 @@ function CamposPagina({ lp, nome, onNomeChange, onSalvo, rotaPublica }) {
             }
           )
         ] }),
-        /* @__PURE__ */ jsx3(
+        /* @__PURE__ */ jsx5(
           "button",
           {
             type: "button",
@@ -926,9 +1170,9 @@ function CamposPagina({ lp, nome, onNomeChange, onSalvo, rotaPublica }) {
           }
         )
       ] }),
-      erroSlug && /* @__PURE__ */ jsx3("p", { className: "text-xs text-red-600 mt-1", children: erroSlug }),
-      !erroSlug && mudou && lp.status === "publicada" && /* @__PURE__ */ jsx3("p", { className: "text-xs text-amber-700 mt-1", children: "A p\xE1gina est\xE1 publicada: links j\xE1 divulgados com o endere\xE7o antigo v\xE3o parar de funcionar." }),
-      /* @__PURE__ */ jsxs3("p", { className: "text-xs text-gray-400 mt-1 break-all", children: [
+      erroSlug && /* @__PURE__ */ jsx5("p", { className: "text-xs text-red-600 mt-1", children: erroSlug }),
+      !erroSlug && mudou && lp.status === "publicada" && /* @__PURE__ */ jsx5("p", { className: "text-xs text-amber-700 mt-1", children: "A p\xE1gina est\xE1 publicada: links j\xE1 divulgados com o endere\xE7o antigo v\xE3o parar de funcionar." }),
+      /* @__PURE__ */ jsxs5("p", { className: "text-xs text-gray-400 mt-1 break-all", children: [
         window.location.origin,
         rotaPublica,
         "/",
@@ -938,9 +1182,9 @@ function CamposPagina({ lp, nome, onNomeChange, onSalvo, rotaPublica }) {
   ] });
 }
 function MetaCampos({ lp, onSalvo }) {
-  const [metaTitulo, setMetaTitulo] = useState3(lp.meta_titulo || "");
-  const [metaDescricao, setMetaDescricao] = useState3(lp.meta_descricao || "");
-  const timeout = useRef(null);
+  const [metaTitulo, setMetaTitulo] = useState4(lp.meta_titulo || "");
+  const [metaDescricao, setMetaDescricao] = useState4(lp.meta_descricao || "");
+  const timeout = useRef2(null);
   function agendar(novoTitulo, novaDescricao) {
     if (timeout.current) clearTimeout(timeout.current);
     timeout.current = setTimeout(() => {
@@ -948,8 +1192,8 @@ function MetaCampos({ lp, onSalvo }) {
       });
     }, 900);
   }
-  return /* @__PURE__ */ jsxs3("div", { className: "space-y-2", children: [
-    /* @__PURE__ */ jsx3(
+  return /* @__PURE__ */ jsxs5("div", { className: "space-y-2", children: [
+    /* @__PURE__ */ jsx5(
       "input",
       {
         value: metaTitulo,
@@ -961,7 +1205,7 @@ function MetaCampos({ lp, onSalvo }) {
         className: "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
       }
     ),
-    /* @__PURE__ */ jsx3(
+    /* @__PURE__ */ jsx5(
       "textarea",
       {
         value: metaDescricao,
@@ -978,9 +1222,9 @@ function MetaCampos({ lp, onSalvo }) {
 }
 function CampoEditor({ campo, valor, onChange }) {
   if (campo.tipo === "texto_curto") {
-    return /* @__PURE__ */ jsxs3("div", { children: [
-      /* @__PURE__ */ jsx3("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: campo.label }),
-      /* @__PURE__ */ jsx3(
+    return /* @__PURE__ */ jsxs5("div", { children: [
+      /* @__PURE__ */ jsx5("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: campo.label }),
+      /* @__PURE__ */ jsx5(
         "input",
         {
           value: valor ?? "",
@@ -992,9 +1236,9 @@ function CampoEditor({ campo, valor, onChange }) {
     ] });
   }
   if (campo.tipo === "texto_longo") {
-    return /* @__PURE__ */ jsxs3("div", { children: [
-      /* @__PURE__ */ jsx3("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: campo.label }),
-      /* @__PURE__ */ jsx3(
+    return /* @__PURE__ */ jsxs5("div", { children: [
+      /* @__PURE__ */ jsx5("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: campo.label }),
+      /* @__PURE__ */ jsx5(
         "textarea",
         {
           value: valor ?? "",
@@ -1007,34 +1251,34 @@ function CampoEditor({ campo, valor, onChange }) {
     ] });
   }
   if (campo.tipo === "imagem") {
-    return /* @__PURE__ */ jsx3(CampoImagem, { campo, valor, onChange });
+    return /* @__PURE__ */ jsx5(CampoImagem, { campo, valor, onChange });
   }
   if (campo.tipo === "lista") {
-    return /* @__PURE__ */ jsx3(CampoLista, { campo, valor, onChange });
+    return /* @__PURE__ */ jsx5(CampoLista, { campo, valor, onChange });
   }
   if (campo.tipo === "lista_faq") {
-    return /* @__PURE__ */ jsx3(CampoFaq, { campo, valor, onChange });
+    return /* @__PURE__ */ jsx5(CampoFaq, { campo, valor, onChange });
   }
   if (campo.tipo === "cor") {
-    return /* @__PURE__ */ jsx3(CampoCor, { campo, valor, onChange });
+    return /* @__PURE__ */ jsx5(CampoCor, { campo, valor, onChange });
   }
   if (campo.tipo === "bloco") {
-    return /* @__PURE__ */ jsx3(CampoBloco, { campo, valor, onChange });
+    return /* @__PURE__ */ jsx5(CampoBloco, { campo, valor, onChange });
   }
   if (campo.tipo === "lista_features") {
-    return /* @__PURE__ */ jsx3(CampoListaFeatures, { campo, valor, onChange });
+    return /* @__PURE__ */ jsx5(CampoListaFeatures, { campo, valor, onChange });
   }
   if (campo.tipo === "lista_depoimentos") {
-    return /* @__PURE__ */ jsx3(CampoListaDepoimentos, { campo, valor, onChange });
+    return /* @__PURE__ */ jsx5(CampoListaDepoimentos, { campo, valor, onChange });
   }
   return null;
 }
 function CampoCor({ campo, valor, onChange }) {
   const cor = valor || campo.padrao || "#000000";
-  return /* @__PURE__ */ jsxs3("div", { children: [
-    /* @__PURE__ */ jsx3("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: campo.label }),
-    /* @__PURE__ */ jsxs3("div", { className: "flex items-center gap-2", children: [
-      /* @__PURE__ */ jsx3(
+  return /* @__PURE__ */ jsxs5("div", { children: [
+    /* @__PURE__ */ jsx5("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: campo.label }),
+    /* @__PURE__ */ jsxs5("div", { className: "flex items-center gap-2", children: [
+      /* @__PURE__ */ jsx5(
         "input",
         {
           type: "color",
@@ -1043,7 +1287,7 @@ function CampoCor({ campo, valor, onChange }) {
           className: "w-10 h-9 rounded-lg border border-gray-200 cursor-pointer p-0.5"
         }
       ),
-      /* @__PURE__ */ jsx3(
+      /* @__PURE__ */ jsx5(
         "input",
         {
           value: cor,
@@ -1059,9 +1303,9 @@ function CampoBloco({ campo, valor, onChange }) {
   function set(chave, texto) {
     onChange({ ...v, [chave]: texto });
   }
-  return /* @__PURE__ */ jsxs3("div", { className: "rounded-lg border border-gray-200 p-3 space-y-2", children: [
-    /* @__PURE__ */ jsx3("label", { className: "text-xs font-medium text-gray-500 block", children: campo.label }),
-    /* @__PURE__ */ jsx3(
+  return /* @__PURE__ */ jsxs5("div", { className: "rounded-lg border border-gray-200 p-3 space-y-2", children: [
+    /* @__PURE__ */ jsx5("label", { className: "text-xs font-medium text-gray-500 block", children: campo.label }),
+    /* @__PURE__ */ jsx5(
       "input",
       {
         value: v.titulo || "",
@@ -1070,7 +1314,7 @@ function CampoBloco({ campo, valor, onChange }) {
         className: "w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-violet-400"
       }
     ),
-    /* @__PURE__ */ jsx3(
+    /* @__PURE__ */ jsx5(
       "textarea",
       {
         value: v.texto || "",
@@ -1080,8 +1324,8 @@ function CampoBloco({ campo, valor, onChange }) {
         className: "w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 resize-none"
       }
     ),
-    campo.semCta !== true && /* @__PURE__ */ jsxs3("div", { className: "flex gap-2", children: [
-      /* @__PURE__ */ jsx3(
+    campo.semCta !== true && /* @__PURE__ */ jsxs5("div", { className: "flex gap-2", children: [
+      /* @__PURE__ */ jsx5(
         "input",
         {
           value: v.cta_texto || "",
@@ -1090,7 +1334,7 @@ function CampoBloco({ campo, valor, onChange }) {
           className: "flex-1 rounded-lg border border-gray-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
         }
       ),
-      /* @__PURE__ */ jsx3(
+      /* @__PURE__ */ jsx5(
         "input",
         {
           value: v.cta_url || "",
@@ -1112,12 +1356,12 @@ function CampoListaFeatures({ campo, valor, onChange }) {
   function removerItem(i) {
     onChange(itens.filter((_, idx) => idx !== i));
   }
-  return /* @__PURE__ */ jsxs3("div", { children: [
-    /* @__PURE__ */ jsx3("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: campo.label }),
-    /* @__PURE__ */ jsxs3("div", { className: "space-y-2", children: [
-      itens.map((item, i) => /* @__PURE__ */ jsxs3("div", { className: "rounded-lg border border-gray-200 p-2.5 space-y-1.5", children: [
-        /* @__PURE__ */ jsxs3("div", { className: "flex items-center gap-1.5", children: [
-          /* @__PURE__ */ jsx3(
+  return /* @__PURE__ */ jsxs5("div", { children: [
+    /* @__PURE__ */ jsx5("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: campo.label }),
+    /* @__PURE__ */ jsxs5("div", { className: "space-y-2", children: [
+      itens.map((item, i) => /* @__PURE__ */ jsxs5("div", { className: "rounded-lg border border-gray-200 p-2.5 space-y-1.5", children: [
+        /* @__PURE__ */ jsxs5("div", { className: "flex items-center gap-1.5", children: [
+          /* @__PURE__ */ jsx5(
             "input",
             {
               value: item?.titulo || "",
@@ -1126,9 +1370,9 @@ function CampoListaFeatures({ campo, valor, onChange }) {
               className: "flex-1 rounded-lg border border-gray-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
             }
           ),
-          /* @__PURE__ */ jsx3("button", { onClick: () => removerItem(i), className: "p-1.5 rounded-lg hover:bg-red-50 text-red-500 shrink-0", children: /* @__PURE__ */ jsx3(Trash22, { size: 14 }) })
+          /* @__PURE__ */ jsx5("button", { onClick: () => removerItem(i), className: "p-1.5 rounded-lg hover:bg-red-50 text-red-500 shrink-0", children: /* @__PURE__ */ jsx5(Trash23, { size: 14 }) })
         ] }),
-        /* @__PURE__ */ jsx3(
+        /* @__PURE__ */ jsx5(
           "textarea",
           {
             value: item?.descricao || "",
@@ -1139,14 +1383,14 @@ function CampoListaFeatures({ campo, valor, onChange }) {
           }
         )
       ] }, i)),
-      /* @__PURE__ */ jsxs3(
+      /* @__PURE__ */ jsxs5(
         "button",
         {
           type: "button",
           onClick: () => onChange([...itens, { titulo: "", descricao: "" }]),
           className: "flex items-center gap-1.5 text-xs font-medium text-violet-600 hover:text-violet-700",
           children: [
-            /* @__PURE__ */ jsx3(Plus2, { size: 13 }),
+            /* @__PURE__ */ jsx5(Plus2, { size: 13 }),
             " Adicionar"
           ]
         }
@@ -1164,12 +1408,12 @@ function CampoListaDepoimentos({ campo, valor, onChange }) {
   function removerItem(i) {
     onChange(itens.filter((_, idx) => idx !== i));
   }
-  return /* @__PURE__ */ jsxs3("div", { children: [
-    /* @__PURE__ */ jsx3("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: campo.label }),
-    /* @__PURE__ */ jsxs3("div", { className: "space-y-2", children: [
-      itens.map((item, i) => /* @__PURE__ */ jsxs3("div", { className: "rounded-lg border border-gray-200 p-2.5 space-y-1.5", children: [
-        /* @__PURE__ */ jsxs3("div", { className: "flex items-center gap-1.5", children: [
-          /* @__PURE__ */ jsx3(
+  return /* @__PURE__ */ jsxs5("div", { children: [
+    /* @__PURE__ */ jsx5("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: campo.label }),
+    /* @__PURE__ */ jsxs5("div", { className: "space-y-2", children: [
+      itens.map((item, i) => /* @__PURE__ */ jsxs5("div", { className: "rounded-lg border border-gray-200 p-2.5 space-y-1.5", children: [
+        /* @__PURE__ */ jsxs5("div", { className: "flex items-center gap-1.5", children: [
+          /* @__PURE__ */ jsx5(
             "textarea",
             {
               value: item?.texto || "",
@@ -1179,9 +1423,9 @@ function CampoListaDepoimentos({ campo, valor, onChange }) {
               className: "flex-1 rounded-lg border border-gray-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 resize-none"
             }
           ),
-          /* @__PURE__ */ jsx3("button", { onClick: () => removerItem(i), className: "p-1.5 rounded-lg hover:bg-red-50 text-red-500 shrink-0", children: /* @__PURE__ */ jsx3(Trash22, { size: 14 }) })
+          /* @__PURE__ */ jsx5("button", { onClick: () => removerItem(i), className: "p-1.5 rounded-lg hover:bg-red-50 text-red-500 shrink-0", children: /* @__PURE__ */ jsx5(Trash23, { size: 14 }) })
         ] }),
-        /* @__PURE__ */ jsx3(
+        /* @__PURE__ */ jsx5(
           "input",
           {
             value: item?.nome || "",
@@ -1191,14 +1435,14 @@ function CampoListaDepoimentos({ campo, valor, onChange }) {
           }
         )
       ] }, i)),
-      /* @__PURE__ */ jsxs3(
+      /* @__PURE__ */ jsxs5(
         "button",
         {
           type: "button",
           onClick: () => onChange([...itens, { texto: "", nome: "" }]),
           className: "flex items-center gap-1.5 text-xs font-medium text-violet-600 hover:text-violet-700",
           children: [
-            /* @__PURE__ */ jsx3(Plus2, { size: 13 }),
+            /* @__PURE__ */ jsx5(Plus2, { size: 13 }),
             " Adicionar depoimento"
           ]
         }
@@ -1207,8 +1451,8 @@ function CampoListaDepoimentos({ campo, valor, onChange }) {
   ] });
 }
 function CampoImagem({ campo, valor, onChange }) {
-  const [enviando, setEnviando] = useState3(false);
-  const inputRef = useRef(null);
+  const [enviando, setEnviando] = useState4(false);
+  const inputRef = useRef2(null);
   async function handleFile(file) {
     if (!file) return;
     setEnviando(true);
@@ -1221,19 +1465,19 @@ function CampoImagem({ campo, valor, onChange }) {
       setEnviando(false);
     }
   }
-  return /* @__PURE__ */ jsxs3("div", { children: [
-    /* @__PURE__ */ jsx3("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: campo.label }),
-    valor ? /* @__PURE__ */ jsxs3("div", { className: "relative inline-block", children: [
-      /* @__PURE__ */ jsx3("img", { src: valor, alt: "", className: "h-24 rounded-lg border border-gray-200 object-cover" }),
-      /* @__PURE__ */ jsx3(
+  return /* @__PURE__ */ jsxs5("div", { children: [
+    /* @__PURE__ */ jsx5("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: campo.label }),
+    valor ? /* @__PURE__ */ jsxs5("div", { className: "relative inline-block", children: [
+      /* @__PURE__ */ jsx5("img", { src: valor, alt: "", className: "h-24 rounded-lg border border-gray-200 object-cover" }),
+      /* @__PURE__ */ jsx5(
         "button",
         {
           onClick: () => onChange(null),
           className: "absolute -top-2 -right-2 bg-white rounded-full p-1 shadow border border-gray-200 text-gray-500 hover:text-red-600",
-          children: /* @__PURE__ */ jsx3(X2, { size: 12 })
+          children: /* @__PURE__ */ jsx5(X3, { size: 12 })
         }
       )
-    ] }) : /* @__PURE__ */ jsxs3(
+    ] }) : /* @__PURE__ */ jsxs5(
       "button",
       {
         type: "button",
@@ -1241,12 +1485,12 @@ function CampoImagem({ campo, valor, onChange }) {
         disabled: enviando,
         className: "flex items-center gap-2 px-3 py-2 rounded-lg border border-dashed border-gray-300 text-sm text-gray-500 hover:border-violet-400 hover:text-violet-600",
         children: [
-          /* @__PURE__ */ jsx3(Upload, { size: 14 }),
+          /* @__PURE__ */ jsx5(Upload2, { size: 14 }),
           enviando ? "Enviando..." : "Enviar imagem"
         ]
       }
     ),
-    /* @__PURE__ */ jsx3("input", { ref: inputRef, type: "file", accept: "image/*", className: "hidden", onChange: (e) => handleFile(e.target.files?.[0]) })
+    /* @__PURE__ */ jsx5("input", { ref: inputRef, type: "file", accept: "image/*", className: "hidden", onChange: (e) => handleFile(e.target.files?.[0]) })
   ] });
 }
 function CampoLista({ campo, valor, onChange }) {
@@ -1259,11 +1503,11 @@ function CampoLista({ campo, valor, onChange }) {
   function removerItem(i) {
     onChange(itens.filter((_, idx) => idx !== i));
   }
-  return /* @__PURE__ */ jsxs3("div", { children: [
-    /* @__PURE__ */ jsx3("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: campo.label }),
-    /* @__PURE__ */ jsxs3("div", { className: "space-y-1.5", children: [
-      itens.map((item, i) => /* @__PURE__ */ jsxs3("div", { className: "flex items-center gap-1.5", children: [
-        /* @__PURE__ */ jsx3(
+  return /* @__PURE__ */ jsxs5("div", { children: [
+    /* @__PURE__ */ jsx5("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: campo.label }),
+    /* @__PURE__ */ jsxs5("div", { className: "space-y-1.5", children: [
+      itens.map((item, i) => /* @__PURE__ */ jsxs5("div", { className: "flex items-center gap-1.5", children: [
+        /* @__PURE__ */ jsx5(
           "input",
           {
             value: item,
@@ -1272,16 +1516,16 @@ function CampoLista({ campo, valor, onChange }) {
             className: "flex-1 rounded-lg border border-gray-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
           }
         ),
-        /* @__PURE__ */ jsx3("button", { onClick: () => removerItem(i), className: "p-1.5 rounded-lg hover:bg-red-50 text-red-500 shrink-0", children: /* @__PURE__ */ jsx3(Trash22, { size: 14 }) })
+        /* @__PURE__ */ jsx5("button", { onClick: () => removerItem(i), className: "p-1.5 rounded-lg hover:bg-red-50 text-red-500 shrink-0", children: /* @__PURE__ */ jsx5(Trash23, { size: 14 }) })
       ] }, i)),
-      /* @__PURE__ */ jsxs3(
+      /* @__PURE__ */ jsxs5(
         "button",
         {
           type: "button",
           onClick: () => onChange([...itens, ""]),
           className: "flex items-center gap-1.5 text-xs font-medium text-violet-600 hover:text-violet-700",
           children: [
-            /* @__PURE__ */ jsx3(Plus2, { size: 13 }),
+            /* @__PURE__ */ jsx5(Plus2, { size: 13 }),
             " Adicionar"
           ]
         }
@@ -1299,12 +1543,12 @@ function CampoFaq({ campo, valor, onChange }) {
   function removerItem(i) {
     onChange(itens.filter((_, idx) => idx !== i));
   }
-  return /* @__PURE__ */ jsxs3("div", { children: [
-    /* @__PURE__ */ jsx3("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: campo.label }),
-    /* @__PURE__ */ jsxs3("div", { className: "space-y-3", children: [
-      itens.map((item, i) => /* @__PURE__ */ jsxs3("div", { className: "rounded-lg border border-gray-200 p-2.5 space-y-1.5", children: [
-        /* @__PURE__ */ jsxs3("div", { className: "flex items-center gap-1.5", children: [
-          /* @__PURE__ */ jsx3(
+  return /* @__PURE__ */ jsxs5("div", { children: [
+    /* @__PURE__ */ jsx5("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: campo.label }),
+    /* @__PURE__ */ jsxs5("div", { className: "space-y-3", children: [
+      itens.map((item, i) => /* @__PURE__ */ jsxs5("div", { className: "rounded-lg border border-gray-200 p-2.5 space-y-1.5", children: [
+        /* @__PURE__ */ jsxs5("div", { className: "flex items-center gap-1.5", children: [
+          /* @__PURE__ */ jsx5(
             "input",
             {
               value: item?.pergunta || "",
@@ -1313,9 +1557,9 @@ function CampoFaq({ campo, valor, onChange }) {
               className: "flex-1 rounded-lg border border-gray-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
             }
           ),
-          /* @__PURE__ */ jsx3("button", { onClick: () => removerItem(i), className: "p-1.5 rounded-lg hover:bg-red-50 text-red-500 shrink-0", children: /* @__PURE__ */ jsx3(Trash22, { size: 14 }) })
+          /* @__PURE__ */ jsx5("button", { onClick: () => removerItem(i), className: "p-1.5 rounded-lg hover:bg-red-50 text-red-500 shrink-0", children: /* @__PURE__ */ jsx5(Trash23, { size: 14 }) })
         ] }),
-        /* @__PURE__ */ jsx3(
+        /* @__PURE__ */ jsx5(
           "textarea",
           {
             value: item?.resposta || "",
@@ -1326,14 +1570,14 @@ function CampoFaq({ campo, valor, onChange }) {
           }
         )
       ] }, i)),
-      /* @__PURE__ */ jsxs3(
+      /* @__PURE__ */ jsxs5(
         "button",
         {
           type: "button",
           onClick: () => onChange([...itens, { pergunta: "", resposta: "" }]),
           className: "flex items-center gap-1.5 text-xs font-medium text-violet-600 hover:text-violet-700",
           children: [
-            /* @__PURE__ */ jsx3(Plus2, { size: 13 }),
+            /* @__PURE__ */ jsx5(Plus2, { size: 13 }),
             " Adicionar pergunta"
           ]
         }
@@ -1343,15 +1587,15 @@ function CampoFaq({ campo, valor, onChange }) {
 }
 
 // js/landing-pages/src/LandingPageView.jsx
-import { useEffect as useEffect4, useState as useState4 } from "react";
+import { useEffect as useEffect5, useState as useState5 } from "react";
 import { useParams as useParams2 } from "react-router-dom";
-import { jsx as jsx4 } from "react/jsx-runtime";
+import { jsx as jsx6 } from "react/jsx-runtime";
 function LandingPageView() {
   const { slug } = useParams2();
-  const [lp, setLp] = useState4(null);
-  const [erro, setErro] = useState4(false);
-  const [carregando, setCarregando] = useState4(true);
-  useEffect4(() => {
+  const [lp, setLp] = useState5(null);
+  const [erro, setErro] = useState5(false);
+  const [carregando, setCarregando] = useState5(true);
+  useEffect5(() => {
     buscarLandingPagePublica(slug).then((data) => {
       setLp(data);
       document.title = data.meta_titulo || data.nome || getConfig().tituloPadrao;
@@ -1372,22 +1616,23 @@ function LandingPageView() {
     await enviarLeadLandingPage(slug, { ...payload, fbclid });
   }
   if (carregando) {
-    return /* @__PURE__ */ jsx4("div", { className: "min-h-screen flex items-center justify-center text-sm text-gray-400", children: "Carregando..." });
+    return /* @__PURE__ */ jsx6("div", { className: "min-h-screen flex items-center justify-center text-sm text-gray-400", children: "Carregando..." });
   }
   if (erro || !lp) {
-    return /* @__PURE__ */ jsx4("div", { className: "min-h-screen flex items-center justify-center text-center px-6", children: /* @__PURE__ */ jsx4("p", { className: "text-sm text-gray-500", children: "Essa p\xE1gina n\xE3o est\xE1 mais dispon\xEDvel." }) });
+    return /* @__PURE__ */ jsx6("div", { className: "min-h-screen flex items-center justify-center text-center px-6", children: /* @__PURE__ */ jsx6("p", { className: "text-sm text-gray-500", children: "Essa p\xE1gina n\xE3o est\xE1 mais dispon\xEDvel." }) });
   }
   const template = LANDING_PAGE_TEMPLATES[lp.template];
   if (!template) {
-    return /* @__PURE__ */ jsx4("div", { className: "min-h-screen flex items-center justify-center text-center px-6", children: /* @__PURE__ */ jsx4("p", { className: "text-sm text-gray-500", children: "Essa p\xE1gina n\xE3o est\xE1 mais dispon\xEDvel." }) });
+    return /* @__PURE__ */ jsx6("div", { className: "min-h-screen flex items-center justify-center text-center px-6", children: /* @__PURE__ */ jsx6("p", { className: "text-sm text-gray-500", children: "Essa p\xE1gina n\xE3o est\xE1 mais dispon\xEDvel." }) });
   }
-  return /* @__PURE__ */ jsx4("div", { className: "min-h-screen bg-white", children: /* @__PURE__ */ jsx4(template.Render, { conteudo: lp.conteudo || {}, onLead: handleLead }) });
+  return /* @__PURE__ */ jsx6("div", { className: "min-h-screen bg-white", children: /* @__PURE__ */ jsx6(MolduraLandingPage, { configuracoes: lp.configuracoes, children: /* @__PURE__ */ jsx6(template.Render, { conteudo: lp.conteudo || {}, onLead: handleLead }) }) });
 }
 export {
   LANDING_PAGE_TEMPLATES,
   LandingPageEditor,
   LandingPageView,
   LandingPagesLista,
+  MolduraLandingPage,
   TEMPLATE_LIST,
   TemplateCardPreview,
   configurarLandingPages,

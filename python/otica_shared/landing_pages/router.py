@@ -19,6 +19,7 @@ from fastapi import APIRouter, Depends, File, HTTPException, Request, UploadFile
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
+from . import config as cfg_lp
 from .schemas import (
     LandingPageCreate,
     LandingPageLeadCreate,
@@ -27,6 +28,8 @@ from .schemas import (
     LandingPagePublicaOut,
     LandingPageTemplateMeta,
     LandingPageUpdate,
+    LandingPagesConfigOut,
+    LandingPagesConfigUpdate,
 )
 
 TEMPLATES_VALIDOS = {"simples", "promocao", "agendar_consulta", "greats"}
@@ -73,8 +76,20 @@ def criar_routers(
     get_usuario_atual: Callable,
     upload_imagem: UploadImagem,
     info_criador: Optional[InfoCriador] = None,
+    LandingPagesConfig=None,
 ) -> Tuple[APIRouter, APIRouter]:
-    """Monta `(router, router_publico)` ligados aos modelos e dependências do app."""
+    """Monta `(router, router_publico)` ligados aos modelos e dependências do app.
+
+    `LandingPagesConfig` (de `criar_modelo_config`) liga as configurações gerais
+    (botão de WhatsApp, logo). Sem ele, as rotas de configuração respondem 404 e
+    as páginas saem sem logo/botão.
+    """
+
+    def _ler_config(db: Session) -> dict:
+        if LandingPagesConfig is None:
+            return cfg_lp.mesclar_com_padrao({})
+        linha = db.query(LandingPagesConfig).filter(LandingPagesConfig.id == 1).first()
+        return cfg_lp.ler(linha.dados if linha else None)
 
     def _gerar_slug_unico(db: Session, nome: str) -> str:
         base = _slug(nome)
@@ -137,6 +152,37 @@ def criar_routers(
     @router.get("/templates", response_model=list[LandingPageTemplateMeta])
     def listar_templates():
         return TEMPLATES_META
+
+    # Registradas antes de "/{lp_id}" para "configuracoes" não ser lido como id.
+    @router.get("/configuracoes", response_model=LandingPagesConfigOut)
+    def obter_configuracoes(db: Session = Depends(get_db)):
+        if LandingPagesConfig is None:
+            raise HTTPException(404, "Configurações não habilitadas neste sistema.")
+        return _ler_config(db)
+
+    @router.put("/configuracoes", response_model=LandingPagesConfigOut)
+    def atualizar_configuracoes(payload: LandingPagesConfigUpdate, db: Session = Depends(get_db)):
+        if LandingPagesConfig is None:
+            raise HTTPException(404, "Configurações não habilitadas neste sistema.")
+        atual = _ler_config(db)
+        novo = payload.model_dump(exclude_unset=True)
+        if "whatsapp" in novo:
+            w = novo["whatsapp"]
+            w["numero"] = cfg_lp.normalizar_numero_whatsapp(w.get("numero", ""))
+            w["mensagem"] = (w.get("mensagem") or "").strip()
+            if w.get("ativo") and not (12 <= len(w["numero"]) <= 15):
+                raise HTTPException(422, "Informe o número do WhatsApp com DDD (ex: 11 99999-9999).")
+        if "marca" in novo:
+            novo["marca"]["logo_url"] = (novo["marca"].get("logo_url") or "").strip() or None
+        for secao, valores in novo.items():
+            atual[secao].update(valores)
+        linha = db.query(LandingPagesConfig).filter(LandingPagesConfig.id == 1).first()
+        if not linha:
+            linha = LandingPagesConfig(id=1)
+            db.add(linha)
+        linha.dados = json.dumps(atual)
+        db.commit()
+        return atual
 
     @router.get("", response_model=list[LandingPageOut])
     def listar(db: Session = Depends(get_db)):
@@ -268,6 +314,7 @@ def criar_routers(
             "conteudo": _parse_conteudo(lp),
             "meta_titulo": lp.meta_titulo,
             "meta_descricao": lp.meta_descricao,
+            "configuracoes": cfg_lp.publica(_ler_config(db)),
         }
 
     @router_publico.post("/{slug}/visualizacao")

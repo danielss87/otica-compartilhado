@@ -37,6 +37,27 @@ class LandingPageOut(BaseModel):
     publicada_em: Optional[datetime] = None
 
 
+class ConfigWhatsapp(BaseModel):
+    ativo: bool = False
+    numero: str = ""
+    mensagem: str = ""
+
+
+class ConfigMarca(BaseModel):
+    logo_url: Optional[str] = None
+
+
+class LandingPagesConfigOut(BaseModel):
+    """Configurações que valem para todas as landing pages."""
+    whatsapp: ConfigWhatsapp
+    marca: ConfigMarca
+
+
+class LandingPagesConfigUpdate(BaseModel):
+    whatsapp: Optional[ConfigWhatsapp] = None
+    marca: Optional[ConfigMarca] = None
+
+
 class LandingPagePublicaOut(BaseModel):
     """Campos servidos pela rota pública — nunca vaza criado_por_id/status interno."""
     nome: str
@@ -44,6 +65,7 @@ class LandingPagePublicaOut(BaseModel):
     conteudo: Optional[Dict[str, Any]] = None
     meta_titulo: Optional[str] = None
     meta_descricao: Optional[str] = None
+    configuracoes: Optional[LandingPagesConfigOut] = None
 
 
 class LandingPageLeadCreate(BaseModel):

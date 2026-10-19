@@ -6,7 +6,7 @@ from sqlalchemy import Column, Integer, String, create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from otica_shared.landing_pages import criar_modelos, criar_routers
+from otica_shared.landing_pages import criar_modelo_config, criar_modelos, criar_routers
 
 Base = declarative_base()
 
@@ -18,6 +18,7 @@ class Usuario(Base):
 
 
 LandingPage, LandingPageLead = criar_modelos(Base, tabela_usuarios="usuarios", modelo_usuario="Usuario")
+LandingPagesConfig = criar_modelo_config(Base)
 
 engine = create_engine("sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool)
 SessionLocal = sessionmaker(bind=engine)
@@ -52,6 +53,7 @@ def upload_imagem(conteudo, nome, request):
 router, router_publico = criar_routers(
     LandingPage, LandingPageLead,
     get_db=get_db, get_usuario_atual=get_usuario_atual, upload_imagem=upload_imagem,
+    LandingPagesConfig=LandingPagesConfig,
 )
 app = FastAPI()
 app.include_router(router_publico, prefix="/api")
@@ -193,3 +195,48 @@ def test_upload_imagem(client):
 def test_templates(client):
     ids = [t["id"] for t in client.get("/api/landing-pages/templates", headers=AUTH).json()]
     assert ids == ["simples", "promocao", "agendar_consulta", "greats"]
+
+
+def _publicar(client, nome="Oferta"):
+    lp = _criar(client, nome)
+    client.post(f"/api/landing-pages/{lp['id']}/publicar", headers=AUTH)
+    return lp
+
+
+def test_configuracoes_padrao_desligadas(client):
+    assert client.get("/api/landing-pages/configuracoes").status_code == 401
+    cfg = client.get("/api/landing-pages/configuracoes", headers=AUTH).json()
+    assert cfg["whatsapp"]["ativo"] is False and cfg["marca"]["logo_url"] is None
+    lp = _publicar(client)
+    pub = client.get(f"/api/publico/landing-pages/{lp['slug']}").json()["configuracoes"]
+    assert pub == {"whatsapp": {"ativo": False, "numero": "", "mensagem": ""}, "marca": {"logo_url": None}}
+
+
+def test_configuracoes_whatsapp_e_logo(client):
+    r = client.put("/api/landing-pages/configuracoes", headers=AUTH, json={
+        "whatsapp": {"ativo": True, "numero": "(11) 99999-8888", "mensagem": "  Oi!  "},
+    })
+    assert r.status_code == 200
+    assert r.json()["whatsapp"] == {"ativo": True, "numero": "5511999998888", "mensagem": "Oi!"}
+    # atualizar só a marca não mexe no WhatsApp
+    r = client.put("/api/landing-pages/configuracoes", headers=AUTH, json={"marca": {"logo_url": "https://cdn/logo.png"}})
+    assert r.json()["whatsapp"]["ativo"] is True
+    lp = _publicar(client)
+    pub = client.get(f"/api/publico/landing-pages/{lp['slug']}").json()["configuracoes"]
+    assert pub["whatsapp"] == {"ativo": True, "numero": "5511999998888", "mensagem": "Oi!"}
+    assert pub["marca"]["logo_url"] == "https://cdn/logo.png"
+    # desligar esconde o número da página pública
+    client.put("/api/landing-pages/configuracoes", headers=AUTH, json={"whatsapp": {"ativo": False, "numero": "5511999998888", "mensagem": "Oi!"}})
+    pub = client.get(f"/api/publico/landing-pages/{lp['slug']}").json()["configuracoes"]
+    assert pub["whatsapp"]["ativo"] is False and pub["whatsapp"]["numero"] == ""
+
+
+def test_configuracoes_whatsapp_sem_numero_valido(client):
+    r = client.put("/api/landing-pages/configuracoes", headers=AUTH, json={"whatsapp": {"ativo": True, "numero": "123"}})
+    assert r.status_code == 422
+
+
+def test_rota_configuracoes_nao_conflita_com_id(client):
+    lp = _criar(client)
+    assert client.get(f"/api/landing-pages/{lp['id']}", headers=AUTH).status_code == 200
+    assert client.get("/api/landing-pages/configuracoes", headers=AUTH).status_code == 200
