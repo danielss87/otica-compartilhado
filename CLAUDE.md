@@ -21,7 +21,7 @@ package.json                     # npm: otica-compartilhado (raiz do repo)
 
 ## Features
 
-### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.5.1, out/2026
+### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.6.0, out/2026
 Origem: 4 Olhos (ago/2026). Páginas de captura por template pronto com edição guiada (4 templates:
 `simples`, `promocao`, `agendar_consulta`, `greats`), página pública `/lp/:slug`, contagem de
 visualizações e captura de lead (nome + telefone + fbclid).
@@ -89,6 +89,20 @@ para todas as opções.
 8. Repo **público**: nunca commitar segredo, credencial, URL interna, dado de cliente ou telefone real.
 
 ## Changelog
+
+### v0.6.0 (20/10/2026)
+- **Menu fixo no topo** (`menu.fixo`, desligado por padrão): o header do menu vira `sticky top-0 z-40`, na
+  página pública (rola com a janela) e na pré-visualização do editor (rola com a área de preview). Só vale
+  com o menu ligado (`config.publica` devolve `fixo: false` com o menu desligado). Com o menu fixo, a
+  rolagem até a seção de contato desconta a altura do menu. Interruptor em Configurações → Menu no topo.
+  Atenção: `sticky` não funciona se um ancestral tiver `overflow: hidden`.
+- **Greats: ícone próprio em cada selo de confiança** (`features[i].icone_url`): no editor, clicar no
+  ícone do selo envia um PNG (mesmo `/upload-imagem`); o "x" volta ao ícone padrão (`GREATS_ICONES`, por
+  posição). Na página o PNG fica numa caixa fixa de 24px com `object-contain`, então qualquer tamanho de
+  arquivo sai igual e sem distorcer. O PNG mantém as cores dele (não é tingido com a cor principal).
+  O campo `lista_features` aceita `icones` (componentes do lucide) para mostrar o padrão no editor.
+- Sem `ALTER TABLE`: `fixo` entra pelo `config.PADRAO` e `icone_url` mora no JSON de `conteudo`.
+  Subir de versão não muda nenhuma página publicada.
 
 ### v0.5.1 (20/10/2026)
 - **Correção (Greats):** os selos de confiança ("FEITOS À MÃO", "MATERIAIS PREMIUM", "TROCA GRÁTIS") e os

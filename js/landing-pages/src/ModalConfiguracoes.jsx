@@ -195,6 +195,13 @@ export default function ModalConfiguracoes({ onClose }) {
                     {!cfg.marca.logo_url && (
                       <p className="text-xs text-amber-700">Envie o logo em "Identidade de marca" para ele aparecer no menu.</p>
                     )}
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <p className="text-xs font-medium text-gray-700">Menu fixo no topo</p>
+                        <p className="text-xs text-gray-400">O menu continua visível no topo da tela enquanto o visitante rola a página.</p>
+                      </div>
+                      <Interruptor ligado={cfg.menu.fixo === true} onChange={v => setMenu('fixo', v)} label="Manter o menu fixo no topo" />
+                    </div>
                     <div>
                       <label className="text-xs font-medium text-gray-500 mb-1 block">Texto do botão</label>
                       <input

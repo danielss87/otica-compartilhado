@@ -166,7 +166,7 @@ var LANDING_PAGE_TEMPLATES = {
       { chave: "hero_titulo", label: "T\xEDtulo do hero", tipo: "texto_curto", placeholder: "Ex: O QUE PROCURAR EM \xD3CULOS DE QUALIDADE" },
       { chave: "hero_cta_texto", label: "Texto do bot\xE3o do hero", tipo: "texto_curto", placeholder: "Ex: VER COLE\xC7\xC3O" },
       { chave: "hero_cta_url", label: "Link do bot\xE3o do hero", tipo: "texto_curto", placeholder: "https://..." },
-      { chave: "features", label: "Selos de confian\xE7a (3 itens)", tipo: "lista_features", padrao: GREATS_FEATURES_PADRAO },
+      { chave: "features", label: "Selos de confian\xE7a (3 itens)", tipo: "lista_features", padrao: GREATS_FEATURES_PADRAO, icones: GREATS_ICONES },
       { chave: "banner_imagem", label: "Imagem de destaque (detalhe do produto)", tipo: "imagem" },
       { chave: "banner_anotacao", label: "Legenda do detalhe", tipo: "texto_curto", placeholder: "Ex: ARMA\xC7\xC3O 100% ACETATO ITALIANO" },
       { chave: "bloco_1", label: "Bloco 1 (texto, com CTA)", tipo: "bloco" },
@@ -395,7 +395,10 @@ function GreatsRender({ conteudo }) {
     /* @__PURE__ */ jsx("div", { "data-secao": "selos", className: "grid grid-cols-3 gap-3 sm:gap-6 px-4 sm:px-10 py-10", style: { background: "#F7F6F4" }, children: features.slice(0, 3).map((f, i) => {
       const Icone = GREATS_ICONES[i % GREATS_ICONES.length];
       return /* @__PURE__ */ jsxs("div", { className: "flex flex-col gap-1.5", children: [
-        /* @__PURE__ */ jsx(Icone, { size: 22, style: { color: corPrimaria }, strokeWidth: 1.75 }),
+        f.icone_url ? (
+          // Caixa fixa + object-contain: qualquer PNG fica do mesmo tamanho, sem distorcer.
+          /* @__PURE__ */ jsx("img", { src: f.icone_url, alt: "", className: "w-6 h-6 object-contain" })
+        ) : /* @__PURE__ */ jsx(Icone, { size: 22, style: { color: corPrimaria }, strokeWidth: 1.75 }),
         /* @__PURE__ */ jsx("p", { className: "text-[10px] sm:text-xs font-bold uppercase tracking-wide", style: { color: corPrimaria }, children: f.titulo || "Selo" }),
         /* @__PURE__ */ jsx("p", { className: "text-[11px] sm:text-xs text-gray-500 leading-snug", children: f.descricao })
       ] }, i);
@@ -659,33 +662,41 @@ function corDoCta(menu, coresPagina) {
   if (menu.cta_cor === "destaque" && coresPagina?.destaque) return coresPagina.destaque;
   return menu.cta_destino === "whatsapp" ? "#25D366" : "#111827";
 }
-function MenuTopo({ logo, menu, whatsapp, coresPagina, onIrParaContato }) {
+function MenuTopo({ logo, menu, whatsapp, coresPagina, onIrParaContato, refMenu }) {
   const vaiProContato = menu.cta_destino === "contato";
   const ctaUrl = vaiProContato ? "#contato" : menu.cta_destino === "whatsapp" && whatsapp?.numero ? linkWhatsApp(whatsapp.numero, whatsapp.mensagem) : menu.cta_url;
   const cta = menu.cta_texto && ctaUrl;
   const ehWhatsapp = menu.cta_destino === "whatsapp";
-  return /* @__PURE__ */ jsxs2("header", { className: "bg-white border-b border-gray-100 px-5 sm:px-8 py-3 flex items-center justify-center sm:justify-between gap-4 min-h-[64px]", children: [
-    logo ? /* @__PURE__ */ jsx2("img", { src: logo, alt: "Logo", className: "h-10 sm:h-11 w-auto max-w-[200px] object-contain" }) : /* @__PURE__ */ jsx2("span", {}),
-    cta && /* @__PURE__ */ jsxs2(
-      "a",
-      {
-        href: ctaUrl,
-        ...vaiProContato ? { onClick: (e) => {
-          e.preventDefault();
-          onIrParaContato();
-        } } : { target: "_blank", rel: "noopener noreferrer" },
-        className: "hidden sm:inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90",
-        style: { background: corDoCta(menu, coresPagina) },
-        children: [
-          ehWhatsapp && /* @__PURE__ */ jsx2(IconeWhatsApp, { className: "w-4 h-4" }),
-          menu.cta_texto
-        ]
-      }
-    )
-  ] });
+  return /* @__PURE__ */ jsxs2(
+    "header",
+    {
+      ref: refMenu,
+      className: `bg-white border-b border-gray-100 px-5 sm:px-8 py-3 flex items-center justify-center sm:justify-between gap-4 min-h-[64px] ${menu.fixo ? "sticky top-0 z-40" : ""}`,
+      children: [
+        logo ? /* @__PURE__ */ jsx2("img", { src: logo, alt: "Logo", className: "h-10 sm:h-11 w-auto max-w-[200px] object-contain" }) : /* @__PURE__ */ jsx2("span", {}),
+        cta && /* @__PURE__ */ jsxs2(
+          "a",
+          {
+            href: ctaUrl,
+            ...vaiProContato ? { onClick: (e) => {
+              e.preventDefault();
+              onIrParaContato();
+            } } : { target: "_blank", rel: "noopener noreferrer" },
+            className: "hidden sm:inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90",
+            style: { background: corDoCta(menu, coresPagina) },
+            children: [
+              ehWhatsapp && /* @__PURE__ */ jsx2(IconeWhatsApp, { className: "w-4 h-4" }),
+              menu.cta_texto
+            ]
+          }
+        )
+      ]
+    }
+  );
 }
 function MolduraLandingPage({ configuracoes, preview = false, secaoContato = null, coresPagina = null, children }) {
   const raiz = useRef(null);
+  const refMenu = useRef(null);
   const logo = configuracoes?.marca?.logo_url;
   const w = configuracoes?.whatsapp;
   const wpp = w?.ativo && w?.numero ? linkWhatsApp(w.numero, w.mensagem) : null;
@@ -699,8 +710,10 @@ function MolduraLandingPage({ configuracoes, preview = false, secaoContato = nul
         menu,
         whatsapp: w,
         coresPagina,
+        refMenu,
         onIrParaContato: () => rolarSuaveAte(
-          raiz.current?.querySelector(`[data-secao="${secaoContato}"]`) || raiz.current?.querySelector("form")
+          raiz.current?.querySelector(`[data-secao="${secaoContato}"]`) || raiz.current?.querySelector("form"),
+          { folga: 16 + (menu.fixo ? refMenu.current?.offsetHeight || 0 : 0) }
         )
       }
     ),
@@ -883,6 +896,13 @@ function ModalConfiguracoes({ onClose }) {
             ] }),
             cfg.menu.ativo && /* @__PURE__ */ jsxs3("div", { className: "space-y-3", children: [
               !cfg.marca.logo_url && /* @__PURE__ */ jsx3("p", { className: "text-xs text-amber-700", children: 'Envie o logo em "Identidade de marca" para ele aparecer no menu.' }),
+              /* @__PURE__ */ jsxs3("div", { className: "flex items-center justify-between gap-3", children: [
+                /* @__PURE__ */ jsxs3("div", { children: [
+                  /* @__PURE__ */ jsx3("p", { className: "text-xs font-medium text-gray-700", children: "Menu fixo no topo" }),
+                  /* @__PURE__ */ jsx3("p", { className: "text-xs text-gray-400", children: "O menu continua vis\xEDvel no topo da tela enquanto o visitante rola a p\xE1gina." })
+                ] }),
+                /* @__PURE__ */ jsx3(Interruptor, { ligado: cfg.menu.fixo === true, onChange: (v) => setMenu("fixo", v), label: "Manter o menu fixo no topo" })
+              ] }),
               /* @__PURE__ */ jsxs3("div", { children: [
                 /* @__PURE__ */ jsx3("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: "Texto do bot\xE3o" }),
                 /* @__PURE__ */ jsx3(
@@ -1626,6 +1646,23 @@ function listaOuPadrao(valor, campo) {
 }
 function CampoListaFeatures({ campo, valor, onChange }) {
   const itens = listaOuPadrao(valor, campo);
+  const [enviando, setEnviando] = useState4(null);
+  const inputIcone = useRef3(null);
+  const alvoIcone = useRef3(null);
+  async function handleIcone(file) {
+    const i = alvoIcone.current;
+    if (!file || i == null) return;
+    setEnviando(i);
+    try {
+      const { url } = await uploadImagemLandingPage(file);
+      atualizarItem(i, "icone_url", url);
+    } catch (e) {
+      alert(e.message);
+    } finally {
+      setEnviando(null);
+      if (inputIcone.current) inputIcone.current.value = "";
+    }
+  }
   function atualizarItem(i, chave, texto) {
     const novo = [...itens];
     novo[i] = { ...novo[i] || {}, [chave]: texto };
@@ -1639,6 +1676,19 @@ function CampoListaFeatures({ campo, valor, onChange }) {
     /* @__PURE__ */ jsxs5("div", { className: "space-y-2", children: [
       itens.map((item, i) => /* @__PURE__ */ jsxs5("div", { className: "rounded-lg border border-gray-200 p-2.5 space-y-1.5", children: [
         /* @__PURE__ */ jsxs5("div", { className: "flex items-center gap-1.5", children: [
+          /* @__PURE__ */ jsx5(
+            IconeSelo,
+            {
+              item,
+              IconePadrao: campo.icones?.[i % campo.icones.length],
+              enviando: enviando === i,
+              onTrocar: () => {
+                alvoIcone.current = i;
+                inputIcone.current?.click();
+              },
+              onRemover: () => atualizarItem(i, "icone_url", null)
+            }
+          ),
           /* @__PURE__ */ jsx5(
             "input",
             {
@@ -1672,8 +1722,35 @@ function CampoListaFeatures({ campo, valor, onChange }) {
             " Adicionar"
           ]
         }
-      )
-    ] })
+      ),
+      /* @__PURE__ */ jsx5("p", { className: "text-xs text-gray-400", children: "Clique no \xEDcone para trocar. Use PNG com fundo transparente: qualquer tamanho \xE9 ajustado automaticamente." })
+    ] }),
+    /* @__PURE__ */ jsx5("input", { ref: inputIcone, type: "file", accept: "image/png,image/webp,image/jpeg", className: "hidden", onChange: (e) => handleIcone(e.target.files?.[0]) })
+  ] });
+}
+function IconeSelo({ item, IconePadrao, enviando, onTrocar, onRemover }) {
+  return /* @__PURE__ */ jsxs5("div", { className: "relative shrink-0", children: [
+    /* @__PURE__ */ jsx5(
+      "button",
+      {
+        type: "button",
+        onClick: onTrocar,
+        disabled: enviando,
+        title: "Trocar \xEDcone",
+        className: "flex items-center justify-center w-9 h-9 rounded-lg border border-dashed border-gray-300 bg-gray-50 text-gray-500 hover:border-violet-400 hover:text-violet-600",
+        children: enviando ? /* @__PURE__ */ jsx5(Upload2, { size: 14, className: "animate-pulse" }) : item?.icone_url ? /* @__PURE__ */ jsx5("img", { src: item.icone_url, alt: "", className: "w-6 h-6 object-contain" }) : IconePadrao ? /* @__PURE__ */ jsx5(IconePadrao, { size: 18, strokeWidth: 1.75 }) : /* @__PURE__ */ jsx5(Upload2, { size: 14 })
+      }
+    ),
+    item?.icone_url && !enviando && /* @__PURE__ */ jsx5(
+      "button",
+      {
+        type: "button",
+        onClick: onRemover,
+        title: "Voltar ao \xEDcone padr\xE3o",
+        className: "absolute -top-1.5 -right-1.5 bg-white rounded-full p-0.5 shadow border border-gray-200 text-gray-500 hover:text-red-600",
+        children: /* @__PURE__ */ jsx5(X3, { size: 10 })
+      }
+    )
   ] });
 }
 function CampoListaDepoimentos({ campo, valor, onChange }) {

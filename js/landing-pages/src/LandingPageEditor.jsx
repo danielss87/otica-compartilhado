@@ -437,6 +437,24 @@ function listaOuPadrao(valor, campo) {
 
 function CampoListaFeatures({ campo, valor, onChange }) {
   const itens = listaOuPadrao(valor, campo)
+  const [enviando, setEnviando] = useState(null)
+  const inputIcone = useRef(null)
+  const alvoIcone = useRef(null)
+
+  async function handleIcone(file) {
+    const i = alvoIcone.current
+    if (!file || i == null) return
+    setEnviando(i)
+    try {
+      const { url } = await uploadImagemLandingPage(file)
+      atualizarItem(i, 'icone_url', url)
+    } catch (e) {
+      alert(e.message)
+    } finally {
+      setEnviando(null)
+      if (inputIcone.current) inputIcone.current.value = ''
+    }
+  }
 
   function atualizarItem(i, chave, texto) {
     const novo = [...itens]
@@ -455,6 +473,13 @@ function CampoListaFeatures({ campo, valor, onChange }) {
         {itens.map((item, i) => (
           <div key={i} className="rounded-lg border border-gray-200 p-2.5 space-y-1.5">
             <div className="flex items-center gap-1.5">
+              <IconeSelo
+                item={item}
+                IconePadrao={campo.icones?.[i % campo.icones.length]}
+                enviando={enviando === i}
+                onTrocar={() => { alvoIcone.current = i; inputIcone.current?.click() }}
+                onRemover={() => atualizarItem(i, 'icone_url', null)}
+              />
               <input
                 value={item?.titulo || ''}
                 onChange={e => atualizarItem(i, 'titulo', e.target.value)}
@@ -481,7 +506,41 @@ function CampoListaFeatures({ campo, valor, onChange }) {
         >
           <Plus size={13} /> Adicionar
         </button>
+        <p className="text-xs text-gray-400">
+          Clique no ícone para trocar. Use PNG com fundo transparente: qualquer tamanho é ajustado automaticamente.
+        </p>
       </div>
+      <input ref={inputIcone} type="file" accept="image/png,image/webp,image/jpeg" className="hidden" onChange={e => handleIcone(e.target.files?.[0])} />
+    </div>
+  )
+}
+
+// Ícone do selo no editor: o PNG enviado ou o ícone padrão do template. Clicar troca.
+function IconeSelo({ item, IconePadrao, enviando, onTrocar, onRemover }) {
+  return (
+    <div className="relative shrink-0">
+      <button
+        type="button"
+        onClick={onTrocar}
+        disabled={enviando}
+        title="Trocar ícone"
+        className="flex items-center justify-center w-9 h-9 rounded-lg border border-dashed border-gray-300 bg-gray-50 text-gray-500 hover:border-violet-400 hover:text-violet-600"
+      >
+        {enviando ? <Upload size={14} className="animate-pulse" />
+          : item?.icone_url ? <img src={item.icone_url} alt="" className="w-6 h-6 object-contain" />
+          : IconePadrao ? <IconePadrao size={18} strokeWidth={1.75} />
+          : <Upload size={14} />}
+      </button>
+      {item?.icone_url && !enviando && (
+        <button
+          type="button"
+          onClick={onRemover}
+          title="Voltar ao ícone padrão"
+          className="absolute -top-1.5 -right-1.5 bg-white rounded-full p-0.5 shadow border border-gray-200 text-gray-500 hover:text-red-600"
+        >
+          <X size={10} />
+        </button>
+      )}
     </div>
   )
 }

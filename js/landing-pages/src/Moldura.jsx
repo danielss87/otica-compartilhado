@@ -109,7 +109,7 @@ function corDoCta(menu, coresPagina) {
 
 // `whatsapp`: config do botão de WhatsApp. A página pública já recebe `menu.cta_url` pronto
 // (calculado no backend, `config.publica`); o editor recebe a config completa e monta aqui.
-function MenuTopo({ logo, menu, whatsapp, coresPagina, onIrParaContato }) {
+function MenuTopo({ logo, menu, whatsapp, coresPagina, onIrParaContato, refMenu }) {
   const vaiProContato = menu.cta_destino === 'contato'
   const ctaUrl = vaiProContato
     ? '#contato'
@@ -119,7 +119,12 @@ function MenuTopo({ logo, menu, whatsapp, coresPagina, onIrParaContato }) {
   const cta = menu.cta_texto && ctaUrl
   const ehWhatsapp = menu.cta_destino === 'whatsapp'
   return (
-    <header className="bg-white border-b border-gray-100 px-5 sm:px-8 py-3 flex items-center justify-center sm:justify-between gap-4 min-h-[64px]">
+    <header
+      ref={refMenu}
+      className={`bg-white border-b border-gray-100 px-5 sm:px-8 py-3 flex items-center justify-center sm:justify-between gap-4 min-h-[64px] ${
+        menu.fixo ? 'sticky top-0 z-40' : ''
+      }`}
+    >
       {logo ? <img src={logo} alt="Logo" className="h-10 sm:h-11 w-auto max-w-[200px] object-contain" /> : <span />}
       {cta && (
         <a
@@ -144,6 +149,7 @@ function MenuTopo({ logo, menu, whatsapp, coresPagina, onIrParaContato }) {
 // `coresPagina`: { principal, destaque } desta página. Ambos vêm de templates.jsx.
 export default function MolduraLandingPage({ configuracoes, preview = false, secaoContato = null, coresPagina = null, children }) {
   const raiz = useRef(null)
+  const refMenu = useRef(null)
   const logo = configuracoes?.marca?.logo_url
   const w = configuracoes?.whatsapp
   const wpp = w?.ativo && w?.numero ? linkWhatsApp(w.numero, w.mensagem) : null
@@ -158,8 +164,11 @@ export default function MolduraLandingPage({ configuracoes, preview = false, sec
           menu={menu}
           whatsapp={w}
           coresPagina={coresPagina}
+          refMenu={refMenu}
+          // Menu fixo cobre o topo da tela: desconta a altura dele pra seção não ficar escondida.
           onIrParaContato={() => rolarSuaveAte(
             raiz.current?.querySelector(`[data-secao="${secaoContato}"]`) || raiz.current?.querySelector('form'),
+            { folga: 16 + (menu.fixo ? refMenu.current?.offsetHeight || 0 : 0) },
           )}
         />
       )}

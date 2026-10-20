@@ -54,6 +54,7 @@ class ConfigMenu(BaseModel):
     cta_destino: str = "whatsapp"  # whatsapp | url | contato
     cta_url: str = ""
     cta_cor: str = "padrao"  # padrao | principal | destaque
+    fixo: bool = False  # menu preso no topo ao rolar
 
 
 class LandingPagesConfigOut(BaseModel):

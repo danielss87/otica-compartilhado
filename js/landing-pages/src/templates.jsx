@@ -14,6 +14,7 @@ const GREATS_FEATURES_PADRAO = [
   { titulo: 'MATERIAIS PREMIUM', descricao: 'Usamos apenas materiais de alta qualidade, por dentro e por fora.' },
   { titulo: 'TROCA GRÁTIS', descricao: 'Se não servir perfeitamente, trocamos sem custo em até 21 dias.' },
 ]
+// Ícone padrão de cada selo (por posição) quando o selo não tem `icone_url` enviado.
 const GREATS_DEPOIMENTOS_PADRAO = [
   { texto: 'Atendimento incrível e produto de altíssima qualidade.', nome: 'Cliente satisfeito' },
   { texto: 'Chegou rápido e é ainda melhor do que nas fotos.', nome: 'Cliente satisfeito' },
@@ -174,7 +175,7 @@ export const LANDING_PAGE_TEMPLATES = {
       { chave: 'hero_cta_texto', label: 'Texto do botão do hero', tipo: 'texto_curto', placeholder: 'Ex: VER COLEÇÃO' },
       { chave: 'hero_cta_url', label: 'Link do botão do hero', tipo: 'texto_curto', placeholder: 'https://...' },
 
-      { chave: 'features', label: 'Selos de confiança (3 itens)', tipo: 'lista_features', padrao: GREATS_FEATURES_PADRAO },
+      { chave: 'features', label: 'Selos de confiança (3 itens)', tipo: 'lista_features', padrao: GREATS_FEATURES_PADRAO, icones: GREATS_ICONES },
 
       { chave: 'banner_imagem', label: 'Imagem de destaque (detalhe do produto)', tipo: 'imagem' },
       { chave: 'banner_anotacao', label: 'Legenda do detalhe', tipo: 'texto_curto', placeholder: 'Ex: ARMAÇÃO 100% ACETATO ITALIANO' },
@@ -476,7 +477,12 @@ function GreatsRender({ conteudo }) {
           const Icone = GREATS_ICONES[i % GREATS_ICONES.length]
           return (
             <div key={i} className="flex flex-col gap-1.5">
-              <Icone size={22} style={{ color: corPrimaria }} strokeWidth={1.75} />
+              {f.icone_url ? (
+                // Caixa fixa + object-contain: qualquer PNG fica do mesmo tamanho, sem distorcer.
+                <img src={f.icone_url} alt="" className="w-6 h-6 object-contain" />
+              ) : (
+                <Icone size={22} style={{ color: corPrimaria }} strokeWidth={1.75} />
+              )}
               <p className="text-[10px] sm:text-xs font-bold uppercase tracking-wide" style={{ color: corPrimaria }}>
                 {f.titulo || 'Selo'}
               </p>

@@ -22,7 +22,8 @@ PADRAO = {
     # logo centralizado no celular. cta_destino: "whatsapp" (número configurado) | "url" |
     # "contato" (rola até a seção de contato da própria página, v0.5.0). cta_cor (v0.5.0):
     # "padrao" | "principal" | "destaque" (cores da própria página, resolvidas no frontend).
-    "menu": {"ativo": False, "cta_texto": "Fale conosco", "cta_destino": "whatsapp", "cta_url": "", "cta_cor": "padrao"},
+    # fixo (v0.6.0): menu preso no topo da tela ao rolar (sticky).
+    "menu": {"ativo": False, "cta_texto": "Fale conosco", "cta_destino": "whatsapp", "cta_url": "", "cta_cor": "padrao", "fixo": False},
 }
 
 
@@ -90,5 +91,6 @@ def publica(cfg: dict) -> dict:
             "cta_destino": m["cta_destino"],
             "cta_url": cta_url if menu_ativo else "",
             "cta_cor": m["cta_cor"],
+            "fixo": bool(m["fixo"]) if menu_ativo else False,
         },
     }
