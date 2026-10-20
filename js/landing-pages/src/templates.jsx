@@ -41,10 +41,10 @@ export const LANDING_PAGE_TEMPLATES = {
           {conteudo.imagem_url && (
             <img src={conteudo.imagem_url} alt="" className="w-full rounded-2xl mb-6 object-cover max-h-72" />
           )}
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{conteudo.titulo || 'Título da oferta'}</h1>
-          {conteudo.subtitulo && <p className="text-base text-gray-500 mb-5">{conteudo.subtitulo}</p>}
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 leading-tight mb-3">{conteudo.titulo || 'Título da oferta'}</h1>
+          {conteudo.subtitulo && <p className="text-lg sm:text-xl text-gray-700 leading-relaxed mb-5">{conteudo.subtitulo}</p>}
         </div>
-        {conteudo.texto && <p data-secao="texto" className="text-sm text-gray-600 whitespace-pre-wrap mb-8">{conteudo.texto}</p>}
+        {conteudo.texto && <p data-secao="texto" className="text-base sm:text-lg text-gray-800 leading-relaxed whitespace-pre-wrap mb-8">{conteudo.texto}</p>}
         <div data-secao="formulario">
           <FormularioLead ctaTexto={conteudo.cta_texto} onLead={onLead} />
         </div>
@@ -71,14 +71,14 @@ export const LANDING_PAGE_TEMPLATES = {
           {conteudo.imagem_url && (
             <img src={conteudo.imagem_url} alt="" className="w-full rounded-2xl mb-6 object-cover max-h-72" />
           )}
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{conteudo.titulo || 'Título da promoção'}</h1>
-          {conteudo.subtitulo && <p className="text-base text-gray-500">{conteudo.subtitulo}</p>}
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 leading-tight mb-3">{conteudo.titulo || 'Título da promoção'}</h1>
+          {conteudo.subtitulo && <p className="text-lg sm:text-xl text-gray-700 leading-relaxed">{conteudo.subtitulo}</p>}
         </div>
         {Array.isArray(conteudo.beneficios) && conteudo.beneficios.length > 0 && (
-          <ul data-secao="beneficios" className="space-y-2 mb-8">
+          <ul data-secao="beneficios" className="space-y-3 mb-8">
             {conteudo.beneficios.filter(Boolean).map((b, i) => (
-              <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
-                <span className="mt-1 w-1.5 h-1.5 rounded-full bg-violet-500 shrink-0" />
+              <li key={i} className="flex items-start gap-3 text-base sm:text-lg text-gray-800 leading-snug">
+                <span className="mt-2 w-2 h-2 rounded-full bg-violet-500 shrink-0" />
                 {b}
               </li>
             ))}
@@ -116,8 +116,8 @@ export const LANDING_PAGE_TEMPLATES = {
             {conteudo.imagem_url && (
               <img src={conteudo.imagem_url} alt="" className="w-full rounded-2xl mb-6 object-cover max-h-72" />
             )}
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{conteudo.titulo || 'Agende sua consulta'}</h1>
-            {conteudo.subtitulo && <p className="text-base text-gray-500">{conteudo.subtitulo}</p>}
+            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 leading-tight mb-3">{conteudo.titulo || 'Agende sua consulta'}</h1>
+            {conteudo.subtitulo && <p className="text-lg sm:text-xl text-gray-700 leading-relaxed">{conteudo.subtitulo}</p>}
           </div>
           <div data-secao="contato">
           {wppUrl ? (
@@ -125,9 +125,9 @@ export const LANDING_PAGE_TEMPLATES = {
               href={wppUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-xl transition-colors mb-8"
+              className="flex items-center justify-center gap-2 w-full bg-emerald-600 hover:bg-emerald-700 text-white text-lg font-semibold py-4 rounded-xl transition-colors mb-8"
             >
-              <MessageCircle size={18} />
+              <MessageCircle size={22} />
               {conteudo.cta_texto || 'Agendar pelo WhatsApp'}
             </a>
           ) : (
@@ -135,11 +135,11 @@ export const LANDING_PAGE_TEMPLATES = {
           )}
           </div>
           {Array.isArray(conteudo.faq) && conteudo.faq.length > 0 && (
-            <div data-secao="faq" className="mt-8 space-y-4">
+            <div data-secao="faq" className="mt-8 space-y-5">
               {conteudo.faq.filter(f => f?.pergunta).map((f, i) => (
                 <div key={i}>
-                  <p className="text-sm font-semibold text-gray-900">{f.pergunta}</p>
-                  <p className="text-sm text-gray-500 mt-0.5">{f.resposta}</p>
+                  <p className="text-base sm:text-lg font-semibold text-gray-900">{f.pergunta}</p>
+                  <p className="text-base text-gray-700 leading-relaxed mt-1">{f.resposta}</p>
                 </div>
               ))}
             </div>
@@ -287,9 +287,9 @@ function FormularioLead({ ctaTexto, onLead }) {
     // Preview no editor: formulário estático, sem submit real.
     return (
       <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-2">
-        <div className="h-9 rounded-lg bg-white border border-gray-200" />
-        <div className="h-9 rounded-lg bg-white border border-gray-200" />
-        <div className="h-10 rounded-lg bg-gray-800 flex items-center justify-center text-white text-sm font-medium">
+        <div className="h-12 rounded-lg bg-white border border-gray-300" />
+        <div className="h-12 rounded-lg bg-white border border-gray-300" />
+        <div className="h-12 rounded-lg bg-gray-800 flex items-center justify-center text-white text-base font-semibold">
           {ctaTexto || 'Quero saber mais'}
         </div>
       </div>
@@ -319,26 +319,26 @@ function FormularioLeadInterativo({ ctaTexto, onLead }) {
 
   if (enviado) {
     return (
-      <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-center text-sm text-emerald-700 font-medium">
+      <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-center text-base text-emerald-800 font-semibold">
         Recebemos seus dados! Em breve entramos em contato. 😊
       </div>
     )
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-2.5">
+    <form onSubmit={handleSubmit} className="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-3">
       <input
         value={nome}
         onChange={e => setNome(e.target.value)}
         placeholder="Seu nome"
-        className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400 bg-white"
+        className="w-full rounded-lg border border-gray-300 px-4 py-3 text-base text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500 bg-white"
         required
       />
       <TelefoneInput value={telefone} onChange={setTelefone} placeholder="Seu WhatsApp" />
       <button
         type="submit"
         disabled={enviando}
-        className="w-full bg-gray-900 hover:bg-gray-800 disabled:opacity-60 text-white font-semibold py-2.5 rounded-lg text-sm transition-colors"
+        className="w-full bg-gray-900 hover:bg-gray-800 disabled:opacity-60 text-white font-semibold py-3.5 rounded-lg text-base transition-colors"
       >
         {enviando ? 'Enviando...' : (ctaTexto || 'Quero saber mais')}
       </button>
@@ -355,7 +355,7 @@ function TelefoneInputSimples({ value, onChange, placeholder }) {
       value={value}
       onChange={e => onChange(e.target.value)}
       placeholder={placeholder || '(11) 99999-9999'}
-      className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400 bg-white"
+      className="w-full rounded-lg border border-gray-300 px-4 py-3 text-base text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500 bg-white"
       required
     />
   )
@@ -395,7 +395,7 @@ function GreatsBotao({ texto, url, variante = 'escuro', cor }) {
       href={url || undefined}
       target={url ? '_blank' : undefined}
       rel="noopener noreferrer"
-      className="inline-block px-6 py-3 text-xs font-bold tracking-widest uppercase text-center transition-opacity hover:opacity-90"
+      className="inline-block px-7 py-3.5 text-sm sm:text-base font-bold tracking-wider uppercase text-center transition-opacity hover:opacity-90"
       style={claro ? { background: '#fff', color: cor } : { background: cor, color: '#fff' }}
     >
       {texto}
@@ -408,17 +408,17 @@ function GreatsBloco({ bloco, corPrimaria, fundo = 'branco', className = '' }) {
   const escuro = fundo === 'escuro'
   return (
     <div
-      className={`flex flex-col justify-center gap-3 p-8 sm:p-10 ${className}`}
+      className={`flex flex-col justify-center gap-3 p-5 sm:p-10 ${className}`}
       style={{ background: escuro ? corPrimaria : (fundo === 'cinza' ? '#F5F4F2' : '#fff') }}
     >
       <h3
-        className="text-lg sm:text-xl font-extrabold uppercase tracking-tight leading-snug"
+        className="text-lg sm:text-2xl font-extrabold uppercase tracking-tight leading-snug break-words"
         style={{ color: escuro ? '#fff' : corPrimaria }}
       >
         {v.titulo || 'Título do bloco'}
       </h3>
       {v.texto && (
-        <p className="text-sm leading-relaxed" style={{ color: escuro ? 'rgba(255,255,255,0.85)' : '#6B7280' }}>
+        <p className="text-base sm:text-lg font-medium leading-relaxed break-words" style={{ color: escuro ? 'rgba(255,255,255,0.95)' : GREATS_TEXTO }}>
           {v.texto}
         </p>
       )}
@@ -432,6 +432,10 @@ function GreatsBloco({ bloco, corPrimaria, fundo = 'branco', className = '' }) {
 }
 
 const GREATS_ICONES = [Gem, Footprints, RotateCcw]
+
+// Padrão "letrão" (v0.9.0): parte do público chega sem óculos ou com a pupila dilatada.
+// Texto corrido em cinza escuro (~10:1 no branco), nunca abaixo de 14px; corpo em 16–18px.
+const GREATS_TEXTO = '#374151'
 
 const GREATS_ESCURECIMENTO_PADRAO = 25
 
@@ -448,7 +452,7 @@ function GreatsRender({ conteudo }) {
   const depoimentos = Array.isArray(c.depoimentos) && c.depoimentos.length > 0 ? c.depoimentos : GREATS_DEPOIMENTOS_PADRAO
 
   return (
-    <div style={{ fontFamily: GREATS_FONT_STACK }} className="bg-white">
+    <div lang="pt-BR" style={{ fontFamily: GREATS_FONT_STACK }} className="bg-white">
       {/* Hero */}
       <div data-secao="hero" className="relative w-full min-h-[380px] sm:min-h-[440px] flex flex-col items-center justify-center text-center px-6 py-16 overflow-hidden">
         {c.hero_imagem ? (
@@ -459,12 +463,12 @@ function GreatsRender({ conteudo }) {
         <div className="absolute inset-0" style={{ background: `rgba(0, 0, 0, ${escurecimentoHero / 100})` }} />
         <div className="relative z-10 flex flex-col items-center gap-5">
           <span
-            className="px-4 py-1.5 text-[11px] font-bold tracking-[0.2em] uppercase text-white"
+            className="px-4 py-2 text-sm font-bold tracking-[0.12em] uppercase text-white"
             style={{ background: corPrimaria }}
           >
             {c.selo_texto || 'SUA MARCA'}
           </span>
-          <h1 className="text-2xl sm:text-4xl font-extrabold uppercase text-white leading-tight max-w-md drop-shadow-md">
+          <h1 className="text-3xl sm:text-5xl font-extrabold uppercase text-white leading-tight max-w-xl break-words" style={{ textShadow: '0 2px 12px rgba(0,0,0,0.55)' }}>
             {c.hero_titulo || 'Título de impacto para o seu produto'}
           </h1>
           <GreatsBotao texto={c.hero_cta_texto || 'SAIBA MAIS'} url={c.hero_cta_url} variante="escuro" cor={corPrimaria} />
@@ -472,21 +476,21 @@ function GreatsRender({ conteudo }) {
       </div>
 
       {/* Selos de confiança */}
-      <div data-secao="selos" className="grid grid-cols-3 gap-3 sm:gap-6 px-4 sm:px-10 py-10" style={{ background: '#F7F6F4' }}>
+      <div data-secao="selos" className="grid grid-cols-1 sm:grid-cols-3 gap-6 px-6 sm:px-10 py-10" style={{ background: '#F7F6F4' }}>
         {features.slice(0, 3).map((f, i) => {
           const Icone = GREATS_ICONES[i % GREATS_ICONES.length]
           return (
-            <div key={i} className="flex flex-col gap-1.5">
+            <div key={i} className="flex flex-col gap-2">
               {f.icone_url ? (
                 // Caixa fixa + object-contain: qualquer PNG fica do mesmo tamanho, sem distorcer.
-                <img src={f.icone_url} alt="" className="w-6 h-6 object-contain" />
+                <img src={f.icone_url} alt="" className="w-8 h-8 object-contain" />
               ) : (
-                <Icone size={22} style={{ color: corPrimaria }} strokeWidth={1.75} />
+                <Icone size={30} style={{ color: corPrimaria }} strokeWidth={1.75} />
               )}
-              <p className="text-[10px] sm:text-xs font-bold uppercase tracking-wide" style={{ color: corPrimaria }}>
+              <p className="text-base sm:text-lg font-extrabold uppercase tracking-wide" style={{ color: corPrimaria }}>
                 {f.titulo || 'Selo'}
               </p>
-              <p className="text-[11px] sm:text-xs text-gray-500 leading-snug">{f.descricao}</p>
+              <p className="text-base font-medium leading-relaxed" style={{ color: GREATS_TEXTO }}>{f.descricao}</p>
             </div>
           )
         })}
@@ -496,8 +500,8 @@ function GreatsRender({ conteudo }) {
       <div data-secao="banner" className="relative w-full">
         <GreatsImg src={c.banner_imagem} className="w-full h-56 sm:h-72 object-cover" />
         {c.banner_anotacao && (
-          <div className="absolute left-3 bottom-3 sm:left-6 sm:bottom-6 bg-white/95 px-3 py-1.5 flex items-center gap-1.5 shadow-sm">
-            <span className="text-gray-900 text-[11px] sm:text-xs font-bold uppercase tracking-wide">
+          <div className="absolute left-3 bottom-3 sm:left-6 sm:bottom-6 bg-white px-4 py-2 flex items-center gap-1.5 shadow-md">
+            <span className="text-gray-900 text-sm sm:text-base font-bold uppercase tracking-wide">
               {c.banner_anotacao}
             </span>
           </div>
@@ -516,12 +520,12 @@ function GreatsRender({ conteudo }) {
       </div>
 
       {/* Faixa de CTA */}
-      <div data-secao="faixa_cta" className="grid grid-cols-2 items-stretch" style={{ background: '#F7F6F4' }}>
-        <div className="flex flex-col justify-center gap-3 p-8 sm:p-10">
-          <h3 className="text-lg sm:text-2xl font-extrabold uppercase tracking-tight" style={{ color: corPrimaria }}>
+      <div data-secao="faixa_cta" className="grid grid-cols-1 sm:grid-cols-2 items-stretch" style={{ background: '#F7F6F4' }}>
+        <div className="flex flex-col justify-center gap-3 p-6 sm:p-10">
+          <h3 className="text-2xl sm:text-3xl font-extrabold uppercase tracking-tight leading-tight break-words" style={{ color: corPrimaria }}>
             {c.cta2_bloco?.titulo || 'Confira nossa coleção'}
           </h3>
-          {c.cta2_bloco?.texto && <p className="text-sm text-gray-500">{c.cta2_bloco.texto}</p>}
+          {c.cta2_bloco?.texto && <p className="text-base sm:text-lg font-medium leading-relaxed" style={{ color: GREATS_TEXTO }}>{c.cta2_bloco.texto}</p>}
           <div className="pt-1">
             <GreatsBotao texto={c.cta2_bloco?.cta_texto || 'VER COLEÇÃO'} url={c.cta2_bloco?.cta_url} variante="escuro" cor={corPrimaria} />
           </div>
@@ -540,13 +544,13 @@ function GreatsRender({ conteudo }) {
       {/* Masculino / Feminino */}
       <div data-secao="colecoes" className="grid grid-cols-2">
         <div className="flex flex-col items-center justify-center gap-3 py-14 px-4" style={{ background: corPrimaria }}>
-          <h3 className="text-white text-lg sm:text-xl font-extrabold uppercase tracking-wide">
+          <h3 className="text-white text-xl sm:text-2xl font-extrabold uppercase tracking-wide text-center break-words">
             {c.men_titulo || 'MASCULINO'}
           </h3>
           <GreatsBotao texto={c.men_cta_texto || 'VER AGORA'} url={c.men_cta_url} variante="claro" cor={corPrimaria} />
         </div>
         <div className="flex flex-col items-center justify-center gap-3 py-14 px-4" style={{ background: corSecundaria }}>
-          <h3 className="text-white text-lg sm:text-xl font-extrabold uppercase tracking-wide">
+          <h3 className="text-white text-xl sm:text-2xl font-extrabold uppercase tracking-wide text-center break-words">
             {c.women_titulo || 'FEMININO'}
           </h3>
           <GreatsBotao texto={c.women_cta_texto || 'VER AGORA'} url={c.women_cta_url} variante="claro" cor={corSecundaria} />
@@ -554,23 +558,23 @@ function GreatsRender({ conteudo }) {
       </div>
 
       {/* Depoimentos */}
-      <div data-secao="depoimentos" className="grid grid-cols-2 gap-4 sm:gap-8 px-4 sm:px-10 py-12 text-center">
+      <div data-secao="depoimentos" className="grid grid-cols-1 sm:grid-cols-2 gap-8 px-6 sm:px-10 py-12 text-center">
         {depoimentos.slice(0, 2).map((d, i) => (
           <div key={i} className="flex flex-col items-center gap-2">
-            <Quote size={16} className="text-gray-300" fill="currentColor" />
+            <Quote size={20} className="text-gray-400" fill="currentColor" />
             <div className="flex gap-0.5">
               {Array.from({ length: 5 }).map((_, j) => (
-                <Star key={j} size={13} className="text-amber-400" fill="currentColor" />
+                <Star key={j} size={18} className="text-amber-500" fill="currentColor" />
               ))}
             </div>
-            <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">{d.texto}</p>
-            <p className="text-xs font-bold" style={{ color: corPrimaria }}>{d.nome}</p>
+            <p className="text-base sm:text-lg font-medium leading-relaxed" style={{ color: GREATS_TEXTO }}>{d.texto}</p>
+            <p className="text-base font-bold" style={{ color: corPrimaria }}>{d.nome}</p>
           </div>
         ))}
       </div>
 
       {/* Rodapé */}
-      <div data-secao="rodape" className="text-center text-[11px] text-gray-400 py-6 border-t border-gray-100">
+      <div data-secao="rodape" className="text-center text-sm text-gray-600 px-6 py-6 border-t border-gray-200">
         {c.rodape_texto || `© ${new Date().getFullYear()} Todos os direitos reservados.`}
       </div>
     </div>

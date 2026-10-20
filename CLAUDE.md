@@ -21,7 +21,7 @@ package.json                     # npm: otica-compartilhado (raiz do repo)
 
 ## Features
 
-### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.8.0, out/2026
+### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.9.0, out/2026
 Origem: 4 Olhos (ago/2026). Páginas de captura por template pronto com edição guiada (4 templates:
 `simples`, `promocao`, `agendar_consulta`, `greats`), página pública `/lp/:slug`, contagem de
 visualizações e captura de lead (nome + telefone + fbclid).
@@ -89,6 +89,20 @@ para todas as opções.
 8. Repo **público**: nunca commitar segredo, credencial, URL interna, dado de cliente ou telefone real.
 
 ## Changelog
+
+### v0.9.0 (20/10/2026)
+- **Padrão "letrão" em todos os templates** (legibilidade para quem chega sem óculos ou com a pupila
+  dilatada — público dos dois sistemas). **Muda o visual de páginas já publicadas** ao subir de versão.
+  - Nenhum texto abaixo de 14px; texto corrido em 16px (celular) / 18px (desktop), `leading-relaxed`.
+  - Texto corrido em cinza escuro (`gray-700`/`gray-800`; no Greats `GREATS_TEXTO = #374151`, ~10:1 no
+    branco) em vez de `gray-500`/`#6B7280`; branco sobre a cor da página a 95%; rodapé `gray-600`.
+  - Greats: corpo em `font-medium` (o 400 da Montserrat é fino); títulos e botões maiores, menos
+    espaçamento entre letras; sombra de texto no título do hero; selos e depoimentos empilhados no
+    celular (`grid-cols-1 sm:grid-cols-3/2`), faixa de CTA com a imagem embaixo no celular; ícones maiores.
+  - Formulário: campos em 16px (também evita o zoom automático do iOS) e mais altos.
+  - Sem hifenização automática (quebrava o título do hero); só `break-words` para palavra que não cabe.
+- **Regra para template novo**: seguir o mesmo padrão (mínimo 14px, corpo 16–18px, nada de gray-400/500
+  em texto).
 
 ### v0.8.0 (20/10/2026)
 - **Animação "tilt" no botão do menu** (`menu.cta_tilt`, desligada por padrão): o CTA balança rápido

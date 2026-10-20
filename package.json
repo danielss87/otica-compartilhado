@@ -1,6 +1,6 @@
 {
   "name": "otica-compartilhado",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "Features compartilhadas entre Ariel (Armazém dos Óculos) e 4 Olhos gestão",
   "type": "module",
   "files": [

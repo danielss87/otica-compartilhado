@@ -60,10 +60,10 @@ var LANDING_PAGE_TEMPLATES = {
     Render: ({ conteudo, onLead }) => /* @__PURE__ */ jsxs("div", { className: "max-w-lg mx-auto px-5 py-10 text-center", children: [
       /* @__PURE__ */ jsxs("div", { "data-secao": "hero", children: [
         conteudo.imagem_url && /* @__PURE__ */ jsx("img", { src: conteudo.imagem_url, alt: "", className: "w-full rounded-2xl mb-6 object-cover max-h-72" }),
-        /* @__PURE__ */ jsx("h1", { className: "text-2xl sm:text-3xl font-bold text-gray-900 mb-2", children: conteudo.titulo || "T\xEDtulo da oferta" }),
-        conteudo.subtitulo && /* @__PURE__ */ jsx("p", { className: "text-base text-gray-500 mb-5", children: conteudo.subtitulo })
+        /* @__PURE__ */ jsx("h1", { className: "text-3xl sm:text-4xl font-bold text-gray-900 leading-tight mb-3", children: conteudo.titulo || "T\xEDtulo da oferta" }),
+        conteudo.subtitulo && /* @__PURE__ */ jsx("p", { className: "text-lg sm:text-xl text-gray-700 leading-relaxed mb-5", children: conteudo.subtitulo })
       ] }),
-      conteudo.texto && /* @__PURE__ */ jsx("p", { "data-secao": "texto", className: "text-sm text-gray-600 whitespace-pre-wrap mb-8", children: conteudo.texto }),
+      conteudo.texto && /* @__PURE__ */ jsx("p", { "data-secao": "texto", className: "text-base sm:text-lg text-gray-800 leading-relaxed whitespace-pre-wrap mb-8", children: conteudo.texto }),
       /* @__PURE__ */ jsx("div", { "data-secao": "formulario", children: /* @__PURE__ */ jsx(FormularioLead, { ctaTexto: conteudo.cta_texto, onLead }) })
     ] })
   },
@@ -83,11 +83,11 @@ var LANDING_PAGE_TEMPLATES = {
     Render: ({ conteudo, onLead }) => /* @__PURE__ */ jsxs("div", { className: "max-w-lg mx-auto px-5 py-10", children: [
       /* @__PURE__ */ jsxs("div", { "data-secao": "hero", className: "text-center mb-6", children: [
         conteudo.imagem_url && /* @__PURE__ */ jsx("img", { src: conteudo.imagem_url, alt: "", className: "w-full rounded-2xl mb-6 object-cover max-h-72" }),
-        /* @__PURE__ */ jsx("h1", { className: "text-2xl sm:text-3xl font-bold text-gray-900 mb-2", children: conteudo.titulo || "T\xEDtulo da promo\xE7\xE3o" }),
-        conteudo.subtitulo && /* @__PURE__ */ jsx("p", { className: "text-base text-gray-500", children: conteudo.subtitulo })
+        /* @__PURE__ */ jsx("h1", { className: "text-3xl sm:text-4xl font-bold text-gray-900 leading-tight mb-3", children: conteudo.titulo || "T\xEDtulo da promo\xE7\xE3o" }),
+        conteudo.subtitulo && /* @__PURE__ */ jsx("p", { className: "text-lg sm:text-xl text-gray-700 leading-relaxed", children: conteudo.subtitulo })
       ] }),
-      Array.isArray(conteudo.beneficios) && conteudo.beneficios.length > 0 && /* @__PURE__ */ jsx("ul", { "data-secao": "beneficios", className: "space-y-2 mb-8", children: conteudo.beneficios.filter(Boolean).map((b, i) => /* @__PURE__ */ jsxs("li", { className: "flex items-start gap-2 text-sm text-gray-700", children: [
-        /* @__PURE__ */ jsx("span", { className: "mt-1 w-1.5 h-1.5 rounded-full bg-violet-500 shrink-0" }),
+      Array.isArray(conteudo.beneficios) && conteudo.beneficios.length > 0 && /* @__PURE__ */ jsx("ul", { "data-secao": "beneficios", className: "space-y-3 mb-8", children: conteudo.beneficios.filter(Boolean).map((b, i) => /* @__PURE__ */ jsxs("li", { className: "flex items-start gap-3 text-base sm:text-lg text-gray-800 leading-snug", children: [
+        /* @__PURE__ */ jsx("span", { className: "mt-2 w-2 h-2 rounded-full bg-violet-500 shrink-0" }),
         b
       ] }, i)) }),
       /* @__PURE__ */ jsx("div", { "data-secao": "formulario", children: /* @__PURE__ */ jsx(FormularioLead, { ctaTexto: conteudo.cta_texto, onLead }) })
@@ -113,8 +113,8 @@ var LANDING_PAGE_TEMPLATES = {
       return /* @__PURE__ */ jsxs("div", { className: "max-w-lg mx-auto px-5 py-10", children: [
         /* @__PURE__ */ jsxs("div", { "data-secao": "hero", className: "text-center mb-6", children: [
           conteudo.imagem_url && /* @__PURE__ */ jsx("img", { src: conteudo.imagem_url, alt: "", className: "w-full rounded-2xl mb-6 object-cover max-h-72" }),
-          /* @__PURE__ */ jsx("h1", { className: "text-2xl sm:text-3xl font-bold text-gray-900 mb-2", children: conteudo.titulo || "Agende sua consulta" }),
-          conteudo.subtitulo && /* @__PURE__ */ jsx("p", { className: "text-base text-gray-500", children: conteudo.subtitulo })
+          /* @__PURE__ */ jsx("h1", { className: "text-3xl sm:text-4xl font-bold text-gray-900 leading-tight mb-3", children: conteudo.titulo || "Agende sua consulta" }),
+          conteudo.subtitulo && /* @__PURE__ */ jsx("p", { className: "text-lg sm:text-xl text-gray-700 leading-relaxed", children: conteudo.subtitulo })
         ] }),
         /* @__PURE__ */ jsx("div", { "data-secao": "contato", children: wppUrl ? /* @__PURE__ */ jsxs(
           "a",
@@ -122,16 +122,16 @@ var LANDING_PAGE_TEMPLATES = {
             href: wppUrl,
             target: "_blank",
             rel: "noopener noreferrer",
-            className: "flex items-center justify-center gap-2 w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-xl transition-colors mb-8",
+            className: "flex items-center justify-center gap-2 w-full bg-emerald-600 hover:bg-emerald-700 text-white text-lg font-semibold py-4 rounded-xl transition-colors mb-8",
             children: [
-              /* @__PURE__ */ jsx(MessageCircle, { size: 18 }),
+              /* @__PURE__ */ jsx(MessageCircle, { size: 22 }),
               conteudo.cta_texto || "Agendar pelo WhatsApp"
             ]
           }
         ) : /* @__PURE__ */ jsx(FormularioLead, { ctaTexto: conteudo.cta_texto, onLead }) }),
-        Array.isArray(conteudo.faq) && conteudo.faq.length > 0 && /* @__PURE__ */ jsx("div", { "data-secao": "faq", className: "mt-8 space-y-4", children: conteudo.faq.filter((f) => f?.pergunta).map((f, i) => /* @__PURE__ */ jsxs("div", { children: [
-          /* @__PURE__ */ jsx("p", { className: "text-sm font-semibold text-gray-900", children: f.pergunta }),
-          /* @__PURE__ */ jsx("p", { className: "text-sm text-gray-500 mt-0.5", children: f.resposta })
+        Array.isArray(conteudo.faq) && conteudo.faq.length > 0 && /* @__PURE__ */ jsx("div", { "data-secao": "faq", className: "mt-8 space-y-5", children: conteudo.faq.filter((f) => f?.pergunta).map((f, i) => /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsx("p", { className: "text-base sm:text-lg font-semibold text-gray-900", children: f.pergunta }),
+          /* @__PURE__ */ jsx("p", { className: "text-base text-gray-700 leading-relaxed mt-1", children: f.resposta })
         ] }, i)) })
       ] });
     }
@@ -248,9 +248,9 @@ function TemplateCardPreview({ templateId }) {
 function FormularioLead({ ctaTexto, onLead }) {
   if (!onLead) {
     return /* @__PURE__ */ jsxs("div", { className: "bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-2", children: [
-      /* @__PURE__ */ jsx("div", { className: "h-9 rounded-lg bg-white border border-gray-200" }),
-      /* @__PURE__ */ jsx("div", { className: "h-9 rounded-lg bg-white border border-gray-200" }),
-      /* @__PURE__ */ jsx("div", { className: "h-10 rounded-lg bg-gray-800 flex items-center justify-center text-white text-sm font-medium", children: ctaTexto || "Quero saber mais" })
+      /* @__PURE__ */ jsx("div", { className: "h-12 rounded-lg bg-white border border-gray-300" }),
+      /* @__PURE__ */ jsx("div", { className: "h-12 rounded-lg bg-white border border-gray-300" }),
+      /* @__PURE__ */ jsx("div", { className: "h-12 rounded-lg bg-gray-800 flex items-center justify-center text-white text-base font-semibold", children: ctaTexto || "Quero saber mais" })
     ] });
   }
   return /* @__PURE__ */ jsx(FormularioLeadInterativo, { ctaTexto, onLead });
@@ -273,16 +273,16 @@ function FormularioLeadInterativo({ ctaTexto, onLead }) {
     }
   }
   if (enviado) {
-    return /* @__PURE__ */ jsx("div", { className: "bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-center text-sm text-emerald-700 font-medium", children: "Recebemos seus dados! Em breve entramos em contato. \u{1F60A}" });
+    return /* @__PURE__ */ jsx("div", { className: "bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-center text-base text-emerald-800 font-semibold", children: "Recebemos seus dados! Em breve entramos em contato. \u{1F60A}" });
   }
-  return /* @__PURE__ */ jsxs("form", { onSubmit: handleSubmit, className: "bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-2.5", children: [
+  return /* @__PURE__ */ jsxs("form", { onSubmit: handleSubmit, className: "bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-3", children: [
     /* @__PURE__ */ jsx(
       "input",
       {
         value: nome,
         onChange: (e) => setNome(e.target.value),
         placeholder: "Seu nome",
-        className: "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400 bg-white",
+        className: "w-full rounded-lg border border-gray-300 px-4 py-3 text-base text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500 bg-white",
         required: true
       }
     ),
@@ -292,7 +292,7 @@ function FormularioLeadInterativo({ ctaTexto, onLead }) {
       {
         type: "submit",
         disabled: enviando,
-        className: "w-full bg-gray-900 hover:bg-gray-800 disabled:opacity-60 text-white font-semibold py-2.5 rounded-lg text-sm transition-colors",
+        className: "w-full bg-gray-900 hover:bg-gray-800 disabled:opacity-60 text-white font-semibold py-3.5 rounded-lg text-base transition-colors",
         children: enviando ? "Enviando..." : ctaTexto || "Quero saber mais"
       }
     )
@@ -307,7 +307,7 @@ function TelefoneInputSimples({ value, onChange, placeholder }) {
       value,
       onChange: (e) => onChange(e.target.value),
       placeholder: placeholder || "(11) 99999-9999",
-      className: "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400 bg-white",
+      className: "w-full rounded-lg border border-gray-300 px-4 py-3 text-base text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500 bg-white",
       required: true
     }
   );
@@ -336,7 +336,7 @@ function GreatsBotao({ texto, url, variante = "escuro", cor }) {
       href: url || void 0,
       target: url ? "_blank" : void 0,
       rel: "noopener noreferrer",
-      className: "inline-block px-6 py-3 text-xs font-bold tracking-widest uppercase text-center transition-opacity hover:opacity-90",
+      className: "inline-block px-7 py-3.5 text-sm sm:text-base font-bold tracking-wider uppercase text-center transition-opacity hover:opacity-90",
       style: claro ? { background: "#fff", color: cor } : { background: cor, color: "#fff" },
       children: texto
     }
@@ -348,24 +348,25 @@ function GreatsBloco({ bloco, corPrimaria, fundo = "branco", className = "" }) {
   return /* @__PURE__ */ jsxs(
     "div",
     {
-      className: `flex flex-col justify-center gap-3 p-8 sm:p-10 ${className}`,
+      className: `flex flex-col justify-center gap-3 p-5 sm:p-10 ${className}`,
       style: { background: escuro ? corPrimaria : fundo === "cinza" ? "#F5F4F2" : "#fff" },
       children: [
         /* @__PURE__ */ jsx(
           "h3",
           {
-            className: "text-lg sm:text-xl font-extrabold uppercase tracking-tight leading-snug",
+            className: "text-lg sm:text-2xl font-extrabold uppercase tracking-tight leading-snug break-words",
             style: { color: escuro ? "#fff" : corPrimaria },
             children: v.titulo || "T\xEDtulo do bloco"
           }
         ),
-        v.texto && /* @__PURE__ */ jsx("p", { className: "text-sm leading-relaxed", style: { color: escuro ? "rgba(255,255,255,0.85)" : "#6B7280" }, children: v.texto }),
+        v.texto && /* @__PURE__ */ jsx("p", { className: "text-base sm:text-lg font-medium leading-relaxed break-words", style: { color: escuro ? "rgba(255,255,255,0.95)" : GREATS_TEXTO }, children: v.texto }),
         v.cta_texto && /* @__PURE__ */ jsx("div", { className: "pt-1", children: /* @__PURE__ */ jsx(GreatsBotao, { texto: v.cta_texto, url: v.cta_url, variante: escuro ? "claro" : "escuro", cor: corPrimaria }) })
       ]
     }
   );
 }
 var GREATS_ICONES = [Gem, Footprints, RotateCcw];
+var GREATS_TEXTO = "#374151";
 var GREATS_ESCURECIMENTO_PADRAO = 25;
 function GreatsRender({ conteudo }) {
   useGreatsFont();
@@ -375,7 +376,7 @@ function GreatsRender({ conteudo }) {
   const escurecimentoHero = Number.isFinite(Number(c.hero_escurecimento)) && c.hero_escurecimento !== "" && c.hero_escurecimento != null ? Number(c.hero_escurecimento) : GREATS_ESCURECIMENTO_PADRAO;
   const features = Array.isArray(c.features) && c.features.length > 0 ? c.features : GREATS_FEATURES_PADRAO;
   const depoimentos = Array.isArray(c.depoimentos) && c.depoimentos.length > 0 ? c.depoimentos : GREATS_DEPOIMENTOS_PADRAO;
-  return /* @__PURE__ */ jsxs("div", { style: { fontFamily: GREATS_FONT_STACK }, className: "bg-white", children: [
+  return /* @__PURE__ */ jsxs("div", { lang: "pt-BR", style: { fontFamily: GREATS_FONT_STACK }, className: "bg-white", children: [
     /* @__PURE__ */ jsxs("div", { "data-secao": "hero", className: "relative w-full min-h-[380px] sm:min-h-[440px] flex flex-col items-center justify-center text-center px-6 py-16 overflow-hidden", children: [
       c.hero_imagem ? /* @__PURE__ */ jsx("img", { src: c.hero_imagem, alt: "", className: "absolute inset-0 w-full h-full object-cover" }) : /* @__PURE__ */ jsx("div", { className: "absolute inset-0 bg-gray-300" }),
       /* @__PURE__ */ jsx("div", { className: "absolute inset-0", style: { background: `rgba(0, 0, 0, ${escurecimentoHero / 100})` } }),
@@ -383,29 +384,29 @@ function GreatsRender({ conteudo }) {
         /* @__PURE__ */ jsx(
           "span",
           {
-            className: "px-4 py-1.5 text-[11px] font-bold tracking-[0.2em] uppercase text-white",
+            className: "px-4 py-2 text-sm font-bold tracking-[0.12em] uppercase text-white",
             style: { background: corPrimaria },
             children: c.selo_texto || "SUA MARCA"
           }
         ),
-        /* @__PURE__ */ jsx("h1", { className: "text-2xl sm:text-4xl font-extrabold uppercase text-white leading-tight max-w-md drop-shadow-md", children: c.hero_titulo || "T\xEDtulo de impacto para o seu produto" }),
+        /* @__PURE__ */ jsx("h1", { className: "text-3xl sm:text-5xl font-extrabold uppercase text-white leading-tight max-w-xl break-words", style: { textShadow: "0 2px 12px rgba(0,0,0,0.55)" }, children: c.hero_titulo || "T\xEDtulo de impacto para o seu produto" }),
         /* @__PURE__ */ jsx(GreatsBotao, { texto: c.hero_cta_texto || "SAIBA MAIS", url: c.hero_cta_url, variante: "escuro", cor: corPrimaria })
       ] })
     ] }),
-    /* @__PURE__ */ jsx("div", { "data-secao": "selos", className: "grid grid-cols-3 gap-3 sm:gap-6 px-4 sm:px-10 py-10", style: { background: "#F7F6F4" }, children: features.slice(0, 3).map((f, i) => {
+    /* @__PURE__ */ jsx("div", { "data-secao": "selos", className: "grid grid-cols-1 sm:grid-cols-3 gap-6 px-6 sm:px-10 py-10", style: { background: "#F7F6F4" }, children: features.slice(0, 3).map((f, i) => {
       const Icone = GREATS_ICONES[i % GREATS_ICONES.length];
-      return /* @__PURE__ */ jsxs("div", { className: "flex flex-col gap-1.5", children: [
+      return /* @__PURE__ */ jsxs("div", { className: "flex flex-col gap-2", children: [
         f.icone_url ? (
           // Caixa fixa + object-contain: qualquer PNG fica do mesmo tamanho, sem distorcer.
-          /* @__PURE__ */ jsx("img", { src: f.icone_url, alt: "", className: "w-6 h-6 object-contain" })
-        ) : /* @__PURE__ */ jsx(Icone, { size: 22, style: { color: corPrimaria }, strokeWidth: 1.75 }),
-        /* @__PURE__ */ jsx("p", { className: "text-[10px] sm:text-xs font-bold uppercase tracking-wide", style: { color: corPrimaria }, children: f.titulo || "Selo" }),
-        /* @__PURE__ */ jsx("p", { className: "text-[11px] sm:text-xs text-gray-500 leading-snug", children: f.descricao })
+          /* @__PURE__ */ jsx("img", { src: f.icone_url, alt: "", className: "w-8 h-8 object-contain" })
+        ) : /* @__PURE__ */ jsx(Icone, { size: 30, style: { color: corPrimaria }, strokeWidth: 1.75 }),
+        /* @__PURE__ */ jsx("p", { className: "text-base sm:text-lg font-extrabold uppercase tracking-wide", style: { color: corPrimaria }, children: f.titulo || "Selo" }),
+        /* @__PURE__ */ jsx("p", { className: "text-base font-medium leading-relaxed", style: { color: GREATS_TEXTO }, children: f.descricao })
       ] }, i);
     }) }),
     /* @__PURE__ */ jsxs("div", { "data-secao": "banner", className: "relative w-full", children: [
       /* @__PURE__ */ jsx(GreatsImg, { src: c.banner_imagem, className: "w-full h-56 sm:h-72 object-cover" }),
-      c.banner_anotacao && /* @__PURE__ */ jsx("div", { className: "absolute left-3 bottom-3 sm:left-6 sm:bottom-6 bg-white/95 px-3 py-1.5 flex items-center gap-1.5 shadow-sm", children: /* @__PURE__ */ jsx("span", { className: "text-gray-900 text-[11px] sm:text-xs font-bold uppercase tracking-wide", children: c.banner_anotacao }) })
+      c.banner_anotacao && /* @__PURE__ */ jsx("div", { className: "absolute left-3 bottom-3 sm:left-6 sm:bottom-6 bg-white px-4 py-2 flex items-center gap-1.5 shadow-md", children: /* @__PURE__ */ jsx("span", { className: "text-gray-900 text-sm sm:text-base font-bold uppercase tracking-wide", children: c.banner_anotacao }) })
     ] }),
     /* @__PURE__ */ jsxs("div", { "data-secao": "mosaico_1", className: "grid grid-cols-2", children: [
       /* @__PURE__ */ jsx(GreatsBloco, { bloco: c.bloco_1, corPrimaria, fundo: "branco" }),
@@ -414,10 +415,10 @@ function GreatsRender({ conteudo }) {
       /* @__PURE__ */ jsx(GreatsBloco, { bloco: c.bloco_2, corPrimaria, fundo: "escuro" }),
       /* @__PURE__ */ jsx("div", { className: "col-span-2 sm:col-span-1 sm:col-start-2", children: /* @__PURE__ */ jsx(GreatsBloco, { bloco: c.bloco_3, corPrimaria, fundo: "cinza" }) })
     ] }),
-    /* @__PURE__ */ jsxs("div", { "data-secao": "faixa_cta", className: "grid grid-cols-2 items-stretch", style: { background: "#F7F6F4" }, children: [
-      /* @__PURE__ */ jsxs("div", { className: "flex flex-col justify-center gap-3 p-8 sm:p-10", children: [
-        /* @__PURE__ */ jsx("h3", { className: "text-lg sm:text-2xl font-extrabold uppercase tracking-tight", style: { color: corPrimaria }, children: c.cta2_bloco?.titulo || "Confira nossa cole\xE7\xE3o" }),
-        c.cta2_bloco?.texto && /* @__PURE__ */ jsx("p", { className: "text-sm text-gray-500", children: c.cta2_bloco.texto }),
+    /* @__PURE__ */ jsxs("div", { "data-secao": "faixa_cta", className: "grid grid-cols-1 sm:grid-cols-2 items-stretch", style: { background: "#F7F6F4" }, children: [
+      /* @__PURE__ */ jsxs("div", { className: "flex flex-col justify-center gap-3 p-6 sm:p-10", children: [
+        /* @__PURE__ */ jsx("h3", { className: "text-2xl sm:text-3xl font-extrabold uppercase tracking-tight leading-tight break-words", style: { color: corPrimaria }, children: c.cta2_bloco?.titulo || "Confira nossa cole\xE7\xE3o" }),
+        c.cta2_bloco?.texto && /* @__PURE__ */ jsx("p", { className: "text-base sm:text-lg font-medium leading-relaxed", style: { color: GREATS_TEXTO }, children: c.cta2_bloco.texto }),
         /* @__PURE__ */ jsx("div", { className: "pt-1", children: /* @__PURE__ */ jsx(GreatsBotao, { texto: c.cta2_bloco?.cta_texto || "VER COLE\xC7\xC3O", url: c.cta2_bloco?.cta_url, variante: "escuro", cor: corPrimaria }) })
       ] }),
       /* @__PURE__ */ jsx(GreatsImg, { src: c.cta2_imagem, className: "w-full h-full min-h-[220px] object-cover" })
@@ -430,21 +431,21 @@ function GreatsRender({ conteudo }) {
     ] }),
     /* @__PURE__ */ jsxs("div", { "data-secao": "colecoes", className: "grid grid-cols-2", children: [
       /* @__PURE__ */ jsxs("div", { className: "flex flex-col items-center justify-center gap-3 py-14 px-4", style: { background: corPrimaria }, children: [
-        /* @__PURE__ */ jsx("h3", { className: "text-white text-lg sm:text-xl font-extrabold uppercase tracking-wide", children: c.men_titulo || "MASCULINO" }),
+        /* @__PURE__ */ jsx("h3", { className: "text-white text-xl sm:text-2xl font-extrabold uppercase tracking-wide text-center break-words", children: c.men_titulo || "MASCULINO" }),
         /* @__PURE__ */ jsx(GreatsBotao, { texto: c.men_cta_texto || "VER AGORA", url: c.men_cta_url, variante: "claro", cor: corPrimaria })
       ] }),
       /* @__PURE__ */ jsxs("div", { className: "flex flex-col items-center justify-center gap-3 py-14 px-4", style: { background: corSecundaria }, children: [
-        /* @__PURE__ */ jsx("h3", { className: "text-white text-lg sm:text-xl font-extrabold uppercase tracking-wide", children: c.women_titulo || "FEMININO" }),
+        /* @__PURE__ */ jsx("h3", { className: "text-white text-xl sm:text-2xl font-extrabold uppercase tracking-wide text-center break-words", children: c.women_titulo || "FEMININO" }),
         /* @__PURE__ */ jsx(GreatsBotao, { texto: c.women_cta_texto || "VER AGORA", url: c.women_cta_url, variante: "claro", cor: corSecundaria })
       ] })
     ] }),
-    /* @__PURE__ */ jsx("div", { "data-secao": "depoimentos", className: "grid grid-cols-2 gap-4 sm:gap-8 px-4 sm:px-10 py-12 text-center", children: depoimentos.slice(0, 2).map((d, i) => /* @__PURE__ */ jsxs("div", { className: "flex flex-col items-center gap-2", children: [
-      /* @__PURE__ */ jsx(Quote, { size: 16, className: "text-gray-300", fill: "currentColor" }),
-      /* @__PURE__ */ jsx("div", { className: "flex gap-0.5", children: Array.from({ length: 5 }).map((_, j) => /* @__PURE__ */ jsx(Star, { size: 13, className: "text-amber-400", fill: "currentColor" }, j)) }),
-      /* @__PURE__ */ jsx("p", { className: "text-xs sm:text-sm text-gray-600 leading-relaxed", children: d.texto }),
-      /* @__PURE__ */ jsx("p", { className: "text-xs font-bold", style: { color: corPrimaria }, children: d.nome })
+    /* @__PURE__ */ jsx("div", { "data-secao": "depoimentos", className: "grid grid-cols-1 sm:grid-cols-2 gap-8 px-6 sm:px-10 py-12 text-center", children: depoimentos.slice(0, 2).map((d, i) => /* @__PURE__ */ jsxs("div", { className: "flex flex-col items-center gap-2", children: [
+      /* @__PURE__ */ jsx(Quote, { size: 20, className: "text-gray-400", fill: "currentColor" }),
+      /* @__PURE__ */ jsx("div", { className: "flex gap-0.5", children: Array.from({ length: 5 }).map((_, j) => /* @__PURE__ */ jsx(Star, { size: 18, className: "text-amber-500", fill: "currentColor" }, j)) }),
+      /* @__PURE__ */ jsx("p", { className: "text-base sm:text-lg font-medium leading-relaxed", style: { color: GREATS_TEXTO }, children: d.texto }),
+      /* @__PURE__ */ jsx("p", { className: "text-base font-bold", style: { color: corPrimaria }, children: d.nome })
     ] }, i)) }),
-    /* @__PURE__ */ jsx("div", { "data-secao": "rodape", className: "text-center text-[11px] text-gray-400 py-6 border-t border-gray-100", children: c.rodape_texto || `\xA9 ${(/* @__PURE__ */ new Date()).getFullYear()} Todos os direitos reservados.` })
+    /* @__PURE__ */ jsx("div", { "data-secao": "rodape", className: "text-center text-sm text-gray-600 px-6 py-6 border-t border-gray-200", children: c.rodape_texto || `\xA9 ${(/* @__PURE__ */ new Date()).getFullYear()} Todos os direitos reservados.` })
   ] });
 }
 
@@ -695,11 +696,11 @@ function MenuTopo({ logo, menu, whatsapp, coresPagina, onIrParaContato, refMenu 
               e.preventDefault();
               onIrParaContato();
             } } : { target: "_blank", rel: "noopener noreferrer" },
-            className: `hidden sm:inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90 ${menu.cta_tilt ? "otica-lp-tilt" : ""}`,
+            className: `hidden sm:inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-base font-semibold text-white transition-opacity hover:opacity-90 ${menu.cta_tilt ? "otica-lp-tilt" : ""}`,
             style: { background: corDoCta(menu, coresPagina) },
             children: [
               menu.cta_tilt && /* @__PURE__ */ jsx2("style", { children: ESTILO_TILT }),
-              ehWhatsapp && /* @__PURE__ */ jsx2(IconeWhatsApp, { className: "w-4 h-4" }),
+              ehWhatsapp && /* @__PURE__ */ jsx2(IconeWhatsApp, { className: "w-5 h-5" }),
               menu.cta_texto
             ]
           }

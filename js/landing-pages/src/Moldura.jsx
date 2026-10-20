@@ -149,13 +149,13 @@ function MenuTopo({ logo, menu, whatsapp, coresPagina, onIrParaContato, refMenu 
           {...(vaiProContato
             ? { onClick: (e) => { e.preventDefault(); onIrParaContato() } }
             : { target: '_blank', rel: 'noopener noreferrer' })}
-          className={`hidden sm:inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90 ${
+          className={`hidden sm:inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-base font-semibold text-white transition-opacity hover:opacity-90 ${
             menu.cta_tilt ? 'otica-lp-tilt' : ''
           }`}
           style={{ background: corDoCta(menu, coresPagina) }}
         >
           {menu.cta_tilt && <style>{ESTILO_TILT}</style>}
-          {ehWhatsapp && <IconeWhatsApp className="w-4 h-4" />}
+          {ehWhatsapp && <IconeWhatsApp className="w-5 h-5" />}
           {menu.cta_texto}
         </a>
       )}
