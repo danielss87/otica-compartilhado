@@ -34,6 +34,23 @@ const ESTILO_PULSO = `
 `
 const COR_NOTIFICACAO = '#FF4B2B'
 
+// "Tilt" do botão do menu (menu.cta_tilt): balança rápido e fica parado o resto do ciclo
+// (~0,7s de movimento a cada 4s), pra chamar atenção sem cansar. Para no hover e pra quem
+// pede menos movimento.
+const ESTILO_TILT = `
+@keyframes otica-lp-tilt {
+  0%, 82%, 100% { transform: rotate(0deg) scale(1); }
+  85% { transform: rotate(-4deg) scale(1.04); }
+  88% { transform: rotate(4deg) scale(1.04); }
+  91% { transform: rotate(-3deg) scale(1.03); }
+  94% { transform: rotate(2deg) scale(1.02); }
+  97% { transform: rotate(0deg) scale(1); }
+}
+.otica-lp-tilt { animation: otica-lp-tilt 4s ease-in-out 1.5s infinite; }
+.otica-lp-tilt:hover { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .otica-lp-tilt { animation: none; } }
+`
+
 function BolinhaNotificacao() {
   return (
     <span className="absolute -top-0.5 -right-0.5 flex h-5 w-5" aria-hidden="true">
@@ -132,9 +149,12 @@ function MenuTopo({ logo, menu, whatsapp, coresPagina, onIrParaContato, refMenu 
           {...(vaiProContato
             ? { onClick: (e) => { e.preventDefault(); onIrParaContato() } }
             : { target: '_blank', rel: 'noopener noreferrer' })}
-          className="hidden sm:inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+          className={`hidden sm:inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90 ${
+            menu.cta_tilt ? 'otica-lp-tilt' : ''
+          }`}
           style={{ background: corDoCta(menu, coresPagina) }}
         >
+          {menu.cta_tilt && <style>{ESTILO_TILT}</style>}
           {ehWhatsapp && <IconeWhatsApp className="w-4 h-4" />}
           {menu.cta_texto}
         </a>

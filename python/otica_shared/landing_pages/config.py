@@ -24,7 +24,8 @@ PADRAO = {
     # "contato" (rola até a seção de contato da própria página, v0.5.0). cta_cor (v0.5.0):
     # "padrao" | "principal" | "destaque" (cores da própria página, resolvidas no frontend).
     # fixo (v0.6.0): menu preso no topo da tela ao rolar (sticky).
-    "menu": {"ativo": False, "cta_texto": "Fale conosco", "cta_destino": "whatsapp", "cta_url": "", "cta_cor": "padrao", "fixo": False},
+    # cta_tilt (v0.8.0): botão do menu balança de leve a cada poucos segundos (chamar atenção).
+    "menu": {"ativo": False, "cta_texto": "Fale conosco", "cta_destino": "whatsapp", "cta_url": "", "cta_cor": "padrao", "fixo": False, "cta_tilt": False},
 }
 
 
@@ -93,5 +94,6 @@ def publica(cfg: dict) -> dict:
             "cta_url": cta_url if menu_ativo else "",
             "cta_cor": m["cta_cor"],
             "fixo": bool(m["fixo"]) if menu_ativo else False,
+            "cta_tilt": bool(m["cta_tilt"]) if menu_ativo else False,
         },
     }

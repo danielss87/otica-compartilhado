@@ -212,7 +212,7 @@ def test_configuracoes_padrao_desligadas(client):
     assert pub == {
         "whatsapp": {"ativo": False, "numero": "", "mensagem": "", "notificacao": False},
         "marca": {"logo_url": None, "favicon_url": None},
-        "menu": {"ativo": False, "cta_texto": "", "cta_destino": "whatsapp", "cta_url": "", "cta_cor": "padrao", "fixo": False},
+        "menu": {"ativo": False, "cta_texto": "", "cta_destino": "whatsapp", "cta_url": "", "cta_cor": "padrao", "fixo": False, "cta_tilt": False},
     }
     assert cfg["whatsapp"]["notificacao"] is True and cfg["menu"]["ativo"] is False
 
@@ -270,7 +270,7 @@ def test_menu_cta_whatsapp_e_url(client):
     menu = client.get(f"/api/publico/landing-pages/{lp['slug']}").json()["configuracoes"]["menu"]
     # funciona mesmo com o botão flutuante desligado
     assert menu == {"ativo": True, "cta_texto": "Fale conosco", "cta_destino": "whatsapp",
-                    "cta_url": "https://wa.me/5511999998888?text=Ol%C3%A1%2C%20tudo%20bem%3F", "cta_cor": "padrao", "fixo": False}
+                    "cta_url": "https://wa.me/5511999998888?text=Ol%C3%A1%2C%20tudo%20bem%3F", "cta_cor": "padrao", "fixo": False, "cta_tilt": False}
     r = client.put("/api/landing-pages/configuracoes", headers=AUTH, json={"menu": {"ativo": True, "cta_texto": "Loja", "cta_destino": "url", "cta_url": ""}})
     assert r.status_code == 422
     client.put("/api/landing-pages/configuracoes", headers=AUTH, json={"menu": {"ativo": True, "cta_texto": "Loja", "cta_destino": "url", "cta_url": "loja.com.br/x"}})
@@ -286,7 +286,7 @@ def test_menu_cta_secao_contato_e_cor_da_pagina(client):
     assert r.status_code == 200  # não exige número de WhatsApp nem link
     lp = _publicar(client)
     menu = client.get(f"/api/publico/landing-pages/{lp['slug']}").json()["configuracoes"]["menu"]
-    assert menu == {"ativo": True, "cta_texto": "Quero o meu", "cta_destino": "contato", "cta_url": "#contato", "cta_cor": "principal", "fixo": False}
+    assert menu == {"ativo": True, "cta_texto": "Quero o meu", "cta_destino": "contato", "cta_url": "#contato", "cta_cor": "principal", "fixo": False, "cta_tilt": False}
     r = client.put("/api/landing-pages/configuracoes", headers=AUTH, json={"menu": {"ativo": True, "cta_texto": "X", "cta_destino": "contato", "cta_cor": "roxo"}})
     assert r.status_code == 422
 
@@ -302,7 +302,7 @@ def test_menu_fixo(client):
     corpo = {"menu": {"ativo": True, "cta_texto": "Fale", "cta_destino": "url", "cta_url": "exemplo.com", "fixo": True}}
     assert client.put("/api/landing-pages/configuracoes", headers=AUTH, json=corpo).json()["menu"]["fixo"] is True
     pub = client.get(f"/api/publico/landing-pages/{lp['slug']}").json()["configuracoes"]
-    assert pub["menu"]["fixo"] is True
+    assert pub["menu"]["fixo"] is True and pub["menu"]["cta_tilt"] is False
     # menu desligado → nunca fixo na página pública
     corpo["menu"]["ativo"] = False
     client.put("/api/landing-pages/configuracoes", headers=AUTH, json=corpo)
@@ -318,3 +318,15 @@ def test_favicon(client):
     assert pub["marca"]["favicon_url"] == "/uploads/f.png"
     r = client.put("/api/landing-pages/configuracoes", headers=AUTH, json={"marca": {"logo_url": "/uploads/l.png", "favicon_url": ""}})
     assert r.json()["marca"]["favicon_url"] is None
+
+
+def test_menu_cta_tilt(client):
+    lp = _publicar(client)
+    corpo = {"menu": {"ativo": True, "cta_texto": "Fale", "cta_destino": "url", "cta_url": "exemplo.com", "cta_tilt": True}}
+    assert client.put("/api/landing-pages/configuracoes", headers=AUTH, json=corpo).json()["menu"]["cta_tilt"] is True
+    pub = client.get(f"/api/publico/landing-pages/{lp['slug']}").json()["configuracoes"]
+    assert pub["menu"]["cta_tilt"] is True
+    corpo["menu"]["ativo"] = False
+    client.put("/api/landing-pages/configuracoes", headers=AUTH, json=corpo)
+    pub = client.get(f"/api/publico/landing-pages/{lp['slug']}").json()["configuracoes"]
+    assert pub["menu"]["cta_tilt"] is False

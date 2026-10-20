@@ -21,7 +21,7 @@ package.json                     # npm: otica-compartilhado (raiz do repo)
 
 ## Features
 
-### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.7.0, out/2026
+### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.8.0, out/2026
 Origem: 4 Olhos (ago/2026). Páginas de captura por template pronto com edição guiada (4 templates:
 `simples`, `promocao`, `agendar_consulta`, `greats`), página pública `/lp/:slug`, contagem de
 visualizações e captura de lead (nome + telefone + fbclid).
@@ -89,6 +89,13 @@ para todas as opções.
 8. Repo **público**: nunca commitar segredo, credencial, URL interna, dado de cliente ou telefone real.
 
 ## Changelog
+
+### v0.8.0 (20/10/2026)
+- **Animação "tilt" no botão do menu** (`menu.cta_tilt`, desligada por padrão): o CTA balança rápido
+  (rotação ±4° com leve aumento, ~0,7s) e fica parado o resto de um ciclo de 4s, começando 1,5s depois de a
+  página abrir. Keyframes próprios em `Moldura.jsx` (`ESTILO_TILT`, só injetados com a opção ligada); pausa
+  no hover e fica sem animação com `prefers-reduced-motion`. Só vale com o menu ligado. Interruptor em
+  Configurações → Menu no topo. Como o CTA só aparece no desktop, a animação também.
 
 ### v0.7.0 (20/10/2026)
 - **Favicon geral** (`marca.favicon_url`, vazio por padrão): enviado em Configurações → Identidade de marca

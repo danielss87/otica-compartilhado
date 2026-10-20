@@ -245,6 +245,13 @@ export default function ModalConfiguracoes({ onClose }) {
                       </div>
                       <Interruptor ligado={cfg.menu.fixo === true} onChange={v => setMenu('fixo', v)} label="Manter o menu fixo no topo" />
                     </div>
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <p className="text-xs font-medium text-gray-700">Animação no botão</p>
+                        <p className="text-xs text-gray-400">O botão balança de leve a cada poucos segundos, para chamar a atenção do visitante.</p>
+                      </div>
+                      <Interruptor ligado={cfg.menu.cta_tilt === true} onChange={v => setMenu('cta_tilt', v)} label="Animar o botão do menu" />
+                    </div>
                     <div>
                       <label className="text-xs font-medium text-gray-500 mb-1 block">Texto do botão</label>
                       <input

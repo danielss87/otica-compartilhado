@@ -56,6 +56,7 @@ class ConfigMenu(BaseModel):
     cta_url: str = ""
     cta_cor: str = "padrao"  # padrao | principal | destaque
     fixo: bool = False  # menu preso no topo ao rolar
+    cta_tilt: bool = False  # botão do menu balança de leve de tempos em tempos
 
 
 class LandingPagesConfigOut(BaseModel):

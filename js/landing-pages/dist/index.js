@@ -600,6 +600,19 @@ var ESTILO_PULSO = `
 @media (prefers-reduced-motion: reduce) { .otica-lp-pulso { animation: none; opacity: 0; } }
 `;
 var COR_NOTIFICACAO = "#FF4B2B";
+var ESTILO_TILT = `
+@keyframes otica-lp-tilt {
+  0%, 82%, 100% { transform: rotate(0deg) scale(1); }
+  85% { transform: rotate(-4deg) scale(1.04); }
+  88% { transform: rotate(4deg) scale(1.04); }
+  91% { transform: rotate(-3deg) scale(1.03); }
+  94% { transform: rotate(2deg) scale(1.02); }
+  97% { transform: rotate(0deg) scale(1); }
+}
+.otica-lp-tilt { animation: otica-lp-tilt 4s ease-in-out 1.5s infinite; }
+.otica-lp-tilt:hover { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .otica-lp-tilt { animation: none; } }
+`;
 function BolinhaNotificacao() {
   return /* @__PURE__ */ jsxs2("span", { className: "absolute -top-0.5 -right-0.5 flex h-5 w-5", "aria-hidden": "true", children: [
     /* @__PURE__ */ jsx2("style", { children: ESTILO_PULSO }),
@@ -682,9 +695,10 @@ function MenuTopo({ logo, menu, whatsapp, coresPagina, onIrParaContato, refMenu 
               e.preventDefault();
               onIrParaContato();
             } } : { target: "_blank", rel: "noopener noreferrer" },
-            className: "hidden sm:inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90",
+            className: `hidden sm:inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90 ${menu.cta_tilt ? "otica-lp-tilt" : ""}`,
             style: { background: corDoCta(menu, coresPagina) },
             children: [
+              menu.cta_tilt && /* @__PURE__ */ jsx2("style", { children: ESTILO_TILT }),
               ehWhatsapp && /* @__PURE__ */ jsx2(IconeWhatsApp, { className: "w-4 h-4" }),
               menu.cta_texto
             ]
@@ -942,6 +956,13 @@ function ModalConfiguracoes({ onClose }) {
                   /* @__PURE__ */ jsx3("p", { className: "text-xs text-gray-400", children: "O menu continua vis\xEDvel no topo da tela enquanto o visitante rola a p\xE1gina." })
                 ] }),
                 /* @__PURE__ */ jsx3(Interruptor, { ligado: cfg.menu.fixo === true, onChange: (v) => setMenu("fixo", v), label: "Manter o menu fixo no topo" })
+              ] }),
+              /* @__PURE__ */ jsxs3("div", { className: "flex items-center justify-between gap-3", children: [
+                /* @__PURE__ */ jsxs3("div", { children: [
+                  /* @__PURE__ */ jsx3("p", { className: "text-xs font-medium text-gray-700", children: "Anima\xE7\xE3o no bot\xE3o" }),
+                  /* @__PURE__ */ jsx3("p", { className: "text-xs text-gray-400", children: "O bot\xE3o balan\xE7a de leve a cada poucos segundos, para chamar a aten\xE7\xE3o do visitante." })
+                ] }),
+                /* @__PURE__ */ jsx3(Interruptor, { ligado: cfg.menu.cta_tilt === true, onChange: (v) => setMenu("cta_tilt", v), label: "Animar o bot\xE3o do menu" })
               ] }),
               /* @__PURE__ */ jsxs3("div", { children: [
                 /* @__PURE__ */ jsx3("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: "Texto do bot\xE3o" }),
