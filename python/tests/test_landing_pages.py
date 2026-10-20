@@ -211,7 +211,7 @@ def test_configuracoes_padrao_desligadas(client):
     pub = client.get(f"/api/publico/landing-pages/{lp['slug']}").json()["configuracoes"]
     assert pub == {
         "whatsapp": {"ativo": False, "numero": "", "mensagem": "", "notificacao": False},
-        "marca": {"logo_url": None},
+        "marca": {"logo_url": None, "favicon_url": None},
         "menu": {"ativo": False, "cta_texto": "", "cta_destino": "whatsapp", "cta_url": "", "cta_cor": "padrao", "fixo": False},
     }
     assert cfg["whatsapp"]["notificacao"] is True and cfg["menu"]["ativo"] is False
@@ -308,3 +308,13 @@ def test_menu_fixo(client):
     client.put("/api/landing-pages/configuracoes", headers=AUTH, json=corpo)
     pub = client.get(f"/api/publico/landing-pages/{lp['slug']}").json()["configuracoes"]
     assert pub["menu"]["fixo"] is False
+
+
+def test_favicon(client):
+    lp = _publicar(client)
+    r = client.put("/api/landing-pages/configuracoes", headers=AUTH, json={"marca": {"logo_url": "/uploads/l.png", "favicon_url": " /uploads/f.png "}})
+    assert r.json()["marca"] == {"logo_url": "/uploads/l.png", "favicon_url": "/uploads/f.png"}
+    pub = client.get(f"/api/publico/landing-pages/{lp['slug']}").json()["configuracoes"]
+    assert pub["marca"]["favicon_url"] == "/uploads/f.png"
+    r = client.put("/api/landing-pages/configuracoes", headers=AUTH, json={"marca": {"logo_url": "/uploads/l.png", "favicon_url": ""}})
+    assert r.json()["marca"]["favicon_url"] is None

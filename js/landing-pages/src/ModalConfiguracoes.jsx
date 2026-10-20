@@ -27,9 +27,11 @@ export default function ModalConfiguracoes({ onClose }) {
   const [erroCarregar, setErroCarregar] = useState('')
   const [salvando, setSalvando] = useState(false)
   const [enviandoLogo, setEnviandoLogo] = useState(false)
+  const [enviandoFavicon, setEnviandoFavicon] = useState(false)
   const [erro, setErro] = useState('')
   const [salvo, setSalvo] = useState(false)
   const inputLogo = useRef(null)
+  const inputFavicon = useRef(null)
 
   useEffect(() => {
     obterConfiguracoes().then(setCfg).catch(e => setErroCarregar(e.message))
@@ -45,9 +47,25 @@ export default function ModalConfiguracoes({ onClose }) {
     setSalvo(false)
   }
 
-  function setLogo(url) {
-    setCfg(c => ({ ...c, marca: { ...c.marca, logo_url: url } }))
+  function setMarca(campo, url) {
+    setCfg(c => ({ ...c, marca: { ...c.marca, [campo]: url } }))
     setSalvo(false)
+  }
+  const setLogo = (url) => setMarca('logo_url', url)
+
+  async function handleFavicon(file) {
+    if (!file) return
+    setEnviandoFavicon(true)
+    setErro('')
+    try {
+      const { url } = await uploadImagemLandingPage(file)
+      setMarca('favicon_url', url)
+    } catch (e) {
+      setErro(e.message)
+    } finally {
+      setEnviandoFavicon(false)
+      if (inputFavicon.current) inputFavicon.current.value = ''
+    }
   }
 
   async function handleLogo(file) {
@@ -149,7 +167,7 @@ export default function ModalConfiguracoes({ onClose }) {
               <section className="space-y-3 pt-5 border-t border-gray-100">
                 <div>
                   <p className="text-sm font-semibold text-gray-900">Identidade de marca</p>
-                  <p className="text-xs text-gray-500">O logo aparece no topo de todas as páginas.</p>
+                  <p className="text-xs text-gray-500">O logo aparece no topo de todas as páginas, e o favicon na aba do navegador.</p>
                 </div>
                 {cfg.marca.logo_url ? (
                   <div className="flex items-center gap-3">
@@ -178,6 +196,31 @@ export default function ModalConfiguracoes({ onClose }) {
                 )}
                 <p className="text-xs text-gray-400">Dica: PNG com fundo transparente fica melhor.</p>
                 <input ref={inputLogo} type="file" accept="image/*" className="hidden" onChange={e => handleLogo(e.target.files?.[0])} />
+
+                <div className="pt-2">
+                  <p className="text-xs font-medium text-gray-700">Favicon</p>
+                  <p className="text-xs text-gray-400 mb-2">O ícone pequeno que aparece na aba do navegador, em todas as páginas.</p>
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 min-w-0">
+                      {cfg.marca.favicon_url
+                        ? <img src={cfg.marca.favicon_url} alt="Favicon" className="w-4 h-4 object-contain shrink-0" />
+                        : <span className="w-4 h-4 rounded-sm bg-gray-300 shrink-0" />}
+                      <span className="text-xs text-gray-500 truncate">{cfg.marca.favicon_url ? 'Seu favicon' : 'Favicon padrão do site'}</span>
+                    </div>
+                    <div className="flex flex-col gap-1.5">
+                      <button type="button" onClick={() => inputFavicon.current?.click()} disabled={enviandoFavicon} className="flex items-center gap-1.5 text-xs font-medium text-violet-600 hover:text-violet-700">
+                        <Upload size={13} /> {enviandoFavicon ? 'Enviando...' : cfg.marca.favicon_url ? 'Trocar favicon' : 'Enviar favicon'}
+                      </button>
+                      {cfg.marca.favicon_url && (
+                        <button type="button" onClick={() => setMarca('favicon_url', null)} className="flex items-center gap-1.5 text-xs font-medium text-red-500 hover:text-red-600">
+                          <Trash2 size={13} /> Remover
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1">Use um PNG quadrado (ex: 512×512), com fundo transparente.</p>
+                  <input ref={inputFavicon} type="file" accept="image/png,image/webp" className="hidden" onChange={e => handleFavicon(e.target.files?.[0])} />
+                </div>
               </section>
 
               <section className="space-y-3 pt-5 border-t border-gray-100">
@@ -287,7 +330,7 @@ export default function ModalConfiguracoes({ onClose }) {
           <button
             type="button"
             onClick={handleSalvar}
-            disabled={!cfg || salvando || enviandoLogo}
+            disabled={!cfg || salvando || enviandoLogo || enviandoFavicon}
             className="px-4 py-2 rounded-lg text-sm font-medium bg-violet-600 text-white hover:bg-violet-700 disabled:opacity-50"
           >
             {salvando ? 'Salvando...' : 'Salvar'}

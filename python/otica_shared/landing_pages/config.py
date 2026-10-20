@@ -17,7 +17,8 @@ PADRAO = {
         # padrão por pedido do Daniel, inclusive pra quem já tinha salvo a config antes.
         "notificacao": True,
     },
-    "marca": {"logo_url": None},
+    # favicon_url (v0.7.0): ícone da aba do navegador em todas as páginas públicas.
+    "marca": {"logo_url": None, "favicon_url": None},
     # Menu no topo (v0.4.0): logo à esquerda + botão CTA à direita no desktop; só o
     # logo centralizado no celular. cta_destino: "whatsapp" (número configurado) | "url" |
     # "contato" (rola até a seção de contato da própria página, v0.5.0). cta_cor (v0.5.0):
@@ -84,7 +85,7 @@ def publica(cfg: dict) -> dict:
             "mensagem": w["mensagem"] if ativo else "",
             "notificacao": bool(w["notificacao"]) if ativo else False,
         },
-        "marca": {"logo_url": cfg["marca"]["logo_url"]},
+        "marca": {"logo_url": cfg["marca"]["logo_url"], "favicon_url": cfg["marca"]["favicon_url"]},
         "menu": {
             "ativo": menu_ativo,
             "cta_texto": m["cta_texto"] if menu_ativo and cta_url else "",

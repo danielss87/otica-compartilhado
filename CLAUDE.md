@@ -21,7 +21,7 @@ package.json                     # npm: otica-compartilhado (raiz do repo)
 
 ## Features
 
-### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.6.0, out/2026
+### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.7.0, out/2026
 Origem: 4 Olhos (ago/2026). Páginas de captura por template pronto com edição guiada (4 templates:
 `simples`, `promocao`, `agendar_consulta`, `greats`), página pública `/lp/:slug`, contagem de
 visualizações e captura de lead (nome + telefone + fbclid).
@@ -89,6 +89,16 @@ para todas as opções.
 8. Repo **público**: nunca commitar segredo, credencial, URL interna, dado de cliente ou telefone real.
 
 ## Changelog
+
+### v0.7.0 (20/10/2026)
+- **Favicon geral** (`marca.favicon_url`, vazio por padrão): enviado em Configurações → Identidade de marca
+  (mesmo `/upload-imagem`, PNG/WebP). Vai na config pública; o `LandingPageView` (`useFavicon`) tira os
+  `<link rel="icon">` do app enquanto a página está aberta, põe o novo e devolve os originais ao sair.
+- **Título da página** (`meta_titulo`, que já existia): saiu do bloco "SEO" no fim do formulário e foi para
+  o bloco "Página", no topo do editor, com rótulo "Título da página (aba do navegador)". Em branco, a aba
+  mostra o nome da página (placeholder mostra isso). A descrição (`meta_descricao`) foi junto.
+- Título, descrição e favicon são aplicados por JavaScript: o Google lê, mas a prévia de link do
+  WhatsApp/Facebook não (elas não rodam JS).
 
 ### v0.6.0 (20/10/2026)
 - **Menu fixo no topo** (`menu.fixo`, desligado por padrão): o header do menu vira `sticky top-0 z-40`, na

@@ -173,7 +173,8 @@ def criar_routers(
             if w.get("ativo") and not (12 <= len(w["numero"]) <= 15):
                 raise HTTPException(422, "Informe o número do WhatsApp com DDD (ex: 11 99999-9999).")
         if "marca" in novo:
-            novo["marca"]["logo_url"] = (novo["marca"].get("logo_url") or "").strip() or None
+            for chave in ("logo_url", "favicon_url"):
+                novo["marca"][chave] = (novo["marca"].get(chave) or "").strip() or None
         for secao, valores in novo.items():
             atual[secao].update(valores)
         if "menu" in novo:

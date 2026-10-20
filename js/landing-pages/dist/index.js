@@ -745,9 +745,11 @@ function ModalConfiguracoes({ onClose }) {
   const [erroCarregar, setErroCarregar] = useState2("");
   const [salvando, setSalvando] = useState2(false);
   const [enviandoLogo, setEnviandoLogo] = useState2(false);
+  const [enviandoFavicon, setEnviandoFavicon] = useState2(false);
   const [erro, setErro] = useState2("");
   const [salvo, setSalvo] = useState2(false);
   const inputLogo = useRef2(null);
+  const inputFavicon = useRef2(null);
   useEffect2(() => {
     obterConfiguracoes().then(setCfg).catch((e) => setErroCarregar(e.message));
   }, []);
@@ -759,9 +761,24 @@ function ModalConfiguracoes({ onClose }) {
     setCfg((c) => ({ ...c, menu: { ...c.menu, [campo]: valor } }));
     setSalvo(false);
   }
-  function setLogo(url) {
-    setCfg((c) => ({ ...c, marca: { ...c.marca, logo_url: url } }));
+  function setMarca(campo, url) {
+    setCfg((c) => ({ ...c, marca: { ...c.marca, [campo]: url } }));
     setSalvo(false);
+  }
+  const setLogo = (url) => setMarca("logo_url", url);
+  async function handleFavicon(file) {
+    if (!file) return;
+    setEnviandoFavicon(true);
+    setErro("");
+    try {
+      const { url } = await uploadImagemLandingPage(file);
+      setMarca("favicon_url", url);
+    } catch (e) {
+      setErro(e.message);
+    } finally {
+      setEnviandoFavicon(false);
+      if (inputFavicon.current) inputFavicon.current.value = "";
+    }
   }
   async function handleLogo(file) {
     if (!file) return;
@@ -855,7 +872,7 @@ function ModalConfiguracoes({ onClose }) {
           /* @__PURE__ */ jsxs3("section", { className: "space-y-3 pt-5 border-t border-gray-100", children: [
             /* @__PURE__ */ jsxs3("div", { children: [
               /* @__PURE__ */ jsx3("p", { className: "text-sm font-semibold text-gray-900", children: "Identidade de marca" }),
-              /* @__PURE__ */ jsx3("p", { className: "text-xs text-gray-500", children: "O logo aparece no topo de todas as p\xE1ginas." })
+              /* @__PURE__ */ jsx3("p", { className: "text-xs text-gray-500", children: "O logo aparece no topo de todas as p\xE1ginas, e o favicon na aba do navegador." })
             ] }),
             cfg.marca.logo_url ? /* @__PURE__ */ jsxs3("div", { className: "flex items-center gap-3", children: [
               /* @__PURE__ */ jsx3("div", { className: "flex items-center justify-center rounded-lg border border-gray-200 bg-white px-4 py-3", children: /* @__PURE__ */ jsx3("img", { src: cfg.marca.logo_url, alt: "Logo", className: "h-12 w-auto max-w-[200px] object-contain" }) }),
@@ -884,7 +901,30 @@ function ModalConfiguracoes({ onClose }) {
               }
             ),
             /* @__PURE__ */ jsx3("p", { className: "text-xs text-gray-400", children: "Dica: PNG com fundo transparente fica melhor." }),
-            /* @__PURE__ */ jsx3("input", { ref: inputLogo, type: "file", accept: "image/*", className: "hidden", onChange: (e) => handleLogo(e.target.files?.[0]) })
+            /* @__PURE__ */ jsx3("input", { ref: inputLogo, type: "file", accept: "image/*", className: "hidden", onChange: (e) => handleLogo(e.target.files?.[0]) }),
+            /* @__PURE__ */ jsxs3("div", { className: "pt-2", children: [
+              /* @__PURE__ */ jsx3("p", { className: "text-xs font-medium text-gray-700", children: "Favicon" }),
+              /* @__PURE__ */ jsx3("p", { className: "text-xs text-gray-400 mb-2", children: "O \xEDcone pequeno que aparece na aba do navegador, em todas as p\xE1ginas." }),
+              /* @__PURE__ */ jsxs3("div", { className: "flex items-center gap-3", children: [
+                /* @__PURE__ */ jsxs3("div", { className: "flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 min-w-0", children: [
+                  cfg.marca.favicon_url ? /* @__PURE__ */ jsx3("img", { src: cfg.marca.favicon_url, alt: "Favicon", className: "w-4 h-4 object-contain shrink-0" }) : /* @__PURE__ */ jsx3("span", { className: "w-4 h-4 rounded-sm bg-gray-300 shrink-0" }),
+                  /* @__PURE__ */ jsx3("span", { className: "text-xs text-gray-500 truncate", children: cfg.marca.favicon_url ? "Seu favicon" : "Favicon padr\xE3o do site" })
+                ] }),
+                /* @__PURE__ */ jsxs3("div", { className: "flex flex-col gap-1.5", children: [
+                  /* @__PURE__ */ jsxs3("button", { type: "button", onClick: () => inputFavicon.current?.click(), disabled: enviandoFavicon, className: "flex items-center gap-1.5 text-xs font-medium text-violet-600 hover:text-violet-700", children: [
+                    /* @__PURE__ */ jsx3(Upload, { size: 13 }),
+                    " ",
+                    enviandoFavicon ? "Enviando..." : cfg.marca.favicon_url ? "Trocar favicon" : "Enviar favicon"
+                  ] }),
+                  cfg.marca.favicon_url && /* @__PURE__ */ jsxs3("button", { type: "button", onClick: () => setMarca("favicon_url", null), className: "flex items-center gap-1.5 text-xs font-medium text-red-500 hover:text-red-600", children: [
+                    /* @__PURE__ */ jsx3(Trash2, { size: 13 }),
+                    " Remover"
+                  ] })
+                ] })
+              ] }),
+              /* @__PURE__ */ jsx3("p", { className: "text-xs text-gray-400 mt-1", children: "Use um PNG quadrado (ex: 512\xD7512), com fundo transparente." }),
+              /* @__PURE__ */ jsx3("input", { ref: inputFavicon, type: "file", accept: "image/png,image/webp", className: "hidden", onChange: (e) => handleFavicon(e.target.files?.[0]) })
+            ] })
           ] }),
           /* @__PURE__ */ jsxs3("section", { className: "space-y-3 pt-5 border-t border-gray-100", children: [
             /* @__PURE__ */ jsxs3("div", { className: "flex items-center justify-between gap-3", children: [
@@ -969,7 +1009,7 @@ function ModalConfiguracoes({ onClose }) {
           {
             type: "button",
             onClick: handleSalvar,
-            disabled: !cfg || salvando || enviandoLogo,
+            disabled: !cfg || salvando || enviandoLogo || enviandoFavicon,
             className: "px-4 py-2 rounded-lg text-sm font-medium bg-violet-600 text-white hover:bg-violet-700 disabled:opacity-50",
             children: salvando ? "Salvando..." : "Salvar"
           }
@@ -1324,11 +1364,7 @@ function LandingPageEditor() {
           ),
           /* @__PURE__ */ jsx5("p", { className: "text-xs text-gray-400 mt-1", children: 'Para onde a p\xE1gina rola quando o bot\xE3o do menu est\xE1 configurado para "levar \xE0 se\xE7\xE3o de contato".' })
         ] }),
-        template.campos.map((campo) => /* @__PURE__ */ jsx5(CampoEditor, { campo, valor: conteudo[campo.chave], onChange: (v) => handleCampoChange(campo.chave, v) }, campo.chave)),
-        /* @__PURE__ */ jsxs5("div", { className: "pt-4 border-t border-gray-200 space-y-3", children: [
-          /* @__PURE__ */ jsx5("p", { className: "text-xs font-medium text-gray-500", children: "SEO (aba do navegador)" }),
-          /* @__PURE__ */ jsx5(MetaCampos, { lp, onSalvo: setLp })
-        ] })
+        template.campos.map((campo) => /* @__PURE__ */ jsx5(CampoEditor, { campo, valor: conteudo[campo.chave], onChange: (v) => handleCampoChange(campo.chave, v) }, campo.chave))
       ] }),
       /* @__PURE__ */ jsxs5("div", { className: "mt-4 lg:mt-0", children: [
         /* @__PURE__ */ jsx5("p", { className: "text-xs font-medium text-gray-500 mb-2", children: "Pr\xE9-visualiza\xE7\xE3o" }),
@@ -1434,10 +1470,11 @@ function CamposPagina({ lp, nome, onNomeChange, onSalvo, rotaPublica }) {
         "/",
         slugFinal || lp.slug
       ] })
-    ] })
+    ] }),
+    /* @__PURE__ */ jsx5(MetaCampos, { lp, nome, onSalvo })
   ] });
 }
-function MetaCampos({ lp, onSalvo }) {
+function MetaCampos({ lp, nome, onSalvo }) {
   const [metaTitulo, setMetaTitulo] = useState4(lp.meta_titulo || "");
   const [metaDescricao, setMetaDescricao] = useState4(lp.meta_descricao || "");
   const timeout = useRef3(null);
@@ -1448,32 +1485,41 @@ function MetaCampos({ lp, onSalvo }) {
       });
     }, 900);
   }
-  return /* @__PURE__ */ jsxs5("div", { className: "space-y-2", children: [
-    /* @__PURE__ */ jsx5(
-      "input",
-      {
-        value: metaTitulo,
-        onChange: (e) => {
-          setMetaTitulo(e.target.value);
-          agendar(e.target.value, metaDescricao);
-        },
-        placeholder: "T\xEDtulo da aba (ex: Promo\xE7\xE3o de inverno)",
-        className: "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
-      }
-    ),
-    /* @__PURE__ */ jsx5(
-      "textarea",
-      {
-        value: metaDescricao,
-        onChange: (e) => {
-          setMetaDescricao(e.target.value);
-          agendar(metaTitulo, e.target.value);
-        },
-        placeholder: "Descri\xE7\xE3o curta (aparece em compartilhamentos)",
-        rows: 2,
-        className: "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 resize-none"
-      }
-    )
+  return /* @__PURE__ */ jsxs5(Fragment3, { children: [
+    /* @__PURE__ */ jsxs5("div", { children: [
+      /* @__PURE__ */ jsx5("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: "T\xEDtulo da p\xE1gina (aba do navegador)" }),
+      /* @__PURE__ */ jsx5(
+        "input",
+        {
+          value: metaTitulo,
+          onChange: (e) => {
+            setMetaTitulo(e.target.value);
+            agendar(e.target.value, metaDescricao);
+          },
+          placeholder: nome || "Ex: Promo\xE7\xE3o de inverno",
+          maxLength: 200,
+          className: "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
+        }
+      ),
+      /* @__PURE__ */ jsx5("p", { className: "text-xs text-gray-400 mt-1", children: "Tamb\xE9m aparece no Google. Em branco, a aba mostra o nome da p\xE1gina." })
+    ] }),
+    /* @__PURE__ */ jsxs5("div", { children: [
+      /* @__PURE__ */ jsx5("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: "Descri\xE7\xE3o da p\xE1gina" }),
+      /* @__PURE__ */ jsx5(
+        "textarea",
+        {
+          value: metaDescricao,
+          onChange: (e) => {
+            setMetaDescricao(e.target.value);
+            agendar(metaTitulo, e.target.value);
+          },
+          placeholder: "Descri\xE7\xE3o curta que aparece no Google",
+          maxLength: 400,
+          rows: 2,
+          className: "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 resize-none"
+        }
+      )
+    ] })
   ] });
 }
 function CampoEditor({ campo, valor, onChange }) {
@@ -1945,6 +1991,21 @@ function CampoFaq({ campo, valor, onChange }) {
 import { useEffect as useEffect5, useState as useState5 } from "react";
 import { useParams as useParams2 } from "react-router-dom";
 import { jsx as jsx6 } from "react/jsx-runtime";
+function useFavicon(url) {
+  useEffect5(() => {
+    if (!url) return;
+    const originais = [...document.querySelectorAll('link[rel~="icon"]')];
+    originais.forEach((el) => el.remove());
+    const link = document.createElement("link");
+    link.rel = "icon";
+    link.href = url;
+    document.head.appendChild(link);
+    return () => {
+      link.remove();
+      originais.forEach((el) => document.head.appendChild(el));
+    };
+  }, [url]);
+}
 function LandingPageView() {
   const { slug } = useParams2();
   const [lp, setLp] = useState5(null);
@@ -1966,6 +2027,7 @@ function LandingPageView() {
       registrarVisualizacao(slug);
     }).catch(() => setErro(true)).finally(() => setCarregando(false));
   }, [slug]);
+  useFavicon(lp?.configuracoes?.marca?.favicon_url);
   async function handleLead(payload) {
     const fbclid = new URLSearchParams(window.location.search).get("fbclid") || void 0;
     await enviarLeadLandingPage(slug, { ...payload, fbclid });

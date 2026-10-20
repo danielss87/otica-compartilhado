@@ -46,6 +46,7 @@ class ConfigWhatsapp(BaseModel):
 
 class ConfigMarca(BaseModel):
     logo_url: Optional[str] = None
+    favicon_url: Optional[str] = None
 
 
 class ConfigMenu(BaseModel):

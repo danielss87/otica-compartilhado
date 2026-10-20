@@ -135,11 +135,6 @@ export default function LandingPageEditor() {
           {template.campos.map(campo => (
             <CampoEditor key={campo.chave} campo={campo} valor={conteudo[campo.chave]} onChange={v => handleCampoChange(campo.chave, v)} />
           ))}
-
-          <div className="pt-4 border-t border-gray-200 space-y-3">
-            <p className="text-xs font-medium text-gray-500">SEO (aba do navegador)</p>
-            <MetaCampos lp={lp} onSalvo={setLp} />
-          </div>
         </div>
 
         <div className="mt-4 lg:mt-0">
@@ -240,11 +235,13 @@ function CamposPagina({ lp, nome, onNomeChange, onSalvo, rotaPublica }) {
           {window.location.origin}{rotaPublica}/{slugFinal || lp.slug}
         </p>
       </div>
+      <MetaCampos lp={lp} nome={nome} onSalvo={onSalvo} />
     </div>
   )
 }
 
-function MetaCampos({ lp, onSalvo }) {
+// Título da aba (meta_titulo) e descrição; vazio = a aba mostra o nome da página.
+function MetaCampos({ lp, nome, onSalvo }) {
   const [metaTitulo, setMetaTitulo] = useState(lp.meta_titulo || '')
   const [metaDescricao, setMetaDescricao] = useState(lp.meta_descricao || '')
   const timeout = useRef(null)
@@ -257,21 +254,30 @@ function MetaCampos({ lp, onSalvo }) {
   }
 
   return (
-    <div className="space-y-2">
-      <input
-        value={metaTitulo}
-        onChange={e => { setMetaTitulo(e.target.value); agendar(e.target.value, metaDescricao) }}
-        placeholder="Título da aba (ex: Promoção de inverno)"
-        className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
-      />
-      <textarea
-        value={metaDescricao}
-        onChange={e => { setMetaDescricao(e.target.value); agendar(metaTitulo, e.target.value) }}
-        placeholder="Descrição curta (aparece em compartilhamentos)"
-        rows={2}
-        className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 resize-none"
-      />
-    </div>
+    <>
+      <div>
+        <label className="text-xs font-medium text-gray-500 mb-1 block">Título da página (aba do navegador)</label>
+        <input
+          value={metaTitulo}
+          onChange={e => { setMetaTitulo(e.target.value); agendar(e.target.value, metaDescricao) }}
+          placeholder={nome || 'Ex: Promoção de inverno'}
+          maxLength={200}
+          className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
+        />
+        <p className="text-xs text-gray-400 mt-1">Também aparece no Google. Em branco, a aba mostra o nome da página.</p>
+      </div>
+      <div>
+        <label className="text-xs font-medium text-gray-500 mb-1 block">Descrição da página</label>
+        <textarea
+          value={metaDescricao}
+          onChange={e => { setMetaDescricao(e.target.value); agendar(metaTitulo, e.target.value) }}
+          placeholder="Descrição curta que aparece no Google"
+          maxLength={400}
+          rows={2}
+          className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 resize-none"
+        />
+      </div>
+    </>
   )
 }
 

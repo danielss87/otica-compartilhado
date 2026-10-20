@@ -5,6 +5,24 @@ import { buscarLandingPagePublica, registrarVisualizacao, enviarLeadLandingPage 
 import { getConfig } from './config'
 import MolduraLandingPage from './Moldura'
 
+// Troca o favicon do site pelo das configurações gerais enquanto a página está aberta.
+// Tira os <link rel="icon"> do app (senão o navegador pode ficar com o dele) e os devolve ao sair.
+function useFavicon(url) {
+  useEffect(() => {
+    if (!url) return
+    const originais = [...document.querySelectorAll('link[rel~="icon"]')]
+    originais.forEach(el => el.remove())
+    const link = document.createElement('link')
+    link.rel = 'icon'
+    link.href = url
+    document.head.appendChild(link)
+    return () => {
+      link.remove()
+      originais.forEach(el => document.head.appendChild(el))
+    }
+  }, [url])
+}
+
 export default function LandingPageView() {
   const { slug } = useParams()
   const [lp, setLp] = useState(null)
@@ -30,6 +48,8 @@ export default function LandingPageView() {
       .catch(() => setErro(true))
       .finally(() => setCarregando(false))
   }, [slug])
+
+  useFavicon(lp?.configuracoes?.marca?.favicon_url)
 
   async function handleLead(payload) {
     const fbclid = new URLSearchParams(window.location.search).get('fbclid') || undefined
