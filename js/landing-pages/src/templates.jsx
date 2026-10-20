@@ -6,9 +6,21 @@ import { useState, useEffect } from 'react'
 import { Image as ImageIcon, MessageCircle, Gem, Footprints, RotateCcw, Star, Quote } from 'lucide-react'
 import { getConfig } from './config'
 
+// Textos de exemplo que a página mostra enquanto a lista está vazia. Os campos do
+// editor recebem os mesmos valores em `padrao`, pra que o que aparece na página
+// também apareça (e seja editável) no formulário.
+const GREATS_FEATURES_PADRAO = [
+  { titulo: 'FEITOS À MÃO', descricao: 'Produzidos com atenção aos mínimos detalhes, por artesãos experientes.' },
+  { titulo: 'MATERIAIS PREMIUM', descricao: 'Usamos apenas materiais de alta qualidade, por dentro e por fora.' },
+  { titulo: 'TROCA GRÁTIS', descricao: 'Se não servir perfeitamente, trocamos sem custo em até 21 dias.' },
+]
+const GREATS_DEPOIMENTOS_PADRAO = [
+  { texto: 'Atendimento incrível e produto de altíssima qualidade.', nome: 'Cliente satisfeito' },
+  { texto: 'Chegou rápido e é ainda melhor do que nas fotos.', nome: 'Cliente satisfeito' },
+]
+
 // `campos` descreve o formulário genérico dirigido por schema do editor —
 // cada entrada: { chave, label, tipo: 'texto_curto'|'texto_longo'|'imagem'|'lista'|'cta' }
-
 export const LANDING_PAGE_TEMPLATES = {
   simples: {
     nome: 'Simples',
@@ -162,7 +174,7 @@ export const LANDING_PAGE_TEMPLATES = {
       { chave: 'hero_cta_texto', label: 'Texto do botão do hero', tipo: 'texto_curto', placeholder: 'Ex: VER COLEÇÃO' },
       { chave: 'hero_cta_url', label: 'Link do botão do hero', tipo: 'texto_curto', placeholder: 'https://...' },
 
-      { chave: 'features', label: 'Selos de confiança (3 itens)', tipo: 'lista_features' },
+      { chave: 'features', label: 'Selos de confiança (3 itens)', tipo: 'lista_features', padrao: GREATS_FEATURES_PADRAO },
 
       { chave: 'banner_imagem', label: 'Imagem de destaque (detalhe do produto)', tipo: 'imagem' },
       { chave: 'banner_anotacao', label: 'Legenda do detalhe', tipo: 'texto_curto', placeholder: 'Ex: ARMAÇÃO 100% ACETATO ITALIANO' },
@@ -188,7 +200,7 @@ export const LANDING_PAGE_TEMPLATES = {
       { chave: 'women_cta_texto', label: 'Texto do botão — coluna 2', tipo: 'texto_curto', placeholder: 'VER COLEÇÃO' },
       { chave: 'women_cta_url', label: 'Link do botão — coluna 2', tipo: 'texto_curto' },
 
-      { chave: 'depoimentos', label: 'Depoimentos', tipo: 'lista_depoimentos' },
+      { chave: 'depoimentos', label: 'Depoimentos', tipo: 'lista_depoimentos', padrao: GREATS_DEPOIMENTOS_PADRAO },
       { chave: 'rodape_texto', label: 'Texto do rodapé', tipo: 'texto_curto', placeholder: 'Ex: © 2026 Sua marca. Todos os direitos reservados.' },
     ],
     Render: ({ conteudo }) => <GreatsRender conteudo={conteudo} />,
@@ -419,6 +431,7 @@ function GreatsBloco({ bloco, corPrimaria, fundo = 'branco', className = '' }) {
 }
 
 const GREATS_ICONES = [Gem, Footprints, RotateCcw]
+
 const GREATS_ESCURECIMENTO_PADRAO = 25
 
 function GreatsRender({ conteudo }) {
@@ -430,19 +443,8 @@ function GreatsRender({ conteudo }) {
   // bg-black/25 que a página tinha antes de virar campo editável.
   const escurecimentoHero = Number.isFinite(Number(c.hero_escurecimento)) && c.hero_escurecimento !== ''
     && c.hero_escurecimento != null ? Number(c.hero_escurecimento) : GREATS_ESCURECIMENTO_PADRAO
-  const features = Array.isArray(c.features) && c.features.length > 0
-    ? c.features
-    : [
-        { titulo: 'FEITOS À MÃO', descricao: 'Produzidos com atenção aos mínimos detalhes, por artesãos experientes.' },
-        { titulo: 'MATERIAIS PREMIUM', descricao: 'Usamos apenas materiais de alta qualidade, por dentro e por fora.' },
-        { titulo: 'TROCA GRÁTIS', descricao: 'Se não servir perfeitamente, trocamos sem custo em até 21 dias.' },
-      ]
-  const depoimentos = Array.isArray(c.depoimentos) && c.depoimentos.length > 0
-    ? c.depoimentos
-    : [
-        { texto: 'Atendimento incrível e produto de altíssima qualidade.', nome: 'Cliente satisfeito' },
-        { texto: 'Chegou rápido e é ainda melhor do que nas fotos.', nome: 'Cliente satisfeito' },
-      ]
+  const features = Array.isArray(c.features) && c.features.length > 0 ? c.features : GREATS_FEATURES_PADRAO
+  const depoimentos = Array.isArray(c.depoimentos) && c.depoimentos.length > 0 ? c.depoimentos : GREATS_DEPOIMENTOS_PADRAO
 
   return (
     <div style={{ fontFamily: GREATS_FONT_STACK }} className="bg-white">

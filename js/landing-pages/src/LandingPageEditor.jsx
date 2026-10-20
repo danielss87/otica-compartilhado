@@ -427,8 +427,16 @@ function CampoBloco({ campo, valor, onChange }) {
   )
 }
 
+// Lista vazia = a página mostra os textos de exemplo do template (`campo.padrao`).
+// O editor mostra esses mesmos itens, pra que dê pra editar o que aparece na página;
+// a primeira edição grava a lista inteira em `conteudo`.
+function listaOuPadrao(valor, campo) {
+  if (Array.isArray(valor) && valor.length > 0) return valor
+  return Array.isArray(campo.padrao) ? campo.padrao : []
+}
+
 function CampoListaFeatures({ campo, valor, onChange }) {
-  const itens = Array.isArray(valor) ? valor : []
+  const itens = listaOuPadrao(valor, campo)
 
   function atualizarItem(i, chave, texto) {
     const novo = [...itens]
@@ -479,7 +487,7 @@ function CampoListaFeatures({ campo, valor, onChange }) {
 }
 
 function CampoListaDepoimentos({ campo, valor, onChange }) {
-  const itens = Array.isArray(valor) ? valor : []
+  const itens = listaOuPadrao(valor, campo)
 
   function atualizarItem(i, chave, texto) {
     const novo = [...itens]

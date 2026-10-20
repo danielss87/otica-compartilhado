@@ -21,7 +21,7 @@ package.json                     # npm: otica-compartilhado (raiz do repo)
 
 ## Features
 
-### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.5.0, out/2026
+### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.5.1, out/2026
 Origem: 4 Olhos (ago/2026). Páginas de captura por template pronto com edição guiada (4 templates:
 `simples`, `promocao`, `agendar_consulta`, `greats`), página pública `/lp/:slug`, contagem de
 visualizações e captura de lead (nome + telefone + fbclid).
@@ -89,6 +89,14 @@ para todas as opções.
 8. Repo **público**: nunca commitar segredo, credencial, URL interna, dado de cliente ou telefone real.
 
 ## Changelog
+
+### v0.5.1 (20/10/2026)
+- **Correção (Greats):** os selos de confiança ("FEITOS À MÃO", "MATERIAIS PREMIUM", "TROCA GRÁTIS") e os
+  depoimentos de exemplo apareciam na página, mas o editor mostrava a lista vazia, então não dava para
+  editá-los. Agora o campo declara `padrao` com os mesmos itens que o `Render` usa, e o editor os mostra
+  quando a lista está vazia (`listaOuPadrao`); a primeira edição grava a lista inteira. Páginas
+  publicadas não mudam.
+- Lista com texto de exemplo no `Render`: declarar o mesmo valor em `padrao` no campo.
 
 ### v0.5.0 (19/10/2026)
 - **Botão do menu leva à seção de contato** (`menu.cta_destino = "contato"`): rola a página até a seção de

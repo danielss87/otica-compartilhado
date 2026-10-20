@@ -35,6 +35,15 @@ function getConfig() {
 import { useState, useEffect } from "react";
 import { Image as ImageIcon, MessageCircle, Gem, Footprints, RotateCcw, Star, Quote } from "lucide-react";
 import { jsx, jsxs } from "react/jsx-runtime";
+var GREATS_FEATURES_PADRAO = [
+  { titulo: "FEITOS \xC0 M\xC3O", descricao: "Produzidos com aten\xE7\xE3o aos m\xEDnimos detalhes, por artes\xE3os experientes." },
+  { titulo: "MATERIAIS PREMIUM", descricao: "Usamos apenas materiais de alta qualidade, por dentro e por fora." },
+  { titulo: "TROCA GR\xC1TIS", descricao: "Se n\xE3o servir perfeitamente, trocamos sem custo em at\xE9 21 dias." }
+];
+var GREATS_DEPOIMENTOS_PADRAO = [
+  { texto: "Atendimento incr\xEDvel e produto de alt\xEDssima qualidade.", nome: "Cliente satisfeito" },
+  { texto: "Chegou r\xE1pido e \xE9 ainda melhor do que nas fotos.", nome: "Cliente satisfeito" }
+];
 var LANDING_PAGE_TEMPLATES = {
   simples: {
     nome: "Simples",
@@ -157,7 +166,7 @@ var LANDING_PAGE_TEMPLATES = {
       { chave: "hero_titulo", label: "T\xEDtulo do hero", tipo: "texto_curto", placeholder: "Ex: O QUE PROCURAR EM \xD3CULOS DE QUALIDADE" },
       { chave: "hero_cta_texto", label: "Texto do bot\xE3o do hero", tipo: "texto_curto", placeholder: "Ex: VER COLE\xC7\xC3O" },
       { chave: "hero_cta_url", label: "Link do bot\xE3o do hero", tipo: "texto_curto", placeholder: "https://..." },
-      { chave: "features", label: "Selos de confian\xE7a (3 itens)", tipo: "lista_features" },
+      { chave: "features", label: "Selos de confian\xE7a (3 itens)", tipo: "lista_features", padrao: GREATS_FEATURES_PADRAO },
       { chave: "banner_imagem", label: "Imagem de destaque (detalhe do produto)", tipo: "imagem" },
       { chave: "banner_anotacao", label: "Legenda do detalhe", tipo: "texto_curto", placeholder: "Ex: ARMA\xC7\xC3O 100% ACETATO ITALIANO" },
       { chave: "bloco_1", label: "Bloco 1 (texto, com CTA)", tipo: "bloco" },
@@ -177,7 +186,7 @@ var LANDING_PAGE_TEMPLATES = {
       { chave: "women_titulo", label: "T\xEDtulo coluna 2 (ex: FEMININO)", tipo: "texto_curto", placeholder: "FEMININO" },
       { chave: "women_cta_texto", label: "Texto do bot\xE3o \u2014 coluna 2", tipo: "texto_curto", placeholder: "VER COLE\xC7\xC3O" },
       { chave: "women_cta_url", label: "Link do bot\xE3o \u2014 coluna 2", tipo: "texto_curto" },
-      { chave: "depoimentos", label: "Depoimentos", tipo: "lista_depoimentos" },
+      { chave: "depoimentos", label: "Depoimentos", tipo: "lista_depoimentos", padrao: GREATS_DEPOIMENTOS_PADRAO },
       { chave: "rodape_texto", label: "Texto do rodap\xE9", tipo: "texto_curto", placeholder: "Ex: \xA9 2026 Sua marca. Todos os direitos reservados." }
     ],
     Render: ({ conteudo }) => /* @__PURE__ */ jsx(GreatsRender, { conteudo })
@@ -364,15 +373,8 @@ function GreatsRender({ conteudo }) {
   const corPrimaria = c.cor_primaria || "#1E3A5F";
   const corSecundaria = c.cor_secundaria || "#E5B3A0";
   const escurecimentoHero = Number.isFinite(Number(c.hero_escurecimento)) && c.hero_escurecimento !== "" && c.hero_escurecimento != null ? Number(c.hero_escurecimento) : GREATS_ESCURECIMENTO_PADRAO;
-  const features = Array.isArray(c.features) && c.features.length > 0 ? c.features : [
-    { titulo: "FEITOS \xC0 M\xC3O", descricao: "Produzidos com aten\xE7\xE3o aos m\xEDnimos detalhes, por artes\xE3os experientes." },
-    { titulo: "MATERIAIS PREMIUM", descricao: "Usamos apenas materiais de alta qualidade, por dentro e por fora." },
-    { titulo: "TROCA GR\xC1TIS", descricao: "Se n\xE3o servir perfeitamente, trocamos sem custo em at\xE9 21 dias." }
-  ];
-  const depoimentos = Array.isArray(c.depoimentos) && c.depoimentos.length > 0 ? c.depoimentos : [
-    { texto: "Atendimento incr\xEDvel e produto de alt\xEDssima qualidade.", nome: "Cliente satisfeito" },
-    { texto: "Chegou r\xE1pido e \xE9 ainda melhor do que nas fotos.", nome: "Cliente satisfeito" }
-  ];
+  const features = Array.isArray(c.features) && c.features.length > 0 ? c.features : GREATS_FEATURES_PADRAO;
+  const depoimentos = Array.isArray(c.depoimentos) && c.depoimentos.length > 0 ? c.depoimentos : GREATS_DEPOIMENTOS_PADRAO;
   return /* @__PURE__ */ jsxs("div", { style: { fontFamily: GREATS_FONT_STACK }, className: "bg-white", children: [
     /* @__PURE__ */ jsxs("div", { "data-secao": "hero", className: "relative w-full min-h-[380px] sm:min-h-[440px] flex flex-col items-center justify-center text-center px-6 py-16 overflow-hidden", children: [
       c.hero_imagem ? /* @__PURE__ */ jsx("img", { src: c.hero_imagem, alt: "", className: "absolute inset-0 w-full h-full object-cover" }) : /* @__PURE__ */ jsx("div", { className: "absolute inset-0 bg-gray-300" }),
@@ -1618,8 +1620,12 @@ function CampoBloco({ campo, valor, onChange }) {
     ] })
   ] });
 }
+function listaOuPadrao(valor, campo) {
+  if (Array.isArray(valor) && valor.length > 0) return valor;
+  return Array.isArray(campo.padrao) ? campo.padrao : [];
+}
 function CampoListaFeatures({ campo, valor, onChange }) {
-  const itens = Array.isArray(valor) ? valor : [];
+  const itens = listaOuPadrao(valor, campo);
   function atualizarItem(i, chave, texto) {
     const novo = [...itens];
     novo[i] = { ...novo[i] || {}, [chave]: texto };
@@ -1671,7 +1677,7 @@ function CampoListaFeatures({ campo, valor, onChange }) {
   ] });
 }
 function CampoListaDepoimentos({ campo, valor, onChange }) {
-  const itens = Array.isArray(valor) ? valor : [];
+  const itens = listaOuPadrao(valor, campo);
   function atualizarItem(i, chave, texto) {
     const novo = [...itens];
     novo[i] = { ...novo[i] || {}, [chave]: texto };
