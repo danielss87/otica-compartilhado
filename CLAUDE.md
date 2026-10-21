@@ -21,7 +21,7 @@ package.json                     # npm: otica-compartilhado (raiz do repo)
 
 ## Features
 
-### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.13.0, out/2026
+### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.14.0, out/2026
 Origem: 4 Olhos (ago/2026). Páginas de captura por template pronto com edição guiada (4 templates:
 `simples`, `promocao`, `agendar_consulta`, `greats`), página pública `/lp/:slug`, contagem de
 visualizações e captura de lead (nome + telefone + fbclid). Quinto template, `leader` (v0.10.0), em
@@ -102,6 +102,11 @@ para todas as opções.
 8. Repo **público**: nunca commitar segredo, credencial, URL interna, dado de cliente ou telefone real.
 
 ## Changelog
+
+### v0.14.0 (21/10/2026)
+- Leader: campo **complemento do endereço** (`endereco_complemento`, ex: "Loja 91"), mostrado em negrito depois do
+  endereço e enviado ao Uber junto do endereço. Fica fora da busca do mapa e das rotas do Google Maps, onde
+  atrapalharia achar o local. Páginas sem complemento: HTML idêntico.
 
 ### v0.13.0 (21/10/2026)
 - **Leader: "Como chegar" na seção de contato.** Com `endereco_texto` preenchido, a imagem da seção vira um

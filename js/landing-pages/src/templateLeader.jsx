@@ -469,7 +469,9 @@ export function LeaderRender({ conteudo, conteudoOriginal, onLead, FormularioLea
   // Como chegar: com endereço, a foto da seção de contato vira o mapa, e entram os botões de
   // Uber (só com coordenadas) e de rotas no Google Maps.
   const local = { coordenadas: lerCoordenadas(c.loja_coordenadas), nome: (c.loja_nome || '').trim(), endereco: (c.endereco_texto || '').trim() }
-  const urlUber = linkUber(local)
+  // O complemento (ex: "Loja 91") só aparece no texto e no Uber; fica fora da busca do mapa e das
+  // rotas, onde atrapalharia o Google a achar o endereço.
+  const urlUber = linkUber({ ...local, endereco: [local.endereco, (c.endereco_complemento || '').trim()].filter(Boolean).join(' – ') })
   const urlRotas = linkRotasMaps(local)
   const urlMapa = linkMapaEmbutido(local)
 
@@ -649,7 +651,12 @@ export function LeaderRender({ conteudo, conteudoOriginal, onLead, FormularioLea
             {temTexto(c.endereco_texto) && (
               <div>
                 <a href={c.endereco_url || urlRotas} target="_blank" rel="noopener noreferrer" className="olp-ld-endereco">
-                  <MapPin size={20} /><span>{local.nome ? <><strong>{local.nome}</strong> · {c.endereco_texto}</> : c.endereco_texto}</span>
+                  <MapPin size={20} />
+                  <span>
+                    {local.nome && <><strong>{local.nome}</strong> · </>}
+                    {c.endereco_texto}
+                    {temTexto(c.endereco_complemento) && <> · <strong>{c.endereco_complemento}</strong></>}
+                  </span>
                 </a>
               </div>
             )}

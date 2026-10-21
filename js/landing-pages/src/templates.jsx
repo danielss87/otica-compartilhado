@@ -292,6 +292,7 @@ export const LANDING_PAGE_TEMPLATES = {
       { chave: 'contato_titulo_destaque', label: 'Contato: final do título em destaque', tipo: 'texto_curto' },
       { chave: 'contato_texto', label: 'Contato: texto', tipo: 'texto_longo', padrao: LEADER_TEXTOS.contato_texto },
       { chave: 'endereco_texto', label: 'Como chegar: endereço da loja (com o endereço, a imagem vira um mapa e aparece o botão de rotas)', tipo: 'texto_curto', placeholder: 'Ex: Rua das Flores, 123 – Centro, Cidade/UF' },
+      { chave: 'endereco_complemento', label: 'Como chegar: complemento, ao lado do endereço (não entra na busca do mapa)', tipo: 'texto_curto', placeholder: 'Ex: Loja 91' },
       { chave: 'loja_nome', label: 'Como chegar: nome do local (ajuda o Google Maps a achar a loja)', tipo: 'texto_curto', placeholder: 'Ex: Shopping Centro' },
       { chave: 'loja_coordenadas', label: 'Como chegar: coordenadas, para o botão do Uber (Google Maps → clique direito no local → copie os números)', tipo: 'texto_curto', placeholder: 'Ex: -27.5988, -48.6082' },
       { chave: 'uber_texto', label: 'Como chegar: texto do botão do Uber', tipo: 'texto_curto', padrao: LEADER_TEXTOS.uber_texto },

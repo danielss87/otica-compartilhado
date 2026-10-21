@@ -617,7 +617,7 @@ function LeaderRender({ conteudo, conteudoOriginal, onLead, FormularioLead: Form
     rolarSuaveAte(alvo, { folga: 16 + alturaMenu });
   }
   const local = { coordenadas: lerCoordenadas(c.loja_coordenadas), nome: (c.loja_nome || "").trim(), endereco: (c.endereco_texto || "").trim() };
-  const urlUber = linkUber(local);
+  const urlUber = linkUber({ ...local, endereco: [local.endereco, (c.endereco_complemento || "").trim()].filter(Boolean).join(" \u2013 ") });
   const urlRotas = linkRotasMaps(local);
   const urlMapa = linkMapaEmbutido(local);
   const acaoPrincipal = /* @__PURE__ */ jsx2(BotaoAcao, { texto: textoBotao, wpp, irParaContato });
@@ -749,11 +749,17 @@ function LeaderRender({ conteudo, conteudoOriginal, onLead, FormularioLead: Form
         ] }),
         temTexto(c.endereco_texto) && /* @__PURE__ */ jsx2("div", { children: /* @__PURE__ */ jsxs2("a", { href: c.endereco_url || urlRotas, target: "_blank", rel: "noopener noreferrer", className: "olp-ld-endereco", children: [
           /* @__PURE__ */ jsx2(MapPin, { size: 20 }),
-          /* @__PURE__ */ jsx2("span", { children: local.nome ? /* @__PURE__ */ jsxs2(Fragment, { children: [
-            /* @__PURE__ */ jsx2("strong", { children: local.nome }),
-            " \xB7 ",
-            c.endereco_texto
-          ] }) : c.endereco_texto })
+          /* @__PURE__ */ jsxs2("span", { children: [
+            local.nome && /* @__PURE__ */ jsxs2(Fragment, { children: [
+              /* @__PURE__ */ jsx2("strong", { children: local.nome }),
+              " \xB7 "
+            ] }),
+            c.endereco_texto,
+            temTexto(c.endereco_complemento) && /* @__PURE__ */ jsxs2(Fragment, { children: [
+              " \xB7 ",
+              /* @__PURE__ */ jsx2("strong", { children: c.endereco_complemento })
+            ] })
+          ] })
         ] }) })
       ] }),
       urlMapa ? /* @__PURE__ */ jsx2(
@@ -1029,6 +1035,7 @@ var LANDING_PAGE_TEMPLATES = {
       { chave: "contato_titulo_destaque", label: "Contato: final do t\xEDtulo em destaque", tipo: "texto_curto" },
       { chave: "contato_texto", label: "Contato: texto", tipo: "texto_longo", padrao: LEADER_TEXTOS.contato_texto },
       { chave: "endereco_texto", label: "Como chegar: endere\xE7o da loja (com o endere\xE7o, a imagem vira um mapa e aparece o bot\xE3o de rotas)", tipo: "texto_curto", placeholder: "Ex: Rua das Flores, 123 \u2013 Centro, Cidade/UF" },
+      { chave: "endereco_complemento", label: "Como chegar: complemento, ao lado do endere\xE7o (n\xE3o entra na busca do mapa)", tipo: "texto_curto", placeholder: "Ex: Loja 91" },
       { chave: "loja_nome", label: "Como chegar: nome do local (ajuda o Google Maps a achar a loja)", tipo: "texto_curto", placeholder: "Ex: Shopping Centro" },
       { chave: "loja_coordenadas", label: "Como chegar: coordenadas, para o bot\xE3o do Uber (Google Maps \u2192 clique direito no local \u2192 copie os n\xFAmeros)", tipo: "texto_curto", placeholder: "Ex: -27.5988, -48.6082" },
       { chave: "uber_texto", label: "Como chegar: texto do bot\xE3o do Uber", tipo: "texto_curto", padrao: LEADER_TEXTOS.uber_texto },
