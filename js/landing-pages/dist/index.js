@@ -72,6 +72,20 @@ var ESTILO_PULSO = `
 @media (prefers-reduced-motion: reduce) { .otica-lp-pulso { animation: none; opacity: 0; } }
 `;
 var COR_NOTIFICACAO = "#FF4B2B";
+var ESTILO_MENU = `
+.otica-lp-menu[data-modo="container"] { container: otica-lp-menu / inline-size; }
+.otica-lp-menu-int { box-sizing: border-box; width: 100%; max-width: 1180px; margin: 0 auto; min-height: 64px; padding: 12px 20px;
+  display: flex; align-items: center; justify-content: center; gap: 16px; }
+.otica-lp-menu-cta { display: none; flex-shrink: 0; white-space: nowrap; }
+@media (min-width: 640px) {
+  .otica-lp-menu[data-modo="janela"] .otica-lp-menu-int { justify-content: space-between; padding: 12px 32px; }
+  .otica-lp-menu[data-modo="janela"] .otica-lp-menu-cta { display: inline-flex; }
+}
+@container otica-lp-menu (min-width: 640px) {
+  .otica-lp-menu-int { justify-content: space-between; padding: 12px 32px; }
+  .otica-lp-menu-cta { display: inline-flex; }
+}
+`;
 var ESTILO_TILT = `
 @keyframes otica-lp-tilt {
   0%, 82%, 100% { transform: rotate(0deg) scale(1); }
@@ -147,40 +161,44 @@ function corDoCta(menu, coresPagina) {
   if (menu.cta_cor === "destaque" && coresPagina?.destaque) return coresPagina.destaque;
   return menu.cta_destino === "whatsapp" ? "#25D366" : "#111827";
 }
-function MenuTopo({ logo, menu, whatsapp, coresPagina, onIrParaContato, refMenu }) {
+function MenuTopo({ logo, menu, whatsapp, coresPagina, onIrParaContato, refMenu, porContainer }) {
   const vaiProContato = menu.cta_destino === "contato";
   const ctaUrl = vaiProContato ? "#contato" : menu.cta_destino === "whatsapp" && whatsapp?.numero ? linkWhatsApp(whatsapp.numero, whatsapp.mensagem) : menu.cta_url;
   const cta = menu.cta_texto && ctaUrl;
   const ehWhatsapp = menu.cta_destino === "whatsapp";
   return /* @__PURE__ */ jsxs(
-    "header",
+    "div",
     {
       ref: refMenu,
-      className: `bg-white border-b border-gray-100 px-5 sm:px-8 py-3 flex items-center justify-center sm:justify-between gap-4 min-h-[64px] ${menu.fixo ? "sticky top-0 z-40" : ""}`,
+      "data-modo": porContainer ? "container" : "janela",
+      className: `otica-lp-menu bg-white border-b border-gray-100 ${menu.fixo ? "sticky top-0 z-40" : ""}`,
       children: [
-        logo ? /* @__PURE__ */ jsx("img", { src: logo, alt: "Logo", className: "h-10 sm:h-11 w-auto max-w-[200px] object-contain" }) : /* @__PURE__ */ jsx("span", {}),
-        cta && /* @__PURE__ */ jsxs(
-          "a",
-          {
-            href: ctaUrl,
-            ...vaiProContato ? { onClick: (e) => {
-              e.preventDefault();
-              onIrParaContato();
-            } } : { target: "_blank", rel: "noopener noreferrer" },
-            className: `hidden sm:inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-base font-semibold text-white transition-opacity hover:opacity-90 ${menu.cta_tilt ? "otica-lp-tilt" : ""}`,
-            style: { background: corDoCta(menu, coresPagina) },
-            children: [
-              menu.cta_tilt && /* @__PURE__ */ jsx("style", { children: ESTILO_TILT }),
-              ehWhatsapp && /* @__PURE__ */ jsx(IconeWhatsApp, { className: "w-5 h-5" }),
-              menu.cta_texto
-            ]
-          }
-        )
+        /* @__PURE__ */ jsx("style", { children: ESTILO_MENU }),
+        /* @__PURE__ */ jsxs("header", { className: "otica-lp-menu-int", children: [
+          logo ? /* @__PURE__ */ jsx("img", { src: logo, alt: "Logo", className: "h-10 sm:h-11 w-auto max-w-[200px] object-contain" }) : /* @__PURE__ */ jsx("span", {}),
+          cta && /* @__PURE__ */ jsxs(
+            "a",
+            {
+              href: ctaUrl,
+              ...vaiProContato ? { onClick: (e) => {
+                e.preventDefault();
+                onIrParaContato();
+              } } : { target: "_blank", rel: "noopener noreferrer" },
+              className: `otica-lp-menu-cta items-center gap-2 rounded-lg px-5 py-2.5 text-base font-semibold text-white transition-opacity hover:opacity-90 ${menu.cta_tilt ? "otica-lp-tilt" : ""}`,
+              style: { background: corDoCta(menu, coresPagina) },
+              children: [
+                menu.cta_tilt && /* @__PURE__ */ jsx("style", { children: ESTILO_TILT }),
+                ehWhatsapp && /* @__PURE__ */ jsx(IconeWhatsApp, { className: "w-5 h-5" }),
+                menu.cta_texto
+              ]
+            }
+          )
+        ] })
       ]
     }
   );
 }
-function MolduraLandingPage({ configuracoes, preview = false, secaoContato = null, coresPagina = null, children }) {
+function MolduraLandingPage({ configuracoes, preview = false, secaoContato = null, coresPagina = null, porContainer = false, children }) {
   const raiz = useRef(null);
   const refMenu = useRef(null);
   const logo = configuracoes?.marca?.logo_url;
@@ -197,6 +215,7 @@ function MolduraLandingPage({ configuracoes, preview = false, secaoContato = nul
         whatsapp: w,
         coresPagina,
         refMenu,
+        porContainer,
         onIrParaContato: () => rolarSuaveAte(
           raiz.current?.querySelector(`[data-secao="${secaoContato}"]`) || raiz.current?.querySelector("form"),
           { folga: 16 + (menu.fixo ? refMenu.current?.offsetHeight || 0 : 0) }
@@ -205,7 +224,7 @@ function MolduraLandingPage({ configuracoes, preview = false, secaoContato = nul
     ),
     !menu?.ativo && logo && /* @__PURE__ */ jsx("header", { className: "bg-white border-b border-gray-100 px-5 py-3 flex items-center justify-center", children: /* @__PURE__ */ jsx("img", { src: logo, alt: "Logo", className: "h-10 sm:h-12 w-auto max-w-[220px] object-contain" }) }),
     children,
-    wpp && (preview ? /* @__PURE__ */ jsx("div", { className: "sticky bottom-0 h-0", children: /* @__PURE__ */ jsx("div", { className: "absolute bottom-4 right-4", children: /* @__PURE__ */ jsx(BotaoWhatsApp, { href: wpp, notificacao }) }) }) : /* @__PURE__ */ jsx("div", { className: "fixed bottom-5 right-5 z-50", children: /* @__PURE__ */ jsx(BotaoWhatsApp, { href: wpp, notificacao }) }))
+    wpp && (preview ? /* @__PURE__ */ jsx("div", { className: "sticky bottom-0 h-0", children: /* @__PURE__ */ jsx("div", { className: "absolute bottom-5 right-5", children: /* @__PURE__ */ jsx(BotaoWhatsApp, { href: wpp, notificacao }) }) }) : /* @__PURE__ */ jsx("div", { className: "fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-50", children: /* @__PURE__ */ jsx(BotaoWhatsApp, { href: wpp, notificacao }) }))
   ] });
 }
 
@@ -2025,6 +2044,7 @@ function LandingPageEditor() {
               preview: true,
               secaoContato: secaoContatoDaPagina(lp.template, conteudo),
               coresPagina: coresDaPagina(lp.template, conteudo),
+              porContainer: Boolean(template.responsivoPorContainer),
               children: /* @__PURE__ */ jsx6(template.Render, { conteudo })
             }
           ) }) })

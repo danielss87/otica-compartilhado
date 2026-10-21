@@ -157,6 +157,7 @@ export default function LandingPageEditor() {
                   preview
                   secaoContato={secaoContatoDaPagina(lp.template, conteudo)}
                   coresPagina={coresDaPagina(lp.template, conteudo)}
+                  porContainer={Boolean(template.responsivoPorContainer)}
                 >
                   <template.Render conteudo={conteudo} />
                 </MolduraLandingPage>

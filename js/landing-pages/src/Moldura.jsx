@@ -34,6 +34,28 @@ const ESTILO_PULSO = `
 `
 const COR_NOTIFICACAO = '#FF4B2B'
 
+// Menu no topo (v0.12.0): o conteúdo do menu fica numa faixa central de no máximo 1180px (a mesma
+// largura do conteúdo dos templates), pra logo e botão não ficarem colados nos cantos em tela larga.
+// O formato (só logo centralizado no celular; logo + botão a partir de 640px) segue a largura da
+// janela (`data-modo="janela"`) ou, na pré-visualização de templates responsivos por container, a
+// largura simulada (`data-modo="container"`). O container fica num wrapper que é o próprio
+// elemento sticky (sticky só gruda dentro do pai). Nunca pôr `container-type` num ancestral do
+// botão flutuante: vira bloco de contenção do `fixed` e o botão some do canto da tela.
+const ESTILO_MENU = `
+.otica-lp-menu[data-modo="container"] { container: otica-lp-menu / inline-size; }
+.otica-lp-menu-int { box-sizing: border-box; width: 100%; max-width: 1180px; margin: 0 auto; min-height: 64px; padding: 12px 20px;
+  display: flex; align-items: center; justify-content: center; gap: 16px; }
+.otica-lp-menu-cta { display: none; flex-shrink: 0; white-space: nowrap; }
+@media (min-width: 640px) {
+  .otica-lp-menu[data-modo="janela"] .otica-lp-menu-int { justify-content: space-between; padding: 12px 32px; }
+  .otica-lp-menu[data-modo="janela"] .otica-lp-menu-cta { display: inline-flex; }
+}
+@container otica-lp-menu (min-width: 640px) {
+  .otica-lp-menu-int { justify-content: space-between; padding: 12px 32px; }
+  .otica-lp-menu-cta { display: inline-flex; }
+}
+`
+
 // "Tilt" do botão do menu (menu.cta_tilt): balança rápido e fica parado o resto do ciclo
 // (~0,7s de movimento a cada 4s), pra chamar atenção sem cansar. Para no hover e pra quem
 // pede menos movimento.
@@ -126,7 +148,7 @@ function corDoCta(menu, coresPagina) {
 
 // `whatsapp`: config do botão de WhatsApp. A página pública já recebe `menu.cta_url` pronto
 // (calculado no backend, `config.publica`); o editor recebe a config completa e monta aqui.
-function MenuTopo({ logo, menu, whatsapp, coresPagina, onIrParaContato, refMenu }) {
+function MenuTopo({ logo, menu, whatsapp, coresPagina, onIrParaContato, refMenu, porContainer }) {
   const vaiProContato = menu.cta_destino === 'contato'
   const ctaUrl = vaiProContato
     ? '#contato'
@@ -136,30 +158,32 @@ function MenuTopo({ logo, menu, whatsapp, coresPagina, onIrParaContato, refMenu 
   const cta = menu.cta_texto && ctaUrl
   const ehWhatsapp = menu.cta_destino === 'whatsapp'
   return (
-    <header
+    <div
       ref={refMenu}
-      className={`bg-white border-b border-gray-100 px-5 sm:px-8 py-3 flex items-center justify-center sm:justify-between gap-4 min-h-[64px] ${
-        menu.fixo ? 'sticky top-0 z-40' : ''
-      }`}
+      data-modo={porContainer ? 'container' : 'janela'}
+      className={`otica-lp-menu bg-white border-b border-gray-100 ${menu.fixo ? 'sticky top-0 z-40' : ''}`}
     >
-      {logo ? <img src={logo} alt="Logo" className="h-10 sm:h-11 w-auto max-w-[200px] object-contain" /> : <span />}
-      {cta && (
-        <a
-          href={ctaUrl}
-          {...(vaiProContato
-            ? { onClick: (e) => { e.preventDefault(); onIrParaContato() } }
-            : { target: '_blank', rel: 'noopener noreferrer' })}
-          className={`hidden sm:inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-base font-semibold text-white transition-opacity hover:opacity-90 ${
-            menu.cta_tilt ? 'otica-lp-tilt' : ''
-          }`}
-          style={{ background: corDoCta(menu, coresPagina) }}
-        >
-          {menu.cta_tilt && <style>{ESTILO_TILT}</style>}
-          {ehWhatsapp && <IconeWhatsApp className="w-5 h-5" />}
-          {menu.cta_texto}
-        </a>
-      )}
-    </header>
+      <style>{ESTILO_MENU}</style>
+      <header className="otica-lp-menu-int">
+        {logo ? <img src={logo} alt="Logo" className="h-10 sm:h-11 w-auto max-w-[200px] object-contain" /> : <span />}
+        {cta && (
+          <a
+            href={ctaUrl}
+            {...(vaiProContato
+              ? { onClick: (e) => { e.preventDefault(); onIrParaContato() } }
+              : { target: '_blank', rel: 'noopener noreferrer' })}
+            className={`otica-lp-menu-cta items-center gap-2 rounded-lg px-5 py-2.5 text-base font-semibold text-white transition-opacity hover:opacity-90 ${
+              menu.cta_tilt ? 'otica-lp-tilt' : ''
+            }`}
+            style={{ background: corDoCta(menu, coresPagina) }}
+          >
+            {menu.cta_tilt && <style>{ESTILO_TILT}</style>}
+            {ehWhatsapp && <IconeWhatsApp className="w-5 h-5" />}
+            {menu.cta_texto}
+          </a>
+        )}
+      </header>
+    </div>
   )
 }
 
@@ -167,7 +191,9 @@ function MenuTopo({ logo, menu, whatsapp, coresPagina, onIrParaContato, refMenu 
 // pré-visualização (sticky), em vez de `fixed` na janela inteira.
 // `secaoContato`: id do bloco (`data-secao`) que é a seção de contato desta página;
 // `coresPagina`: { principal, destaque } desta página. Ambos vêm de templates.jsx.
-export default function MolduraLandingPage({ configuracoes, preview = false, secaoContato = null, coresPagina = null, children }) {
+// `porContainer`: só na pré-visualização de template com `responsivoPorContainer` — o menu segue a
+// largura simulada (celular/tablet/desktop) em vez da largura da janela.
+export default function MolduraLandingPage({ configuracoes, preview = false, secaoContato = null, coresPagina = null, porContainer = false, children }) {
   const raiz = useRef(null)
   const refMenu = useRef(null)
   const logo = configuracoes?.marca?.logo_url
@@ -185,6 +211,7 @@ export default function MolduraLandingPage({ configuracoes, preview = false, sec
           whatsapp={w}
           coresPagina={coresPagina}
           refMenu={refMenu}
+          porContainer={porContainer}
           // Menu fixo cobre o topo da tela: desconta a altura dele pra seção não ficar escondida.
           onIrParaContato={() => rolarSuaveAte(
             raiz.current?.querySelector(`[data-secao="${secaoContato}"]`) || raiz.current?.querySelector('form'),
@@ -200,12 +227,12 @@ export default function MolduraLandingPage({ configuracoes, preview = false, sec
       {children}
       {wpp && (preview ? (
         <div className="sticky bottom-0 h-0">
-          <div className="absolute bottom-4 right-4">
+          <div className="absolute bottom-5 right-5">
             <BotaoWhatsApp href={wpp} notificacao={notificacao} />
           </div>
         </div>
       ) : (
-        <div className="fixed bottom-5 right-5 z-50">
+        <div className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-50">
           <BotaoWhatsApp href={wpp} notificacao={notificacao} />
         </div>
       ))}

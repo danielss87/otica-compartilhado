@@ -21,7 +21,7 @@ package.json                     # npm: otica-compartilhado (raiz do repo)
 
 ## Features
 
-### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.11.0, out/2026
+### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.12.0, out/2026
 Origem: 4 Olhos (ago/2026). Páginas de captura por template pronto com edição guiada (4 templates:
 `simples`, `promocao`, `agendar_consulta`, `greats`), página pública `/lp/:slug`, contagem de
 visualizações e captura de lead (nome + telefone + fbclid). Quinto template, `leader` (v0.10.0), em
@@ -102,6 +102,17 @@ para todas as opções.
 8. Repo **público**: nunca commitar segredo, credencial, URL interna, dado de cliente ou telefone real.
 
 ## Changelog
+
+### v0.12.0 (21/10/2026)
+- **Menu no topo alinhado ao conteúdo**: logo e botão ficam numa faixa central de no máximo 1180px (a largura
+  do conteúdo dos templates), em vez de presos aos cantos da tela. Em tela larga eles pareciam colados na
+  borda direita. **Muda a posição do menu em páginas publicadas** em telas acima de ~1180px; abaixo disso, igual.
+- **Botão flutuante de WhatsApp com mais respiro**: 32px do canto a partir de 640px (era 20px) e 24px no celular.
+- Pré-visualização: com template `responsivoPorContainer`, o menu segue a largura simulada (no modo Celular o
+  botão do menu some, como no celular de verdade); antes seguia a janela e aparecia espremido.
+  `MolduraLandingPage` ganhou a prop `porContainer`. O CSS do menu é próprio (`ESTILO_MENU`, injetado).
+- Regra: nunca pôr `container-type` num ancestral do botão flutuante (`fixed`): o container vira o bloco de
+  contenção dele e o botão sai do canto da tela.
 
 ### v0.11.0 (21/10/2026)
 - **Editor mostra os textos padrão dentro das caixas**: antes o campo ficava vazio enquanto a página mostrava
