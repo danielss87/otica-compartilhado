@@ -15,9 +15,9 @@
 // Cores de runtime entram por variáveis CSS no elemento raiz.
 import { useEffect, useState } from 'react'
 import {
-  Image as ImageIcon, Eye, Sun, CircleDot, Zap, User, Glasses, Wrench, CircleCheck, MapPin, Plus, Star,
+  Image as ImageIcon, Eye, Sun, CircleDot, Zap, User, Glasses, Wrench, CircleCheck, MapPin, Plus, Star, Car, Navigation,
 } from 'lucide-react'
-import { IconeWhatsApp, linkWhatsApp } from './Moldura'
+import { IconeWhatsApp, linkWhatsApp, rolarSuaveAte } from './Moldura'
 
 export const LEADER_COR_ESCURA = '#020B26'
 export const LEADER_COR_DESTAQUE = '#00B6D5'
@@ -53,6 +53,8 @@ export const LEADER_TEXTOS = {
   contato_selo: 'Venha nos visitar',
   contato_titulo: 'Hoje você ainda pode sair enxergando melhor.',
   contato_texto: 'Venha até a loja ou fale pelo WhatsApp. A gente cuida do resto, do atendimento à entrega dos óculos ajustados no seu rosto.',
+  uber_texto: 'Pedir um Uber',
+  rotas_texto: 'Ver rotas no Google Maps',
   rodape_titulo: 'Sua ótica — óculos de grau, sol e lentes de contato',
   rodape_texto: `© ${new Date().getFullYear()} Todos os direitos reservados.`,
 }
@@ -121,6 +123,44 @@ function misturar(a, b, t) {
 function numeroWhatsApp(numero) {
   const d = String(numero || '').replace(/\D/g, '')
   return d.length === 10 || d.length === 11 ? `55${d}` : d
+}
+
+// ─── Como chegar (v0.13.0) ──────────────────────────────────────────────────
+// "lat, lng" como o Google Maps copia (clique direito no mapa). Inválido → null.
+export function lerCoordenadas(texto) {
+  const m = String(texto || '').match(/(-?\d+(?:[.,]\d+)?)\s*[,;\s]\s*(-?\d+(?:[.,]\d+)?)/)
+  if (!m) return null
+  const lat = Number(m[1].replace(',', '.'))
+  const lng = Number(m[2].replace(',', '.'))
+  return Math.abs(lat) <= 90 && Math.abs(lng) <= 180 ? { lat, lng } : null
+}
+
+// Deep links: links universais que abrem o app quando instalado (celular) e o site nos outros casos.
+// Uber: o destino precisa de latitude/longitude (o endereço sozinho não preenche o destino).
+export function linkUber({ coordenadas, nome, endereco }) {
+  if (!coordenadas) return null
+  const p = new URLSearchParams({ action: 'setPickup', pickup: 'my_location' })
+  p.set('dropoff[latitude]', String(coordenadas.lat))
+  p.set('dropoff[longitude]', String(coordenadas.lng))
+  if (nome) p.set('dropoff[nickname]', nome)
+  if (endereco) p.set('dropoff[formatted_address]', endereco)
+  return `https://m.uber.com/ul/?${p.toString()}`
+}
+
+// Google Maps: rota até o destino a partir de onde a pessoa está. Nome + endereço acha o lugar
+// certo (com a ficha da loja); sem endereço, vai pelas coordenadas.
+function destinoMaps({ coordenadas, nome, endereco }) {
+  if (endereco) return [nome, endereco].filter(Boolean).join(', ')
+  return coordenadas ? `${coordenadas.lat},${coordenadas.lng}` : null
+}
+export function linkRotasMaps(local) {
+  const destino = destinoMaps(local)
+  return destino ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destino)}` : null
+}
+// Mapa embutido sem chave de API (o mesmo do "Incorporar um mapa" do Google Maps).
+function linkMapaEmbutido(local) {
+  const destino = destinoMaps(local)
+  return destino ? `https://maps.google.com/maps?q=${encodeURIComponent(destino)}&z=16&output=embed` : null
 }
 
 // ─── CSS próprio (container queries) ───────────────────────────────────────
@@ -223,6 +263,17 @@ const CSS = `
 .olp-ld-endereco strong { font-weight: 700; }
 a.olp-ld-endereco:hover { text-decoration: underline; }
 
+/* Como chegar: mapa + botões de Uber e rotas */
+.olp-ld-mapa { width: 100%; height: 320px; border: 0; border-radius: 24px; display: block; background: #E5E7EB; box-shadow: 0 1px 2px rgba(2,11,38,.06); }
+.olp-ld-contato[data-mapa="1"] { padding-bottom: 56px !important; }
+.olp-ld-chegar { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; justify-content: center; }
+.olp-ld-chegar a { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px; padding: 12px 24px; border-radius: 999px;
+  font-family: ${FONTE_TITULO}; font-weight: 700; font-size: 16px; text-decoration: none; white-space: nowrap; transition: transform .15s, filter .15s; }
+.olp-ld-chegar a:hover { transform: translateY(-1px); filter: brightness(1.12); }
+.olp-ld-chegar svg { width: 20px; height: 20px; flex-shrink: 0; }
+.olp-ld-uber { background: #000000; color: #FFFFFF; }
+.olp-ld-maps { background: #1A73E8; color: #FFFFFF; }
+
 /* Rodapé */
 .olp-ld-rodape { padding: 30px 0; text-align: center; }
 .olp-ld-rodape h3 { font-size: 18px; font-weight: 700; color: #fff; }
@@ -259,6 +310,9 @@ a.olp-ld-endereco:hover { text-decoration: underline; }
   .olp-ld-duo-img { aspect-ratio: 4 / 5; }
   .olp-ld-contato .olp-ld-duo-texto { order: 2; }
   .olp-ld-form { margin-left: 0; }
+  .olp-ld-chegar { justify-content: flex-start; }
+  .olp-ld-mapa { height: 420px; }
+  .olp-ld-contato[data-mapa="1"] { padding-bottom: 72px !important; }
 
   .olp-ld-cards { grid-template-columns: repeat(3, 1fr); }
   .olp-ld-cards[data-n="4"] { grid-template-columns: repeat(2, 1fr); }
@@ -290,7 +344,7 @@ a.olp-ld-endereco:hover { text-decoration: underline; }
   .olp-ld-depos[data-n="1"] { grid-template-columns: 1fr; max-width: 640px; margin-left: auto; margin-right: auto; }
 }
 
-@media (prefers-reduced-motion: reduce) { .olp-ld-btn, .olp-ld-faq-q svg { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .olp-ld-btn, .olp-ld-faq-q svg, .olp-ld-chegar a { transition: none; } }
 `
 
 // ─── Peças ──────────────────────────────────────────────────────────────────
@@ -406,9 +460,18 @@ export function LeaderRender({ conteudo, conteudoOriginal, onLead, FormularioLea
     const raiz = e.currentTarget.closest('.olp-ld')
     const alvo = raiz?.querySelector('[data-secao="contato"]')
     if (!alvo) return
-    const reduzir = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
-    alvo.scrollIntoView({ behavior: reduzir ? 'auto' : 'smooth', block: 'start' })
+    // Mesma rolagem suave do botão do menu; com o menu fixo, desconta a altura dele.
+    const menu = document.querySelector('.otica-lp-menu')
+    const alturaMenu = menu && getComputedStyle(menu).position === 'sticky' ? menu.offsetHeight : 0
+    rolarSuaveAte(alvo, { folga: 16 + alturaMenu })
   }
+
+  // Como chegar: com endereço, a foto da seção de contato vira o mapa, e entram os botões de
+  // Uber (só com coordenadas) e de rotas no Google Maps.
+  const local = { coordenadas: lerCoordenadas(c.loja_coordenadas), nome: (c.loja_nome || '').trim(), endereco: (c.endereco_texto || '').trim() }
+  const urlUber = linkUber(local)
+  const urlRotas = linkRotasMaps(local)
+  const urlMapa = linkMapaEmbutido(local)
 
   const acaoPrincipal = <BotaoAcao texto={textoBotao} wpp={wpp} irParaContato={irParaContato} />
 
@@ -557,9 +620,9 @@ export function LeaderRender({ conteudo, conteudoOriginal, onLead, FormularioLea
       </section>
 
       {/* Venha nos visitar (seção de contato) */}
-      <section data-secao="contato" className="olp-ld-sec olp-ld-contato" style={{ paddingBottom: 0 }}>
-        <div className="olp-ld-wrap olp-ld-duo" style={{ alignItems: 'end' }}>
-          <div className="olp-ld-duo-texto" style={{ alignSelf: 'center', paddingBottom: 40 }}>
+      <section data-secao="contato" data-mapa={urlMapa ? '1' : undefined} className="olp-ld-sec olp-ld-contato" style={{ paddingBottom: 0 }}>
+        <div className="olp-ld-wrap olp-ld-duo" style={{ alignItems: urlMapa ? 'center' : 'end' }}>
+          <div className="olp-ld-duo-texto" style={{ alignSelf: 'center', paddingBottom: urlMapa ? 0 : 40 }}>
             <p className="olp-ld-selo">{c.contato_selo}</p>
             <Titulo className="olp-ld-h2" texto={c.contato_titulo} destaque={c.contato_titulo_destaque} />
             <p className="olp-ld-corpo" style={{ marginTop: 20 }}>
@@ -573,19 +636,36 @@ export function LeaderRender({ conteudo, conteudoOriginal, onLead, FormularioLea
                 <FormularioLead ctaTexto={conteudoOriginal?.botao_texto || 'Quero ser atendido'} onLead={onLead} />
               </div>
             )}
-            {temTexto(c.endereco_texto) && (
-              <div>
-                {c.endereco_url ? (
-                  <a href={c.endereco_url} target="_blank" rel="noopener noreferrer" className="olp-ld-endereco">
-                    <MapPin size={20} /><span>{c.endereco_texto}</span>
-                  </a>
-                ) : (
-                  <span className="olp-ld-endereco"><MapPin size={20} /><span>{c.endereco_texto}</span></span>
+            {(urlUber || urlRotas) && (
+              <div className="olp-ld-chegar">
+                {urlUber && (
+                  <a href={urlUber} target="_blank" rel="noopener noreferrer" className="olp-ld-uber"><Car />{c.uber_texto}</a>
+                )}
+                {urlRotas && (
+                  <a href={urlRotas} target="_blank" rel="noopener noreferrer" className="olp-ld-maps"><Navigation />{c.rotas_texto}</a>
                 )}
               </div>
             )}
+            {temTexto(c.endereco_texto) && (
+              <div>
+                <a href={c.endereco_url || urlRotas} target="_blank" rel="noopener noreferrer" className="olp-ld-endereco">
+                  <MapPin size={20} /><span>{local.nome ? <><strong>{local.nome}</strong> · {c.endereco_texto}</> : c.endereco_texto}</span>
+                </a>
+              </div>
+            )}
           </div>
-          <Imagem src={c.contato_imagem} className="olp-ld-contato-img" />
+          {urlMapa ? (
+            <iframe
+              src={urlMapa}
+              title={`Mapa: ${local.nome || local.endereco}`}
+              className="olp-ld-mapa"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              allowFullScreen
+            />
+          ) : (
+            <Imagem src={c.contato_imagem} className="olp-ld-contato-img" />
+          )}
         </div>
       </section>
 

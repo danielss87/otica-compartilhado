@@ -49,7 +49,9 @@ import {
   CircleCheck,
   MapPin,
   Plus,
-  Star
+  Star,
+  Car,
+  Navigation
 } from "lucide-react";
 
 // js/landing-pages/src/Moldura.jsx
@@ -229,7 +231,7 @@ function MolduraLandingPage({ configuracoes, preview = false, secaoContato = nul
 }
 
 // js/landing-pages/src/templateLeader.jsx
-import { jsx as jsx2, jsxs as jsxs2 } from "react/jsx-runtime";
+import { Fragment, jsx as jsx2, jsxs as jsxs2 } from "react/jsx-runtime";
 var LEADER_COR_ESCURA = "#020B26";
 var LEADER_COR_DESTAQUE = "#00B6D5";
 var LEADER_DEGRADE_PADRAO = 50;
@@ -261,6 +263,8 @@ var LEADER_TEXTOS = {
   contato_selo: "Venha nos visitar",
   contato_titulo: "Hoje voc\xEA ainda pode sair enxergando melhor.",
   contato_texto: "Venha at\xE9 a loja ou fale pelo WhatsApp. A gente cuida do resto, do atendimento \xE0 entrega dos \xF3culos ajustados no seu rosto.",
+  uber_texto: "Pedir um Uber",
+  rotas_texto: "Ver rotas no Google Maps",
   rodape_titulo: "Sua \xF3tica \u2014 \xF3culos de grau, sol e lentes de contato",
   rodape_texto: `\xA9 ${(/* @__PURE__ */ new Date()).getFullYear()} Todos os direitos reservados.`
 };
@@ -315,6 +319,34 @@ function misturar(a, b, t) {
 function numeroWhatsApp(numero) {
   const d = String(numero || "").replace(/\D/g, "");
   return d.length === 10 || d.length === 11 ? `55${d}` : d;
+}
+function lerCoordenadas(texto) {
+  const m = String(texto || "").match(/(-?\d+(?:[.,]\d+)?)\s*[,;\s]\s*(-?\d+(?:[.,]\d+)?)/);
+  if (!m) return null;
+  const lat = Number(m[1].replace(",", "."));
+  const lng = Number(m[2].replace(",", "."));
+  return Math.abs(lat) <= 90 && Math.abs(lng) <= 180 ? { lat, lng } : null;
+}
+function linkUber({ coordenadas, nome, endereco }) {
+  if (!coordenadas) return null;
+  const p = new URLSearchParams({ action: "setPickup", pickup: "my_location" });
+  p.set("dropoff[latitude]", String(coordenadas.lat));
+  p.set("dropoff[longitude]", String(coordenadas.lng));
+  if (nome) p.set("dropoff[nickname]", nome);
+  if (endereco) p.set("dropoff[formatted_address]", endereco);
+  return `https://m.uber.com/ul/?${p.toString()}`;
+}
+function destinoMaps({ coordenadas, nome, endereco }) {
+  if (endereco) return [nome, endereco].filter(Boolean).join(", ");
+  return coordenadas ? `${coordenadas.lat},${coordenadas.lng}` : null;
+}
+function linkRotasMaps(local) {
+  const destino = destinoMaps(local);
+  return destino ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destino)}` : null;
+}
+function linkMapaEmbutido(local) {
+  const destino = destinoMaps(local);
+  return destino ? `https://maps.google.com/maps?q=${encodeURIComponent(destino)}&z=16&output=embed` : null;
 }
 var CSS = `
 .olp-ld { container: olp-ld / inline-size; font-family: ${FONTE_TEXTO}; color: var(--ld-texto); background: #fff; overflow-wrap: break-word; }
@@ -413,6 +445,17 @@ var CSS = `
 .olp-ld-endereco strong { font-weight: 700; }
 a.olp-ld-endereco:hover { text-decoration: underline; }
 
+/* Como chegar: mapa + bot\xF5es de Uber e rotas */
+.olp-ld-mapa { width: 100%; height: 320px; border: 0; border-radius: 24px; display: block; background: #E5E7EB; box-shadow: 0 1px 2px rgba(2,11,38,.06); }
+.olp-ld-contato[data-mapa="1"] { padding-bottom: 56px !important; }
+.olp-ld-chegar { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; justify-content: center; }
+.olp-ld-chegar a { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px; padding: 12px 24px; border-radius: 999px;
+  font-family: ${FONTE_TITULO}; font-weight: 700; font-size: 16px; text-decoration: none; white-space: nowrap; transition: transform .15s, filter .15s; }
+.olp-ld-chegar a:hover { transform: translateY(-1px); filter: brightness(1.12); }
+.olp-ld-chegar svg { width: 20px; height: 20px; flex-shrink: 0; }
+.olp-ld-uber { background: #000000; color: #FFFFFF; }
+.olp-ld-maps { background: #1A73E8; color: #FFFFFF; }
+
 /* Rodap\xE9 */
 .olp-ld-rodape { padding: 30px 0; text-align: center; }
 .olp-ld-rodape h3 { font-size: 18px; font-weight: 700; color: #fff; }
@@ -449,6 +492,9 @@ a.olp-ld-endereco:hover { text-decoration: underline; }
   .olp-ld-duo-img { aspect-ratio: 4 / 5; }
   .olp-ld-contato .olp-ld-duo-texto { order: 2; }
   .olp-ld-form { margin-left: 0; }
+  .olp-ld-chegar { justify-content: flex-start; }
+  .olp-ld-mapa { height: 420px; }
+  .olp-ld-contato[data-mapa="1"] { padding-bottom: 72px !important; }
 
   .olp-ld-cards { grid-template-columns: repeat(3, 1fr); }
   .olp-ld-cards[data-n="4"] { grid-template-columns: repeat(2, 1fr); }
@@ -480,7 +526,7 @@ a.olp-ld-endereco:hover { text-decoration: underline; }
   .olp-ld-depos[data-n="1"] { grid-template-columns: 1fr; max-width: 640px; margin-left: auto; margin-right: auto; }
 }
 
-@media (prefers-reduced-motion: reduce) { .olp-ld-btn, .olp-ld-faq-q svg { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .olp-ld-btn, .olp-ld-faq-q svg, .olp-ld-chegar a { transition: none; } }
 `;
 function Imagem({ src, className }) {
   if (src) return /* @__PURE__ */ jsx2("img", { src, alt: "", className });
@@ -566,9 +612,14 @@ function LeaderRender({ conteudo, conteudoOriginal, onLead, FormularioLead: Form
     const raiz = e.currentTarget.closest(".olp-ld");
     const alvo = raiz?.querySelector('[data-secao="contato"]');
     if (!alvo) return;
-    const reduzir = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    alvo.scrollIntoView({ behavior: reduzir ? "auto" : "smooth", block: "start" });
+    const menu = document.querySelector(".otica-lp-menu");
+    const alturaMenu = menu && getComputedStyle(menu).position === "sticky" ? menu.offsetHeight : 0;
+    rolarSuaveAte(alvo, { folga: 16 + alturaMenu });
   }
+  const local = { coordenadas: lerCoordenadas(c.loja_coordenadas), nome: (c.loja_nome || "").trim(), endereco: (c.endereco_texto || "").trim() };
+  const urlUber = linkUber(local);
+  const urlRotas = linkRotasMaps(local);
+  const urlMapa = linkMapaEmbutido(local);
   const acaoPrincipal = /* @__PURE__ */ jsx2(BotaoAcao, { texto: textoBotao, wpp, irParaContato });
   return /* @__PURE__ */ jsxs2("div", { lang: "pt-BR", className: "olp-ld", style: estiloRaiz, children: [
     /* @__PURE__ */ jsx2("style", { children: CSS }),
@@ -680,21 +731,42 @@ function LeaderRender({ conteudo, conteudoOriginal, onLead, FormularioLead: Form
       ] }),
       /* @__PURE__ */ jsx2("div", { className: "olp-ld-faq", children: faq.map((f, i) => /* @__PURE__ */ jsx2(ItemFaq, { item: f }, i)) })
     ] }) }),
-    /* @__PURE__ */ jsx2("section", { "data-secao": "contato", className: "olp-ld-sec olp-ld-contato", style: { paddingBottom: 0 }, children: /* @__PURE__ */ jsxs2("div", { className: "olp-ld-wrap olp-ld-duo", style: { alignItems: "end" }, children: [
-      /* @__PURE__ */ jsxs2("div", { className: "olp-ld-duo-texto", style: { alignSelf: "center", paddingBottom: 40 }, children: [
+    /* @__PURE__ */ jsx2("section", { "data-secao": "contato", "data-mapa": urlMapa ? "1" : void 0, className: "olp-ld-sec olp-ld-contato", style: { paddingBottom: 0 }, children: /* @__PURE__ */ jsxs2("div", { className: "olp-ld-wrap olp-ld-duo", style: { alignItems: urlMapa ? "center" : "end" }, children: [
+      /* @__PURE__ */ jsxs2("div", { className: "olp-ld-duo-texto", style: { alignSelf: "center", paddingBottom: urlMapa ? 0 : 40 }, children: [
         /* @__PURE__ */ jsx2("p", { className: "olp-ld-selo", children: c.contato_selo }),
         /* @__PURE__ */ jsx2(Titulo, { className: "olp-ld-h2", texto: c.contato_titulo, destaque: c.contato_titulo_destaque }),
         /* @__PURE__ */ jsx2("p", { className: "olp-ld-corpo", style: { marginTop: 20 }, children: c.contato_texto }),
         wpp ? /* @__PURE__ */ jsx2("div", { className: "olp-ld-acoes", children: acaoPrincipal }) : /* @__PURE__ */ jsx2("div", { className: "olp-ld-form", children: /* @__PURE__ */ jsx2(FormularioLead2, { ctaTexto: conteudoOriginal?.botao_texto || "Quero ser atendido", onLead }) }),
-        temTexto(c.endereco_texto) && /* @__PURE__ */ jsx2("div", { children: c.endereco_url ? /* @__PURE__ */ jsxs2("a", { href: c.endereco_url, target: "_blank", rel: "noopener noreferrer", className: "olp-ld-endereco", children: [
+        (urlUber || urlRotas) && /* @__PURE__ */ jsxs2("div", { className: "olp-ld-chegar", children: [
+          urlUber && /* @__PURE__ */ jsxs2("a", { href: urlUber, target: "_blank", rel: "noopener noreferrer", className: "olp-ld-uber", children: [
+            /* @__PURE__ */ jsx2(Car, {}),
+            c.uber_texto
+          ] }),
+          urlRotas && /* @__PURE__ */ jsxs2("a", { href: urlRotas, target: "_blank", rel: "noopener noreferrer", className: "olp-ld-maps", children: [
+            /* @__PURE__ */ jsx2(Navigation, {}),
+            c.rotas_texto
+          ] })
+        ] }),
+        temTexto(c.endereco_texto) && /* @__PURE__ */ jsx2("div", { children: /* @__PURE__ */ jsxs2("a", { href: c.endereco_url || urlRotas, target: "_blank", rel: "noopener noreferrer", className: "olp-ld-endereco", children: [
           /* @__PURE__ */ jsx2(MapPin, { size: 20 }),
-          /* @__PURE__ */ jsx2("span", { children: c.endereco_texto })
-        ] }) : /* @__PURE__ */ jsxs2("span", { className: "olp-ld-endereco", children: [
-          /* @__PURE__ */ jsx2(MapPin, { size: 20 }),
-          /* @__PURE__ */ jsx2("span", { children: c.endereco_texto })
+          /* @__PURE__ */ jsx2("span", { children: local.nome ? /* @__PURE__ */ jsxs2(Fragment, { children: [
+            /* @__PURE__ */ jsx2("strong", { children: local.nome }),
+            " \xB7 ",
+            c.endereco_texto
+          ] }) : c.endereco_texto })
         ] }) })
       ] }),
-      /* @__PURE__ */ jsx2(Imagem, { src: c.contato_imagem, className: "olp-ld-contato-img" })
+      urlMapa ? /* @__PURE__ */ jsx2(
+        "iframe",
+        {
+          src: urlMapa,
+          title: `Mapa: ${local.nome || local.endereco}`,
+          className: "olp-ld-mapa",
+          loading: "lazy",
+          referrerPolicy: "no-referrer-when-downgrade",
+          allowFullScreen: true
+        }
+      ) : /* @__PURE__ */ jsx2(Imagem, { src: c.contato_imagem, className: "olp-ld-contato-img" })
     ] }) }),
     /* @__PURE__ */ jsxs2("footer", { "data-secao": "rodape", children: [
       /* @__PURE__ */ jsx2("div", { className: "olp-ld-escuro olp-ld-rodape", children: /* @__PURE__ */ jsxs2("div", { className: "olp-ld-wrap", children: [
@@ -951,13 +1023,17 @@ var LANDING_PAGE_TEMPLATES = {
       { chave: "faq_titulo", label: "D\xFAvidas: t\xEDtulo", tipo: "texto_curto", padrao: LEADER_TEXTOS.faq_titulo },
       { chave: "faq_titulo_destaque", label: "D\xFAvidas: final do t\xEDtulo em destaque", tipo: "texto_curto" },
       { chave: "faq", label: "D\xFAvidas: perguntas e respostas", tipo: "lista_faq", padrao: LEADER_FAQ_PADRAO },
-      { chave: "contato_imagem", label: "Contato: imagem (PNG sem fundo fica melhor)", tipo: "imagem" },
+      { chave: "contato_imagem", label: "Contato: imagem (PNG sem fundo fica melhor; n\xE3o aparece quando h\xE1 endere\xE7o, que vira mapa)", tipo: "imagem" },
       { chave: "contato_selo", label: "Contato: frase pequena", tipo: "texto_curto", padrao: LEADER_TEXTOS.contato_selo, padrao: LEADER_TEXTOS.contato_selo },
       { chave: "contato_titulo", label: "Contato: t\xEDtulo", tipo: "texto_curto", padrao: LEADER_TEXTOS.contato_titulo },
       { chave: "contato_titulo_destaque", label: "Contato: final do t\xEDtulo em destaque", tipo: "texto_curto" },
       { chave: "contato_texto", label: "Contato: texto", tipo: "texto_longo", padrao: LEADER_TEXTOS.contato_texto },
-      { chave: "endereco_texto", label: "Contato: endere\xE7o", tipo: "texto_curto", placeholder: "Ex: Rua das Flores, 123 \xB7 Centro" },
-      { chave: "endereco_url", label: "Contato: link do endere\xE7o (Google Maps)", tipo: "texto_curto", placeholder: "https://maps.google.com/..." },
+      { chave: "endereco_texto", label: "Como chegar: endere\xE7o da loja (com o endere\xE7o, a imagem vira um mapa e aparece o bot\xE3o de rotas)", tipo: "texto_curto", placeholder: "Ex: Rua das Flores, 123 \u2013 Centro, Cidade/UF" },
+      { chave: "loja_nome", label: "Como chegar: nome do local (ajuda o Google Maps a achar a loja)", tipo: "texto_curto", placeholder: "Ex: Shopping Centro" },
+      { chave: "loja_coordenadas", label: "Como chegar: coordenadas, para o bot\xE3o do Uber (Google Maps \u2192 clique direito no local \u2192 copie os n\xFAmeros)", tipo: "texto_curto", placeholder: "Ex: -27.5988, -48.6082" },
+      { chave: "uber_texto", label: "Como chegar: texto do bot\xE3o do Uber", tipo: "texto_curto", padrao: LEADER_TEXTOS.uber_texto },
+      { chave: "rotas_texto", label: "Como chegar: texto do bot\xE3o de rotas", tipo: "texto_curto", padrao: LEADER_TEXTOS.rotas_texto },
+      { chave: "endereco_url", label: "Como chegar: link do endere\xE7o (opcional; em branco, abre as rotas)", tipo: "texto_curto", placeholder: "https://maps.google.com/..." },
       { chave: "rodape_titulo", label: "Rodap\xE9: nome da \xF3tica", tipo: "texto_curto", padrao: LEADER_TEXTOS.rodape_titulo },
       { chave: "rodape_itens", label: "Rodap\xE9: diferenciais", tipo: "lista", padrao: LEADER_RODAPE_ITENS_PADRAO, placeholder: "Ex: P\xF3s-venda garantido" },
       { chave: "rodape_texto", label: "Rodap\xE9: texto da faixa final", tipo: "texto_curto", padrao: LEADER_TEXTOS.rodape_texto, placeholder: "Ex: \xA9 2026 Sua \xF3tica. Todos os direitos reservados." }
@@ -1376,7 +1452,7 @@ async function salvarConfiguracoes(payload) {
 }
 
 // js/landing-pages/src/ModalConfiguracoes.jsx
-import { Fragment, jsx as jsx4, jsxs as jsxs4 } from "react/jsx-runtime";
+import { Fragment as Fragment2, jsx as jsx4, jsxs as jsxs4 } from "react/jsx-runtime";
 var inputCls = "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400";
 function Interruptor({ ligado, onChange, label }) {
   return /* @__PURE__ */ jsx4(
@@ -1472,7 +1548,7 @@ function ModalConfiguracoes({ onClose }) {
       /* @__PURE__ */ jsxs4("div", { className: "p-5 overflow-y-auto space-y-6", children: [
         !cfg && !erroCarregar && /* @__PURE__ */ jsx4("p", { className: "text-sm text-gray-400 text-center py-6", children: "Carregando..." }),
         erroCarregar && /* @__PURE__ */ jsx4("p", { className: "text-sm text-red-600 text-center py-6", children: erroCarregar }),
-        cfg && /* @__PURE__ */ jsxs4(Fragment, { children: [
+        cfg && /* @__PURE__ */ jsxs4(Fragment2, { children: [
           /* @__PURE__ */ jsxs4("section", { className: "space-y-3", children: [
             /* @__PURE__ */ jsxs4("div", { className: "flex items-center justify-between gap-3", children: [
               /* @__PURE__ */ jsxs4("div", { className: "flex items-center gap-2.5", children: [
@@ -1679,7 +1755,7 @@ function ModalConfiguracoes({ onClose }) {
 }
 
 // js/landing-pages/src/LandingPagesLista.jsx
-import { Fragment as Fragment2, jsx as jsx5, jsxs as jsxs5 } from "react/jsx-runtime";
+import { Fragment as Fragment3, jsx as jsx5, jsxs as jsxs5 } from "react/jsx-runtime";
 var STATUS_ESTILO = {
   rascunho: "bg-gray-100 text-gray-600",
   publicada: "bg-emerald-100 text-emerald-700",
@@ -1821,7 +1897,7 @@ function LandingPagesLista() {
             children: lp.status === "publicada" ? /* @__PURE__ */ jsx5(Pause, { size: 14 }) : /* @__PURE__ */ jsx5(Play, { size: 14 })
           }
         ),
-        lp.status === "publicada" && /* @__PURE__ */ jsxs5(Fragment2, { children: [
+        lp.status === "publicada" && /* @__PURE__ */ jsxs5(Fragment3, { children: [
           /* @__PURE__ */ jsx5("button", { onClick: () => copiarLink(lp.slug), title: "Copiar link", className: "p-1.5 rounded-lg hover:bg-gray-100 text-gray-500", children: copiado === lp.slug ? /* @__PURE__ */ jsx5(Check, { size: 14, className: "text-emerald-600" }) : /* @__PURE__ */ jsx5(Copy, { size: 14 }) }),
           /* @__PURE__ */ jsx5("a", { href: `${rotaPublica}/${lp.slug}`, target: "_blank", rel: "noopener noreferrer", title: "Abrir p\xE1gina", className: "p-1.5 rounded-lg hover:bg-gray-100 text-gray-500", children: /* @__PURE__ */ jsx5(ExternalLink, { size: 14 }) })
         ] }),
@@ -1916,7 +1992,7 @@ function ModalEscolherTemplate({ onClose, onCriado }) {
 import { useEffect as useEffect5, useState as useState5, useRef as useRef3, useCallback } from "react";
 import { useParams, useNavigate as useNavigate2 } from "react-router-dom";
 import { ArrowLeft, Save, Play as Play2, Pause as Pause2, Copy as Copy2, Check as Check2, Upload as Upload2, X as X3, Plus as Plus3, Trash2 as Trash23, Smartphone, Tablet, Monitor } from "lucide-react";
-import { Fragment as Fragment3, jsx as jsx6, jsxs as jsxs6 } from "react/jsx-runtime";
+import { Fragment as Fragment4, jsx as jsx6, jsxs as jsxs6 } from "react/jsx-runtime";
 function LandingPageEditor() {
   const { id } = useParams();
   const navigate = useNavigate2();
@@ -1997,10 +2073,10 @@ function LandingPageEditor() {
           {
             onClick: handlePublicarPausar,
             className: `flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${lp.status === "publicada" ? "bg-amber-100 text-amber-700 hover:bg-amber-200" : "bg-emerald-600 text-white hover:bg-emerald-700"}`,
-            children: lp.status === "publicada" ? /* @__PURE__ */ jsxs6(Fragment3, { children: [
+            children: lp.status === "publicada" ? /* @__PURE__ */ jsxs6(Fragment4, { children: [
               /* @__PURE__ */ jsx6(Pause2, { size: 14 }),
               " Pausar"
-            ] }) : /* @__PURE__ */ jsxs6(Fragment3, { children: [
+            ] }) : /* @__PURE__ */ jsxs6(Fragment4, { children: [
               /* @__PURE__ */ jsx6(Play2, { size: 14 }),
               " Publicar"
             ] })
@@ -2187,7 +2263,7 @@ function MetaCampos({ lp, nome, onSalvo }) {
       });
     }, 900);
   }
-  return /* @__PURE__ */ jsxs6(Fragment3, { children: [
+  return /* @__PURE__ */ jsxs6(Fragment4, { children: [
     /* @__PURE__ */ jsxs6("div", { children: [
       /* @__PURE__ */ jsx6("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: "T\xEDtulo da p\xE1gina (aba do navegador)" }),
       /* @__PURE__ */ jsx6(

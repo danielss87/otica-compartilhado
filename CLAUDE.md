@@ -21,7 +21,7 @@ package.json                     # npm: otica-compartilhado (raiz do repo)
 
 ## Features
 
-### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.12.0, out/2026
+### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.13.0, out/2026
 Origem: 4 Olhos (ago/2026). Páginas de captura por template pronto com edição guiada (4 templates:
 `simples`, `promocao`, `agendar_consulta`, `greats`), página pública `/lp/:slug`, contagem de
 visualizações e captura de lead (nome + telefone + fbclid). Quinto template, `leader` (v0.10.0), em
@@ -102,6 +102,20 @@ para todas as opções.
 8. Repo **público**: nunca commitar segredo, credencial, URL interna, dado de cliente ou telefone real.
 
 ## Changelog
+
+### v0.13.0 (21/10/2026)
+- **Leader: "Como chegar" na seção de contato.** Com `endereco_texto` preenchido, a imagem da seção vira um
+  **mapa do Google embutido** (sem chave de API, `maps.google.com/maps?q=...&output=embed`) e aparecem dois
+  botões com deep link (links universais: abrem o app no celular, o site no computador):
+  - **Pedir um Uber** (preto, identidade da Uber): `m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[...]`.
+    Só aparece com `loja_coordenadas` ("lat, lng", como o Google Maps copia), porque o Uber não preenche o
+    destino só com o endereço.
+  - **Ver rotas no Google Maps** (azul Google): `google.com/maps/dir/?api=1&destination=<nome, endereço>`.
+  - Campos novos: `loja_nome`, `loja_coordenadas`, `uber_texto`, `rotas_texto`. A linha do endereço passa a
+    abrir as rotas quando `endereco_url` está vazio. Sem endereço, a seção fica como antes.
+- Leader: o link secundário do topo ("ou visitar a loja") rola até a seção de contato com a mesma rolagem
+  suave do menu e desconta a altura do menu fixo (antes o título ficava escondido atrás dele).
+- Páginas sem endereço: HTML idêntico ao da v0.12.0.
 
 ### v0.12.0 (21/10/2026)
 - **Menu no topo alinhado ao conteúdo**: logo e botão ficam numa faixa central de no máximo 1180px (a largura
