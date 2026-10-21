@@ -5,6 +5,10 @@
 import { useState, useEffect } from 'react'
 import { Image as ImageIcon, MessageCircle, Gem, Footprints, RotateCcw, Star, Quote } from 'lucide-react'
 import { getConfig } from './config'
+import {
+  LeaderRender, LeaderCardPreview, LEADER_COR_ESCURA, LEADER_COR_DESTAQUE, LEADER_SERVICOS_PADRAO, LEADER_SERVICOS_ICONES,
+  LEADER_PASSOS_PADRAO, LEADER_PASSOS_ICONES, LEADER_FAQ_PADRAO, LEADER_RODAPE_ITENS_PADRAO,
+} from './templateLeader'
 
 // Textos de exemplo que a página mostra enquanto a lista está vazia. Os campos do
 // editor recebem os mesmos valores em `padrao`, pra que o que aparece na página
@@ -206,6 +210,94 @@ export const LANDING_PAGE_TEMPLATES = {
     ],
     Render: ({ conteudo }) => <GreatsRender conteudo={conteudo} />,
   },
+
+  // Ótica de bairro com banners em degradê (cor sólida ↔ foto da loja). Responsivo por
+  // container query: a pré-visualização mostra celular/tablet/desktop de verdade
+  // (`responsivoPorContainer`). Código em templateLeader.jsx.
+  leader: {
+    nome: 'Leader',
+    descricao: 'Ótica de bairro: banners com degradê entre cor sólida e foto da loja, passo a passo, FAQ e WhatsApp.',
+    responsivoPorContainer: true,
+    secoes: [
+      { id: 'hero', nome: 'Topo (banner com degradê)' }, { id: 'problema', nome: 'O problema' }, { id: 'solucao', nome: 'A solução (banner com degradê)' },
+      { id: 'servicos', nome: 'O que oferecemos' }, { id: 'como_funciona', nome: 'Como funciona' }, { id: 'galeria', nome: 'Fotos da loja' },
+      { id: 'prova_social', nome: 'Prova social' }, { id: 'faq', nome: 'Dúvidas frequentes' }, { id: 'contato', nome: 'Venha nos visitar (contato)' },
+      { id: 'rodape', nome: 'Rodapé' },
+    ],
+    secaoContatoPadrao: 'contato',
+    cores: (c) => ({ principal: c.cor_escura || LEADER_COR_ESCURA, destaque: c.cor_destaque || LEADER_COR_DESTAQUE }),
+    campos: [
+      { chave: 'cor_escura', label: 'Cor escura (topo, rodapé, títulos)', tipo: 'cor', padrao: LEADER_COR_ESCURA },
+      { chave: 'cor_destaque', label: 'Cor de destaque (botões, palavras em destaque)', tipo: 'cor', padrao: LEADER_COR_DESTAQUE },
+      { chave: 'degrade_largura', label: 'Largura do degradê entre a cor e a foto (banners)', tipo: 'intensidade', min: 20, max: 80, passo: 5, padrao: 50, unidade: '%', rotuloMin: 'Transição curta', rotuloMax: 'Transição longa' },
+
+      { chave: 'whatsapp_numero', label: 'WhatsApp dos botões (com DDD)', tipo: 'texto_curto', placeholder: 'Ex: 11 99999-9999 — em branco, os botões levam ao formulário' },
+      { chave: 'whatsapp_mensagem', label: 'Mensagem pré-preenchida do WhatsApp', tipo: 'texto_curto', placeholder: 'Ex: Olá! Vim pela página e gostaria de mais informações.' },
+      { chave: 'botao_texto', label: 'Texto dos botões', tipo: 'texto_curto', placeholder: 'Falar pelo WhatsApp' },
+
+      { chave: 'hero_imagem', label: 'Topo: foto da loja (fica à direita, fundindo com a cor escura)', tipo: 'imagem' },
+      { chave: 'hero_logo', label: 'Topo: logo dentro do banner (opcional, PNG claro)', tipo: 'imagem' },
+      { chave: 'hero_selo', label: 'Topo: frase pequena acima do título', tipo: 'texto_curto', placeholder: 'Ex: ÓTICA — ÓCULOS DE GRAU, SOL E LENTES DE CONTATO' },
+      { chave: 'hero_titulo', label: 'Topo: título', tipo: 'texto_curto', placeholder: 'Ex: Enxergue melhor ainda hoje.' },
+      { chave: 'hero_titulo_destaque', label: 'Topo: final do título, na cor de destaque', tipo: 'texto_curto', placeholder: 'Ex: Óculos prontos em até 40 minutos.' },
+      { chave: 'hero_texto', label: 'Topo: texto', tipo: 'texto_longo' },
+      { chave: 'hero_link_texto', label: 'Topo: link ao lado do botão', tipo: 'texto_curto', placeholder: 'ou visitar a loja' },
+      { chave: 'hero_link_url', label: 'Topo: endereço do link (ex: Google Maps). Em branco, rola até o contato', tipo: 'texto_curto', placeholder: 'https://maps.google.com/...' },
+
+      { chave: 'problema_imagem', label: 'O problema: imagem', tipo: 'imagem' },
+      { chave: 'problema_selo', label: 'O problema: frase pequena', tipo: 'texto_curto', placeholder: 'O PROBLEMA' },
+      { chave: 'problema_titulo', label: 'O problema: título', tipo: 'texto_curto' },
+      { chave: 'problema_titulo_destaque', label: 'O problema: final do título em destaque', tipo: 'texto_curto' },
+      { chave: 'problema_texto', label: 'O problema: texto (linha em branco separa parágrafos)', tipo: 'texto_longo' },
+      { chave: 'problema_caixa', label: 'O problema: caixa escura no fim', tipo: 'texto_curto', placeholder: 'Ex: Aqui é diferente.' },
+
+      { chave: 'solucao_imagem', label: 'A solução: foto (fica à direita, fundindo com o branco)', tipo: 'imagem' },
+      { chave: 'solucao_selo', label: 'A solução: frase pequena', tipo: 'texto_curto', placeholder: 'A SOLUÇÃO' },
+      { chave: 'solucao_titulo', label: 'A solução: título', tipo: 'texto_curto' },
+      { chave: 'solucao_titulo_destaque', label: 'A solução: final do título em destaque', tipo: 'texto_curto' },
+      { chave: 'solucao_texto', label: 'A solução: texto', tipo: 'texto_longo' },
+
+      { chave: 'servicos_selo', label: 'O que oferecemos: frase pequena', tipo: 'texto_curto', placeholder: 'O QUE OFERECEMOS' },
+      { chave: 'servicos_titulo', label: 'O que oferecemos: título', tipo: 'texto_curto' },
+      { chave: 'servicos_titulo_destaque', label: 'O que oferecemos: final do título em destaque', tipo: 'texto_curto' },
+      { chave: 'servicos', label: 'O que oferecemos: cartões (até 4)', tipo: 'lista_features', padrao: LEADER_SERVICOS_PADRAO, icones: LEADER_SERVICOS_ICONES, placeholderTitulo: 'Ex: Óculos de grau' },
+      { chave: 'faixa_titulo', label: 'Faixa escura: título', tipo: 'texto_curto', placeholder: 'Ex: Entrega expressa' },
+      { chave: 'faixa_texto', label: 'Faixa escura: texto', tipo: 'texto_curto' },
+
+      { chave: 'passos_selo', label: 'Como funciona: frase pequena', tipo: 'texto_curto', placeholder: 'COMO FUNCIONA' },
+      { chave: 'passos_titulo', label: 'Como funciona: título', tipo: 'texto_curto' },
+      { chave: 'passos_titulo_destaque', label: 'Como funciona: final do título em destaque', tipo: 'texto_curto' },
+      { chave: 'passos', label: 'Como funciona: etapas', tipo: 'lista_features', padrao: LEADER_PASSOS_PADRAO, icones: LEADER_PASSOS_ICONES, placeholderTitulo: 'Ex: Escolha da armação' },
+
+      { chave: 'galeria_1', label: 'Fotos da loja: 1', tipo: 'imagem' },
+      { chave: 'galeria_2', label: 'Fotos da loja: 2', tipo: 'imagem' },
+      { chave: 'galeria_3', label: 'Fotos da loja: 3', tipo: 'imagem' },
+
+      { chave: 'prova_selo', label: 'Prova social: frase pequena', tipo: 'texto_curto', placeholder: 'PROVA SOCIAL' },
+      { chave: 'prova_titulo', label: 'Prova social: título', tipo: 'texto_curto' },
+      { chave: 'prova_titulo_destaque', label: 'Prova social: final do título em destaque', tipo: 'texto_curto' },
+      { chave: 'prova_texto', label: 'Prova social: texto', tipo: 'texto_longo' },
+      { chave: 'depoimentos', label: 'Prova social: depoimentos (opcional, até 3)', tipo: 'lista_depoimentos' },
+
+      { chave: 'faq_selo', label: 'Dúvidas: frase pequena', tipo: 'texto_curto', placeholder: 'DÚVIDAS FREQUENTES' },
+      { chave: 'faq_titulo', label: 'Dúvidas: título', tipo: 'texto_curto' },
+      { chave: 'faq_titulo_destaque', label: 'Dúvidas: final do título em destaque', tipo: 'texto_curto' },
+      { chave: 'faq', label: 'Dúvidas: perguntas e respostas', tipo: 'lista_faq', padrao: LEADER_FAQ_PADRAO },
+
+      { chave: 'contato_imagem', label: 'Contato: imagem (PNG sem fundo fica melhor)', tipo: 'imagem' },
+      { chave: 'contato_selo', label: 'Contato: frase pequena', tipo: 'texto_curto', placeholder: 'VENHA NOS VISITAR' },
+      { chave: 'contato_titulo', label: 'Contato: título', tipo: 'texto_curto' },
+      { chave: 'contato_titulo_destaque', label: 'Contato: final do título em destaque', tipo: 'texto_curto' },
+      { chave: 'contato_texto', label: 'Contato: texto', tipo: 'texto_longo' },
+      { chave: 'endereco_texto', label: 'Contato: endereço', tipo: 'texto_curto', placeholder: 'Ex: Rua das Flores, 123 · Centro' },
+      { chave: 'endereco_url', label: 'Contato: link do endereço (Google Maps)', tipo: 'texto_curto', placeholder: 'https://maps.google.com/...' },
+
+      { chave: 'rodape_titulo', label: 'Rodapé: nome da ótica', tipo: 'texto_curto' },
+      { chave: 'rodape_itens', label: 'Rodapé: diferenciais', tipo: 'lista', padrao: LEADER_RODAPE_ITENS_PADRAO, placeholder: 'Ex: Pós-venda garantido' },
+      { chave: 'rodape_texto', label: 'Rodapé: texto da faixa final', tipo: 'texto_curto', placeholder: 'Ex: © 2026 Sua ótica. Todos os direitos reservados.' },
+    ],
+    Render: ({ conteudo, onLead }) => <LeaderRender conteudo={conteudo} onLead={onLead} FormularioLead={FormularioLead} />,
+  },
 }
 
 // `secoes`: blocos marcados com `data-secao` no Render — a página escolhe um como "seção de
@@ -243,6 +335,7 @@ export function TemplateCardPreview({ templateId }) {
       </div>
     )
   }
+  if (templateId === 'leader') return <LeaderCardPreview />
   if (templateId === 'greats') {
     return (
       <div className="w-full h-24 rounded-lg bg-gray-50 border border-gray-200 p-1.5 flex flex-col gap-1">

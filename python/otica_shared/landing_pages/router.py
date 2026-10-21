@@ -32,13 +32,14 @@ from .schemas import (
     LandingPagesConfigUpdate,
 )
 
-TEMPLATES_VALIDOS = {"simples", "promocao", "agendar_consulta", "greats"}
+TEMPLATES_VALIDOS = {"simples", "promocao", "agendar_consulta", "greats", "leader"}
 
 TEMPLATES_META = [
     {"id": "simples", "nome": "Simples", "descricao": "Hero + texto livre + CTA — ideal para uma oferta única e direta."},
     {"id": "promocao", "nome": "Promoção", "descricao": "Hero + imagem de produto + lista de benefícios + CTA."},
     {"id": "agendar_consulta", "nome": "Agendar consulta", "descricao": "Hero + CTA de WhatsApp + FAQ."},
     {"id": "greats", "nome": "Greats", "descricao": "Layout premium de e-commerce (hero, mosaico de fotos, CTAs) — fiel a uma referência real."},
+    {"id": "leader", "nome": "Leader", "descricao": "Ótica de bairro: banners com degradê entre cor sólida e foto da loja, passo a passo, FAQ e WhatsApp."},
 ]
 
 STATUS_VALIDOS = {"rascunho", "publicada", "pausada"}

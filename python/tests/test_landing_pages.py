@@ -194,7 +194,7 @@ def test_upload_imagem(client):
 
 def test_templates(client):
     ids = [t["id"] for t in client.get("/api/landing-pages/templates", headers=AUTH).json()]
-    assert ids == ["simples", "promocao", "agendar_consulta", "greats"]
+    assert ids == ["simples", "promocao", "agendar_consulta", "greats", "leader"]
 
 
 def _publicar(client, nome="Oferta"):

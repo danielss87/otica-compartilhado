@@ -21,10 +21,18 @@ package.json                     # npm: otica-compartilhado (raiz do repo)
 
 ## Features
 
-### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.9.0, out/2026
+### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.10.0, out/2026
 Origem: 4 Olhos (ago/2026). Páginas de captura por template pronto com edição guiada (4 templates:
 `simples`, `promocao`, `agendar_consulta`, `greats`), página pública `/lp/:slug`, contagem de
-visualizações e captura de lead (nome + telefone + fbclid).
+visualizações e captura de lead (nome + telefone + fbclid). Quinto template, `leader` (v0.10.0), em
+`templateLeader.jsx`.
+
+**Template responsivo por container query** (`responsivoPorContainer: true`, hoje só o `leader`): o
+layout muda pela largura da própria página, não da janela, então a pré-visualização do editor mostra
+celular/tablet/desktop de verdade (seletor ao lado de "Pré-visualização"; renderiza em 390/820/1280px e
+reduz com `zoom`). O CSS é próprio, com prefixo de classe e injetado num `<style>`, porque o Tailwind 3
+(Ariel) não tem container query e o 4 (4 Olhos) usa outra sintaxe. Template novo de layout complexo:
+preferir este modelo. Os templates antigos usam `sm:` (viewport) e não respondem ao seletor.
 
 **Backend** — `criar_modelos(Base, tabela_usuarios=..., modelo_usuario=...)` e
 `criar_modelo_config(Base)` e
@@ -89,6 +97,21 @@ para todas as opções.
 8. Repo **público**: nunca commitar segredo, credencial, URL interna, dado de cliente ou telefone real.
 
 ## Changelog
+
+### v0.10.0 (21/10/2026)
+- **Template novo "Leader"** (`leader`, `templateLeader.jsx`), réplica do layout de uma landing page de ótica
+  de bairro (referência: oticaleader.com). Seções: topo, o problema, a solução, o que oferecemos (+ faixa
+  escura), como funciona (linha do tempo), fotos da loja, prova social (+ depoimentos opcionais), dúvidas
+  (sanfona), venha nos visitar (contato) e rodapé. Fontes Syne + DM Sans (só carregadas com o template).
+- **Banners com degradê** (topo e "a solução"): cor sólida fundindo com a foto da loja, em CSS (na
+  referência vinha pronto no PNG), então qualquer foto enviada ganha o efeito. Desktop/tablet: foto à
+  direita, degradê da esquerda para a direita; celular: foto em cima, desbotando para a cor embaixo, com o
+  texto centralizado. Largura do degradê editável (`degrade_largura`, 20–80%, padrão 50).
+- Botões abrem o WhatsApp do próprio template (`whatsapp_numero`, normalizado como nas configurações
+  gerais); sem número, rolam até a seção de contato, que mostra o formulário de lead.
+- Editor: seletor **Celular / Tablet / Desktop** na pré-visualização para templates com
+  `responsivoPorContainer`. `lista_features` aceita `placeholderTitulo`; `lista` e `lista_faq` passam a
+  aceitar `padrao` (mesmo comportamento do `listaOuPadrao`). Templates existentes não mudam.
 
 ### v0.9.0 (20/10/2026)
 - **Padrão "letrão" em todos os templates** (legibilidade para quem chega sem óculos ou com a pupila

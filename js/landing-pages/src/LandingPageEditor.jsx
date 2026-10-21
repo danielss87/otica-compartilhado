@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Save, Play, Pause, Copy, Check, Upload, X, Plus, Trash2 } from 'lucide-react'
+import { ArrowLeft, Save, Play, Pause, Copy, Check, Upload, X, Plus, Trash2, Smartphone, Tablet, Monitor } from 'lucide-react'
 import { LANDING_PAGE_TEMPLATES, coresDaPagina, secaoContatoDaPagina } from './templates'
 import { getConfig } from './config'
 import MolduraLandingPage from './Moldura'
@@ -22,6 +22,8 @@ export default function LandingPageEditor() {
   const saveTimeout = useRef(null)
   // Configurações gerais (logo, botão de WhatsApp) — só pra pré-visualização ficar igual à página pública.
   const [configuracoes, setConfiguracoes] = useState(null)
+  // Largura simulada na pré-visualização (só templates responsivos por container query).
+  const [dispositivo, setDispositivo] = useState('celular')
 
   useEffect(() => {
     obterConfiguracoes().then(setConfiguracoes).catch(() => {})
@@ -138,26 +140,85 @@ export default function LandingPageEditor() {
         </div>
 
         <div className="mt-4 lg:mt-0">
-          <p className="text-xs font-medium text-gray-500 mb-2">Pré-visualização</p>
+          <div className="flex items-center justify-between gap-2 mb-2">
+            <p className="text-xs font-medium text-gray-500">Pré-visualização</p>
+            {template.responsivoPorContainer && <SeletorDispositivo valor={dispositivo} onChange={setDispositivo} />}
+          </div>
           <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
             <div className="bg-gray-100 px-3 py-2 flex items-center gap-1.5 border-b border-gray-200">
               <span className="w-2.5 h-2.5 rounded-full bg-red-300" />
               <span className="w-2.5 h-2.5 rounded-full bg-yellow-300" />
               <span className="w-2.5 h-2.5 rounded-full bg-green-300" />
             </div>
-            <div className="max-h-[70vh] overflow-y-auto">
-              <MolduraLandingPage
-                configuracoes={configuracoes}
-                preview
-                secaoContato={secaoContatoDaPagina(lp.template, conteudo)}
-                coresPagina={coresDaPagina(lp.template, conteudo)}
-              >
-                <template.Render conteudo={conteudo} />
-              </MolduraLandingPage>
+            <div className="max-h-[70vh] overflow-y-auto overflow-x-hidden">
+              <MolduraDispositivo largura={template.responsivoPorContainer ? LARGURA_DISPOSITIVO[dispositivo] : null}>
+                <MolduraLandingPage
+                  configuracoes={configuracoes}
+                  preview
+                  secaoContato={secaoContatoDaPagina(lp.template, conteudo)}
+                  coresPagina={coresDaPagina(lp.template, conteudo)}
+                >
+                  <template.Render conteudo={conteudo} />
+                </MolduraLandingPage>
+              </MolduraDispositivo>
             </div>
           </div>
         </div>
       </div>
+    </div>
+  )
+}
+
+// ─── Pré-visualização por dispositivo ──────────────────────────────────────
+// Templates com `responsivoPorContainer` mudam de layout pela largura da própria página
+// (container query), então dá pra simular celular/tablet/desktop renderizando na largura
+// real do aparelho e reduzindo com `zoom` pra caber na coluna (zoom, e não transform,
+// porque mexe no layout e a rolagem fica certa).
+const LARGURA_DISPOSITIVO = { celular: 390, tablet: 820, desktop: 1280 }
+const DISPOSITIVOS = [
+  { id: 'celular', nome: 'Celular', Icone: Smartphone },
+  { id: 'tablet', nome: 'Tablet', Icone: Tablet },
+  { id: 'desktop', nome: 'Desktop', Icone: Monitor },
+]
+
+function SeletorDispositivo({ valor, onChange }) {
+  return (
+    <div className="flex items-center gap-0.5 rounded-lg bg-gray-100 p-0.5">
+      {DISPOSITIVOS.map(({ id, nome, Icone }) => (
+        <button
+          key={id}
+          type="button"
+          onClick={() => onChange(id)}
+          title={nome}
+          className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium ${valor === id ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+        >
+          <Icone size={13} />
+          <span className="hidden sm:inline">{nome}</span>
+        </button>
+      ))}
+    </div>
+  )
+}
+
+function MolduraDispositivo({ largura, children }) {
+  const ref = useRef(null)
+  const [disponivel, setDisponivel] = useState(0)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el || !largura) return
+    const medir = () => setDisponivel(el.clientWidth)
+    medir()
+    const obs = new ResizeObserver(medir)
+    obs.observe(el)
+    return () => obs.disconnect()
+  }, [largura])
+
+  if (!largura) return children
+  const zoom = disponivel ? Math.min(1, disponivel / largura) : 1
+  return (
+    <div ref={ref} className="w-full">
+      <div style={{ width: largura, zoom, margin: '0 auto' }}>{children}</div>
     </div>
   )
 }
@@ -489,7 +550,7 @@ function CampoListaFeatures({ campo, valor, onChange }) {
               <input
                 value={item?.titulo || ''}
                 onChange={e => atualizarItem(i, 'titulo', e.target.value)}
-                placeholder="Título curto (ex: FEITO À MÃO)"
+                placeholder={campo.placeholderTitulo || 'Título curto (ex: FEITO À MÃO)'}
                 className="flex-1 rounded-lg border border-gray-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
               />
               <button onClick={() => removerItem(i)} className="p-1.5 rounded-lg hover:bg-red-50 text-red-500 shrink-0">
@@ -649,7 +710,7 @@ function CampoImagem({ campo, valor, onChange }) {
 }
 
 function CampoLista({ campo, valor, onChange }) {
-  const itens = Array.isArray(valor) ? valor : []
+  const itens = listaOuPadrao(valor, campo)
 
   function atualizarItem(i, texto) {
     const novo = [...itens]
@@ -691,7 +752,7 @@ function CampoLista({ campo, valor, onChange }) {
 }
 
 function CampoFaq({ campo, valor, onChange }) {
-  const itens = Array.isArray(valor) ? valor : []
+  const itens = listaOuPadrao(valor, campo)
 
   function atualizarItem(i, campoNome, texto) {
     const novo = [...itens]
