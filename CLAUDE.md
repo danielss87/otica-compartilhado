@@ -21,7 +21,7 @@ package.json                     # npm: otica-compartilhado (raiz do repo)
 
 ## Features
 
-### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.10.0, out/2026
+### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.11.0, out/2026
 Origem: 4 Olhos (ago/2026). Páginas de captura por template pronto com edição guiada (4 templates:
 `simples`, `promocao`, `agendar_consulta`, `greats`), página pública `/lp/:slug`, contagem de
 visualizações e captura de lead (nome + telefone + fbclid). Quinto template, `leader` (v0.10.0), em
@@ -48,6 +48,11 @@ preferir este modelo. Os templates antigos usam `sm:` (viewport) e não responde
   nunca é recalculado. A regra existe em dois lugares: `_slug` (router.py) e `normalizarSlug`
   (LandingPageEditor.jsx).
 - A definição visual dos templates mora **só no frontend**; o backend guarda `conteudo` como JSON solto.
+- **Texto padrão de campo mora só no `padrao` do campo** (v0.11.0): nunca escrever `c.x || 'texto'` no
+  `Render`. O `Render` recebe o conteúdo já mesclado (`aplicarPadroes`: vazio/nulo/"" → padrão) e o editor
+  mostra o padrão dentro da caixa, pra achar no Ctrl+F. Vale para `texto_curto`, `texto_longo` e as chaves
+  de `bloco` (`padrao: { titulo, ... }`); listas já usavam `padrao` (`listaOuPadrao`). Padrão que depende de
+  outro campo: ler de `conteudoOriginal` e não declarar `padrao` no campo.
 - **Configurações gerais** (v0.3.0, `landing_pages_config`, uma linha com JSON):
   - Configuração nova = chave nova em `config.PADRAO` (Python) + campo no `ModalConfiguracoes.jsx` +
     uso em `Moldura.jsx`. **Sem ALTER TABLE**: a leitura sempre mescla com o padrão.
@@ -97,6 +102,17 @@ para todas as opções.
 8. Repo **público**: nunca commitar segredo, credencial, URL interna, dado de cliente ou telefone real.
 
 ## Changelog
+
+### v0.11.0 (21/10/2026)
+- **Editor mostra os textos padrão dentro das caixas**: antes o campo ficava vazio enquanto a página mostrava
+  o texto de exemplo, e não dava para achar no Ctrl+F qual campo editar. Agora o campo nunca editado vem com o
+  mesmo texto que a página exibe; apagado, a página volta ao padrão e a caixa mostra o padrão como dica.
+- Os textos padrão saíram do `Render` e foram para o `padrao` de cada campo, nos 5 templates (fonte única).
+  Mescla em `aplicarPadroes` (templates.jsx), aplicada a todo `Render`.
+- Nenhuma página publicada muda: o HTML de todos os templates foi comparado com a v0.10.0 (conteúdo vazio,
+  parcial e com campos apagados) e saiu idêntico.
+- Exceções sem `padrao`: `cta_texto` do Agendar consulta e o botão do formulário do Leader (padrão depende de
+  ter WhatsApp ou não).
 
 ### v0.10.0 (21/10/2026)
 - **Template novo "Leader"** (`leader`, `templateLeader.jsx`), réplica do layout de uma landing page de ótica

@@ -343,14 +343,17 @@ function MetaCampos({ lp, nome, onSalvo }) {
 }
 
 function CampoEditor({ campo, valor, onChange }) {
+  // Campo nunca editado mostra o texto padrão do template (o mesmo que a página exibe),
+  // pra que dê pra achar no Ctrl+F do navegador. Apagado (""), a página volta ao padrão e o
+  // campo mostra o padrão como dica.
   if (campo.tipo === 'texto_curto') {
     return (
       <div>
         <label className="text-xs font-medium text-gray-500 mb-1 block">{campo.label}</label>
         <input
-          value={valor ?? ''}
+          value={valor ?? campo.padrao ?? ''}
           onChange={e => onChange(e.target.value)}
-          placeholder={campo.placeholder}
+          placeholder={campo.placeholder || campo.padrao}
           className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
         />
       </div>
@@ -361,9 +364,9 @@ function CampoEditor({ campo, valor, onChange }) {
       <div>
         <label className="text-xs font-medium text-gray-500 mb-1 block">{campo.label}</label>
         <textarea
-          value={valor ?? ''}
+          value={valor ?? campo.padrao ?? ''}
           onChange={e => onChange(e.target.value)}
-          placeholder={campo.placeholder}
+          placeholder={campo.placeholder || campo.padrao}
           rows={4}
           className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 resize-none"
         />
@@ -453,6 +456,9 @@ function CampoCor({ campo, valor, onChange }) {
 
 function CampoBloco({ campo, valor, onChange }) {
   const v = valor || {}
+  // Mesma regra dos campos de texto: chave nunca editada mostra o padrão do template.
+  const p = campo.padrao || {}
+  const mostrar = chave => v[chave] ?? p[chave] ?? ''
 
   function set(chave, texto) {
     onChange({ ...v, [chave]: texto })
@@ -462,13 +468,13 @@ function CampoBloco({ campo, valor, onChange }) {
     <div className="rounded-lg border border-gray-200 p-3 space-y-2">
       <label className="text-xs font-medium text-gray-500 block">{campo.label}</label>
       <input
-        value={v.titulo || ''}
+        value={mostrar('titulo')}
         onChange={e => set('titulo', e.target.value)}
         placeholder="Título do bloco"
         className="w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-violet-400"
       />
       <textarea
-        value={v.texto || ''}
+        value={mostrar('texto')}
         onChange={e => set('texto', e.target.value)}
         placeholder="Texto (opcional)"
         rows={2}
@@ -477,13 +483,13 @@ function CampoBloco({ campo, valor, onChange }) {
       {campo.semCta !== true && (
         <div className="flex gap-2">
           <input
-            value={v.cta_texto || ''}
+            value={mostrar('cta_texto')}
             onChange={e => set('cta_texto', e.target.value)}
             placeholder="Texto do botão (opcional)"
             className="flex-1 rounded-lg border border-gray-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
           />
           <input
-            value={v.cta_url || ''}
+            value={mostrar('cta_url')}
             onChange={e => set('cta_url', e.target.value)}
             placeholder="Link (opcional)"
             className="flex-1 rounded-lg border border-gray-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"

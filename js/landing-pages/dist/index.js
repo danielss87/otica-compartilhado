@@ -214,6 +214,37 @@ import { jsx as jsx2, jsxs as jsxs2 } from "react/jsx-runtime";
 var LEADER_COR_ESCURA = "#020B26";
 var LEADER_COR_DESTAQUE = "#00B6D5";
 var LEADER_DEGRADE_PADRAO = 50;
+var LEADER_TEXTOS = {
+  whatsapp_mensagem: "Ol\xE1! Vim pela p\xE1gina e gostaria de mais informa\xE7\xF5es.",
+  botao_texto: "Falar pelo WhatsApp",
+  hero_selo: "\xD3tica \xB7 \xF3culos de grau, sol e lentes de contato",
+  hero_titulo: "Enxergue melhor ainda hoje.",
+  hero_texto: "Atendimento consultivo, arma\xE7\xE3o certa para o seu rosto e lentes indicadas para a sua rotina.",
+  hero_link_texto: "ou visitar a loja",
+  problema_selo: "O problema",
+  problema_titulo: "Enxergar mal afeta muito mais do que parece.",
+  problema_texto: "Dor de cabe\xE7a, vista cansada, dificuldade para ler ou enxergar longe. Muita gente convive com isso por tanto tempo que nem percebe o quanto est\xE1 perdendo.",
+  problema_caixa: "Aqui \xE9 diferente.",
+  solucao_selo: "A solu\xE7\xE3o",
+  solucao_titulo: "A \xF3tica que resolve o seu problema de vis\xE3o.",
+  solucao_texto: "N\xE3o viemos s\xF3 vender \xF3culos. O atendimento come\xE7a entendendo a sua rotina e o que voc\xEA precisa enxergar melhor; a partir da\xED, indicamos a arma\xE7\xE3o e as lentes ideais para o seu caso.",
+  servicos_selo: "O que oferecemos",
+  servicos_titulo: "Tudo que voc\xEA precisa para enxergar melhor",
+  faixa_titulo: "Atendimento sem pressa",
+  faixa_texto: "Tire suas d\xFAvidas antes de sair de casa: respondemos pelo WhatsApp.",
+  passos_selo: "Como funciona",
+  passos_titulo: "Do atendimento ao \xF3culos no rosto",
+  prova_selo: "Prova social",
+  prova_titulo: "Clientes que chegaram com dor de cabe\xE7a e sa\xEDram enxergando.",
+  prova_texto: "Depois dos \xF3culos certos: menos dor de cabe\xE7a, mais disposi\xE7\xE3o e a autoestima l\xE1 em cima.",
+  faq_selo: "D\xFAvidas frequentes",
+  faq_titulo: "D\xFAvidas que aparecem antes de escolher uma \xF3tica",
+  contato_selo: "Venha nos visitar",
+  contato_titulo: "Hoje voc\xEA ainda pode sair enxergando melhor.",
+  contato_texto: "Venha at\xE9 a loja ou fale pelo WhatsApp. A gente cuida do resto, do atendimento \xE0 entrega dos \xF3culos ajustados no seu rosto.",
+  rodape_titulo: "Sua \xF3tica \u2014 \xF3culos de grau, sol e lentes de contato",
+  rodape_texto: `\xA9 ${(/* @__PURE__ */ new Date()).getFullYear()} Todos os direitos reservados.`
+};
 var LEADER_SERVICOS_PADRAO = [
   { titulo: "\xD3culos de grau", descricao: "Arma\xE7\xF5es para todos os estilos e formatos de rosto, com a lente indicada para a sua receita." },
   { titulo: "\xD3culos de sol", descricao: "Prote\xE7\xE3o de verdade para os olhos, com arma\xE7\xF5es que combinam com o seu jeito." },
@@ -436,11 +467,10 @@ function Imagem({ src, className }) {
   if (src) return /* @__PURE__ */ jsx2("img", { src, alt: "", className });
   return /* @__PURE__ */ jsx2("div", { className: `${className} olp-ld-vazio`, children: /* @__PURE__ */ jsx2(ImageIcon, { size: 32 }) });
 }
-function Titulo({ como: Tag = "h2", className, texto, destaque, padrao: padrao2 }) {
-  const principal = texto || (destaque ? "" : padrao2);
+function Titulo({ como: Tag = "h2", className, texto, destaque }) {
   return /* @__PURE__ */ jsxs2(Tag, { className, children: [
-    principal,
-    principal && destaque ? " " : "",
+    texto,
+    texto && destaque ? " " : "",
     destaque && /* @__PURE__ */ jsx2("span", { className: "olp-ld-dest", children: destaque })
   ] });
 }
@@ -489,15 +519,15 @@ function IconeItem({ item, Padrao, size }) {
 }
 var lista = (valor, padrao2) => Array.isArray(valor) && valor.length > 0 ? valor : padrao2;
 var temTexto = (v) => typeof v === "string" ? v.trim() !== "" : Boolean(v);
-function LeaderRender({ conteudo, onLead, FormularioLead: FormularioLead2 }) {
+function LeaderRender({ conteudo, conteudoOriginal, onLead, FormularioLead: FormularioLead2 }) {
   useFontesLeader();
   const c = conteudo || {};
   const escura = hexParaRgb(c.cor_escura) ? c.cor_escura : LEADER_COR_ESCURA;
   const destaque = hexParaRgb(c.cor_destaque) ? c.cor_destaque : LEADER_COR_DESTAQUE;
   const degrade = Number.isFinite(Number(c.degrade_largura)) && c.degrade_largura !== "" && c.degrade_largura != null ? Number(c.degrade_largura) : LEADER_DEGRADE_PADRAO;
   const numero = numeroWhatsApp(c.whatsapp_numero);
-  const wpp = numero ? linkWhatsApp(numero, c.whatsapp_mensagem || "Ol\xE1! Vim pela p\xE1gina e gostaria de mais informa\xE7\xF5es.") : null;
-  const textoBotao = c.botao_texto || "Falar pelo WhatsApp";
+  const wpp = numero ? linkWhatsApp(numero, c.whatsapp_mensagem) : null;
+  const textoBotao = c.botao_texto;
   const servicos = lista(c.servicos, LEADER_SERVICOS_PADRAO).slice(0, 4);
   const passos = lista(c.passos, LEADER_PASSOS_PADRAO);
   const faq = lista(c.faq, LEADER_FAQ_PADRAO).filter((f) => temTexto(f?.pergunta));
@@ -539,12 +569,12 @@ function LeaderRender({ conteudo, onLead, FormularioLead: FormularioLead2 }) {
         larguraTextoTab: "62%",
         children: [
           c.hero_logo && /* @__PURE__ */ jsx2("img", { src: c.hero_logo, alt: "", className: "olp-ld-logo" }),
-          /* @__PURE__ */ jsx2("p", { className: "olp-ld-selo", children: c.hero_selo || "\xD3tica \xB7 \xF3culos de grau, sol e lentes de contato" }),
-          /* @__PURE__ */ jsx2(Titulo, { como: "h1", className: "olp-ld-h1", texto: c.hero_titulo, destaque: c.hero_titulo_destaque, padrao: "Enxergue melhor ainda hoje." }),
-          /* @__PURE__ */ jsx2("p", { className: "olp-ld-corpo", style: { color: "rgba(255,255,255,.92)", marginTop: 20, maxWidth: 520 }, children: c.hero_texto || "Atendimento consultivo, arma\xE7\xE3o certa para o seu rosto e lentes indicadas para a sua rotina." }),
+          /* @__PURE__ */ jsx2("p", { className: "olp-ld-selo", children: c.hero_selo }),
+          /* @__PURE__ */ jsx2(Titulo, { como: "h1", className: "olp-ld-h1", texto: c.hero_titulo, destaque: c.hero_titulo_destaque }),
+          /* @__PURE__ */ jsx2("p", { className: "olp-ld-corpo", style: { color: "rgba(255,255,255,.92)", marginTop: 20, maxWidth: 520 }, children: c.hero_texto }),
           /* @__PURE__ */ jsxs2("div", { className: "olp-ld-acoes", children: [
             acaoPrincipal,
-            c.hero_link_url ? /* @__PURE__ */ jsx2("a", { href: c.hero_link_url, target: "_blank", rel: "noopener noreferrer", className: "olp-ld-link", children: c.hero_link_texto || "ou visitar a loja" }) : /* @__PURE__ */ jsx2("button", { type: "button", onClick: irParaContato, className: "olp-ld-link", children: c.hero_link_texto || "ou visitar a loja" })
+            c.hero_link_url ? /* @__PURE__ */ jsx2("a", { href: c.hero_link_url, target: "_blank", rel: "noopener noreferrer", className: "olp-ld-link", children: c.hero_link_texto }) : /* @__PURE__ */ jsx2("button", { type: "button", onClick: irParaContato, className: "olp-ld-link", children: c.hero_link_texto })
           ] })
         ]
       }
@@ -552,10 +582,10 @@ function LeaderRender({ conteudo, onLead, FormularioLead: FormularioLead2 }) {
     /* @__PURE__ */ jsx2("section", { "data-secao": "problema", className: "olp-ld-sec olp-ld-claro", children: /* @__PURE__ */ jsxs2("div", { className: "olp-ld-wrap olp-ld-duo", children: [
       /* @__PURE__ */ jsx2(Imagem, { src: c.problema_imagem, className: "olp-ld-duo-img" }),
       /* @__PURE__ */ jsxs2("div", { className: "olp-ld-duo-texto", children: [
-        /* @__PURE__ */ jsx2("p", { className: "olp-ld-selo", children: c.problema_selo || "O problema" }),
-        /* @__PURE__ */ jsx2(Titulo, { className: "olp-ld-h2", texto: c.problema_titulo, destaque: c.problema_titulo_destaque, padrao: "Enxergar mal afeta muito mais do que parece." }),
-        /* @__PURE__ */ jsx2("p", { className: "olp-ld-corpo", style: { marginTop: 20 }, children: c.problema_texto || "Dor de cabe\xE7a, vista cansada, dificuldade para ler ou enxergar longe. Muita gente convive com isso por tanto tempo que nem percebe o quanto est\xE1 perdendo." }),
-        /* @__PURE__ */ jsx2("p", { className: "olp-ld-caixa", children: c.problema_caixa || "Aqui \xE9 diferente." })
+        /* @__PURE__ */ jsx2("p", { className: "olp-ld-selo", children: c.problema_selo }),
+        /* @__PURE__ */ jsx2(Titulo, { className: "olp-ld-h2", texto: c.problema_titulo, destaque: c.problema_titulo_destaque }),
+        /* @__PURE__ */ jsx2("p", { className: "olp-ld-corpo", style: { marginTop: 20 }, children: c.problema_texto }),
+        /* @__PURE__ */ jsx2("p", { className: "olp-ld-caixa", children: c.problema_caixa })
       ] })
     ] }) }),
     /* @__PURE__ */ jsxs2(
@@ -572,16 +602,16 @@ function LeaderRender({ conteudo, onLead, FormularioLead: FormularioLead2 }) {
         larguraTextoDesk: "470px",
         larguraTextoTab: "48%",
         children: [
-          /* @__PURE__ */ jsx2("p", { className: "olp-ld-selo", children: c.solucao_selo || "A solu\xE7\xE3o" }),
-          /* @__PURE__ */ jsx2(Titulo, { className: "olp-ld-h2", texto: c.solucao_titulo, destaque: c.solucao_titulo_destaque, padrao: "A \xF3tica que resolve o seu problema de vis\xE3o." }),
-          /* @__PURE__ */ jsx2("p", { className: "olp-ld-corpo", style: { marginTop: 20 }, children: c.solucao_texto || "N\xE3o viemos s\xF3 vender \xF3culos. O atendimento come\xE7a entendendo a sua rotina e o que voc\xEA precisa enxergar melhor; a partir da\xED, indicamos a arma\xE7\xE3o e as lentes ideais para o seu caso." })
+          /* @__PURE__ */ jsx2("p", { className: "olp-ld-selo", children: c.solucao_selo }),
+          /* @__PURE__ */ jsx2(Titulo, { className: "olp-ld-h2", texto: c.solucao_titulo, destaque: c.solucao_titulo_destaque }),
+          /* @__PURE__ */ jsx2("p", { className: "olp-ld-corpo", style: { marginTop: 20 }, children: c.solucao_texto })
         ]
       }
     ),
     /* @__PURE__ */ jsx2("section", { "data-secao": "servicos", className: "olp-ld-sec olp-ld-claro", children: /* @__PURE__ */ jsxs2("div", { className: "olp-ld-wrap", children: [
       /* @__PURE__ */ jsxs2("div", { className: "olp-ld-centro", children: [
-        /* @__PURE__ */ jsx2("p", { className: "olp-ld-selo", children: c.servicos_selo || "O que oferecemos" }),
-        /* @__PURE__ */ jsx2(Titulo, { className: "olp-ld-h2", texto: c.servicos_titulo, destaque: c.servicos_titulo_destaque, padrao: "Tudo que voc\xEA precisa para enxergar melhor" })
+        /* @__PURE__ */ jsx2("p", { className: "olp-ld-selo", children: c.servicos_selo }),
+        /* @__PURE__ */ jsx2(Titulo, { className: "olp-ld-h2", texto: c.servicos_titulo, destaque: c.servicos_titulo_destaque })
       ] }),
       /* @__PURE__ */ jsx2("div", { className: "olp-ld-cards", "data-n": servicos.length, children: servicos.map((s, i) => /* @__PURE__ */ jsxs2("div", { className: "olp-ld-card", children: [
         /* @__PURE__ */ jsx2("div", { className: "olp-ld-icone", children: /* @__PURE__ */ jsx2(IconeItem, { item: s, Padrao: LEADER_SERVICOS_ICONES[i % LEADER_SERVICOS_ICONES.length], size: 24 }) }),
@@ -590,16 +620,16 @@ function LeaderRender({ conteudo, onLead, FormularioLead: FormularioLead2 }) {
       ] }, i)) }),
       /* @__PURE__ */ jsxs2("div", { className: "olp-ld-faixa", children: [
         /* @__PURE__ */ jsxs2("div", { children: [
-          /* @__PURE__ */ jsx2("h3", { children: c.faixa_titulo || "Atendimento sem pressa" }),
-          /* @__PURE__ */ jsx2("p", { children: c.faixa_texto || "Tire suas d\xFAvidas antes de sair de casa: respondemos pelo WhatsApp." })
+          /* @__PURE__ */ jsx2("h3", { children: c.faixa_titulo }),
+          /* @__PURE__ */ jsx2("p", { children: c.faixa_texto })
         ] }),
         /* @__PURE__ */ jsx2("div", { className: "olp-ld-acoes", children: acaoPrincipal })
       ] })
     ] }) }),
     /* @__PURE__ */ jsx2("section", { "data-secao": "como_funciona", className: "olp-ld-sec", children: /* @__PURE__ */ jsxs2("div", { className: "olp-ld-wrap", children: [
       /* @__PURE__ */ jsxs2("div", { className: "olp-ld-centro", children: [
-        /* @__PURE__ */ jsx2("p", { className: "olp-ld-selo", children: c.passos_selo || "Como funciona" }),
-        /* @__PURE__ */ jsx2(Titulo, { className: "olp-ld-h2", texto: c.passos_titulo, destaque: c.passos_titulo_destaque, padrao: "Do atendimento ao \xF3culos no rosto" })
+        /* @__PURE__ */ jsx2("p", { className: "olp-ld-selo", children: c.passos_selo }),
+        /* @__PURE__ */ jsx2(Titulo, { className: "olp-ld-h2", texto: c.passos_titulo, destaque: c.passos_titulo_destaque })
       ] }),
       /* @__PURE__ */ jsx2("div", { className: "olp-ld-passos", children: passos.map((p, i) => /* @__PURE__ */ jsxs2("div", { className: "olp-ld-passo", children: [
         /* @__PURE__ */ jsxs2("div", { className: "olp-ld-passo-marca", children: [
@@ -615,9 +645,9 @@ function LeaderRender({ conteudo, onLead, FormularioLead: FormularioLead2 }) {
     ] }) }),
     /* @__PURE__ */ jsx2("section", { "data-secao": "galeria", className: "olp-ld-sec olp-ld-claro", children: /* @__PURE__ */ jsx2("div", { className: "olp-ld-galeria", style: { maxWidth: 1180, margin: "0 auto" }, children: galeria.map((src, i) => /* @__PURE__ */ jsx2(Imagem, { src }, i)) }) }),
     /* @__PURE__ */ jsx2("section", { "data-secao": "prova_social", className: "olp-ld-sec olp-ld-escuro", children: /* @__PURE__ */ jsxs2("div", { className: "olp-ld-wrap olp-ld-centro", children: [
-      /* @__PURE__ */ jsx2("p", { className: "olp-ld-selo", children: c.prova_selo || "Prova social" }),
-      /* @__PURE__ */ jsx2(Titulo, { className: "olp-ld-h2", texto: c.prova_titulo, destaque: c.prova_titulo_destaque, padrao: "Clientes que chegaram com dor de cabe\xE7a e sa\xEDram enxergando." }),
-      /* @__PURE__ */ jsx2("p", { className: "olp-ld-corpo", style: { marginTop: 20, maxWidth: 680, marginLeft: "auto", marginRight: "auto" }, children: c.prova_texto || "Depois dos \xF3culos certos: menos dor de cabe\xE7a, mais disposi\xE7\xE3o e a autoestima l\xE1 em cima." }),
+      /* @__PURE__ */ jsx2("p", { className: "olp-ld-selo", children: c.prova_selo }),
+      /* @__PURE__ */ jsx2(Titulo, { className: "olp-ld-h2", texto: c.prova_titulo, destaque: c.prova_titulo_destaque }),
+      /* @__PURE__ */ jsx2("p", { className: "olp-ld-corpo", style: { marginTop: 20, maxWidth: 680, marginLeft: "auto", marginRight: "auto" }, children: c.prova_texto }),
       depoimentos.length > 0 && /* @__PURE__ */ jsx2("div", { className: "olp-ld-depos", "data-n": depoimentos.length, children: depoimentos.map((d, i) => /* @__PURE__ */ jsxs2("div", { className: "olp-ld-depo", children: [
         /* @__PURE__ */ jsx2("div", { className: "olp-ld-estrelas", children: Array.from({ length: 5 }).map((_, j) => /* @__PURE__ */ jsx2(Star, { size: 18, fill: "currentColor" }, j)) }),
         /* @__PURE__ */ jsx2("p", { children: d.texto }),
@@ -626,17 +656,17 @@ function LeaderRender({ conteudo, onLead, FormularioLead: FormularioLead2 }) {
     ] }) }),
     /* @__PURE__ */ jsx2("section", { "data-secao": "faq", className: "olp-ld-sec olp-ld-claro", children: /* @__PURE__ */ jsxs2("div", { className: "olp-ld-wrap", children: [
       /* @__PURE__ */ jsxs2("div", { className: "olp-ld-centro", children: [
-        /* @__PURE__ */ jsx2("p", { className: "olp-ld-selo", children: c.faq_selo || "D\xFAvidas frequentes" }),
-        /* @__PURE__ */ jsx2(Titulo, { className: "olp-ld-h2", texto: c.faq_titulo, destaque: c.faq_titulo_destaque, padrao: "D\xFAvidas que aparecem antes de escolher uma \xF3tica" })
+        /* @__PURE__ */ jsx2("p", { className: "olp-ld-selo", children: c.faq_selo }),
+        /* @__PURE__ */ jsx2(Titulo, { className: "olp-ld-h2", texto: c.faq_titulo, destaque: c.faq_titulo_destaque })
       ] }),
       /* @__PURE__ */ jsx2("div", { className: "olp-ld-faq", children: faq.map((f, i) => /* @__PURE__ */ jsx2(ItemFaq, { item: f }, i)) })
     ] }) }),
     /* @__PURE__ */ jsx2("section", { "data-secao": "contato", className: "olp-ld-sec olp-ld-contato", style: { paddingBottom: 0 }, children: /* @__PURE__ */ jsxs2("div", { className: "olp-ld-wrap olp-ld-duo", style: { alignItems: "end" }, children: [
       /* @__PURE__ */ jsxs2("div", { className: "olp-ld-duo-texto", style: { alignSelf: "center", paddingBottom: 40 }, children: [
-        /* @__PURE__ */ jsx2("p", { className: "olp-ld-selo", children: c.contato_selo || "Venha nos visitar" }),
-        /* @__PURE__ */ jsx2(Titulo, { className: "olp-ld-h2", texto: c.contato_titulo, destaque: c.contato_titulo_destaque, padrao: "Hoje voc\xEA ainda pode sair enxergando melhor." }),
-        /* @__PURE__ */ jsx2("p", { className: "olp-ld-corpo", style: { marginTop: 20 }, children: c.contato_texto || "Venha at\xE9 a loja ou fale pelo WhatsApp. A gente cuida do resto, do atendimento \xE0 entrega dos \xF3culos ajustados no seu rosto." }),
-        wpp ? /* @__PURE__ */ jsx2("div", { className: "olp-ld-acoes", children: acaoPrincipal }) : /* @__PURE__ */ jsx2("div", { className: "olp-ld-form", children: /* @__PURE__ */ jsx2(FormularioLead2, { ctaTexto: c.botao_texto || "Quero ser atendido", onLead }) }),
+        /* @__PURE__ */ jsx2("p", { className: "olp-ld-selo", children: c.contato_selo }),
+        /* @__PURE__ */ jsx2(Titulo, { className: "olp-ld-h2", texto: c.contato_titulo, destaque: c.contato_titulo_destaque }),
+        /* @__PURE__ */ jsx2("p", { className: "olp-ld-corpo", style: { marginTop: 20 }, children: c.contato_texto }),
+        wpp ? /* @__PURE__ */ jsx2("div", { className: "olp-ld-acoes", children: acaoPrincipal }) : /* @__PURE__ */ jsx2("div", { className: "olp-ld-form", children: /* @__PURE__ */ jsx2(FormularioLead2, { ctaTexto: conteudoOriginal?.botao_texto || "Quero ser atendido", onLead }) }),
         temTexto(c.endereco_texto) && /* @__PURE__ */ jsx2("div", { children: c.endereco_url ? /* @__PURE__ */ jsxs2("a", { href: c.endereco_url, target: "_blank", rel: "noopener noreferrer", className: "olp-ld-endereco", children: [
           /* @__PURE__ */ jsx2(MapPin, { size: 20 }),
           /* @__PURE__ */ jsx2("span", { children: c.endereco_texto })
@@ -649,10 +679,10 @@ function LeaderRender({ conteudo, onLead, FormularioLead: FormularioLead2 }) {
     ] }) }),
     /* @__PURE__ */ jsxs2("footer", { "data-secao": "rodape", children: [
       /* @__PURE__ */ jsx2("div", { className: "olp-ld-escuro olp-ld-rodape", children: /* @__PURE__ */ jsxs2("div", { className: "olp-ld-wrap", children: [
-        /* @__PURE__ */ jsx2("h3", { children: c.rodape_titulo || "Sua \xF3tica \u2014 \xF3culos de grau, sol e lentes de contato" }),
+        /* @__PURE__ */ jsx2("h3", { children: c.rodape_titulo }),
         rodapeItens.length > 0 && /* @__PURE__ */ jsx2("ul", { children: rodapeItens.map((t, i) => /* @__PURE__ */ jsx2("li", { children: t }, i)) })
       ] }) }),
-      /* @__PURE__ */ jsx2("p", { className: "olp-ld-copy", children: c.rodape_texto || `\xA9 ${(/* @__PURE__ */ new Date()).getFullYear()} Todos os direitos reservados.` })
+      /* @__PURE__ */ jsx2("p", { className: "olp-ld-copy", children: c.rodape_texto })
     ] })
   ] });
 }
@@ -680,6 +710,7 @@ var GREATS_FEATURES_PADRAO = [
   { titulo: "MATERIAIS PREMIUM", descricao: "Usamos apenas materiais de alta qualidade, por dentro e por fora." },
   { titulo: "TROCA GR\xC1TIS", descricao: "Se n\xE3o servir perfeitamente, trocamos sem custo em at\xE9 21 dias." }
 ];
+var GREATS_BLOCO_PADRAO = { titulo: "T\xEDtulo do bloco" };
 var GREATS_DEPOIMENTOS_PADRAO = [
   { texto: "Atendimento incr\xEDvel e produto de alt\xEDssima qualidade.", nome: "Cliente satisfeito" },
   { texto: "Chegou r\xE1pido e \xE9 ainda melhor do que nas fotos.", nome: "Cliente satisfeito" }
@@ -691,16 +722,16 @@ var LANDING_PAGE_TEMPLATES = {
     secoes: [{ id: "hero", nome: "Topo (t\xEDtulo e imagem)" }, { id: "texto", nome: "Texto livre" }, { id: "formulario", nome: "Formul\xE1rio de contato" }],
     secaoContatoPadrao: "formulario",
     campos: [
-      { chave: "titulo", label: "T\xEDtulo (hero)", tipo: "texto_curto", placeholder: "Ex: \xD3culos completo a partir de R$ 250" },
+      { chave: "titulo", label: "T\xEDtulo (hero)", tipo: "texto_curto", padrao: "T\xEDtulo da oferta", placeholder: "Ex: \xD3culos completo a partir de R$ 250" },
       { chave: "subtitulo", label: "Subt\xEDtulo", tipo: "texto_curto", placeholder: "Ex: Arma\xE7\xE3o + lente, com receita ou sem" },
       { chave: "imagem_url", label: "Imagem principal", tipo: "imagem" },
       { chave: "texto", label: "Texto livre", tipo: "texto_longo", placeholder: "Conte mais sobre a oferta..." },
-      { chave: "cta_texto", label: "Texto do bot\xE3o", tipo: "texto_curto", placeholder: "Ex: Quero garantir o meu" }
+      { chave: "cta_texto", label: "Texto do bot\xE3o", tipo: "texto_curto", padrao: "Quero saber mais", placeholder: "Ex: Quero garantir o meu" }
     ],
     Render: ({ conteudo, onLead }) => /* @__PURE__ */ jsxs3("div", { className: "max-w-lg mx-auto px-5 py-10 text-center", children: [
       /* @__PURE__ */ jsxs3("div", { "data-secao": "hero", children: [
         conteudo.imagem_url && /* @__PURE__ */ jsx3("img", { src: conteudo.imagem_url, alt: "", className: "w-full rounded-2xl mb-6 object-cover max-h-72" }),
-        /* @__PURE__ */ jsx3("h1", { className: "text-3xl sm:text-4xl font-bold text-gray-900 leading-tight mb-3", children: conteudo.titulo || "T\xEDtulo da oferta" }),
+        /* @__PURE__ */ jsx3("h1", { className: "text-3xl sm:text-4xl font-bold text-gray-900 leading-tight mb-3", children: conteudo.titulo }),
         conteudo.subtitulo && /* @__PURE__ */ jsx3("p", { className: "text-lg sm:text-xl text-gray-700 leading-relaxed mb-5", children: conteudo.subtitulo })
       ] }),
       conteudo.texto && /* @__PURE__ */ jsx3("p", { "data-secao": "texto", className: "text-base sm:text-lg text-gray-800 leading-relaxed whitespace-pre-wrap mb-8", children: conteudo.texto }),
@@ -714,16 +745,16 @@ var LANDING_PAGE_TEMPLATES = {
     secaoContatoPadrao: "formulario",
     cores: () => ({ destaque: "#8B5CF6" }),
     campos: [
-      { chave: "titulo", label: "T\xEDtulo (hero)", tipo: "texto_curto", placeholder: "Ex: Promo\xE7\xE3o de agosto" },
+      { chave: "titulo", label: "T\xEDtulo (hero)", tipo: "texto_curto", padrao: "T\xEDtulo da promo\xE7\xE3o", placeholder: "Ex: Promo\xE7\xE3o de agosto" },
       { chave: "subtitulo", label: "Subt\xEDtulo", tipo: "texto_curto" },
       { chave: "imagem_url", label: "Imagem do produto", tipo: "imagem" },
       { chave: "beneficios", label: "Benef\xEDcios", tipo: "lista", placeholder: "Ex: Frete gr\xE1tis pra SC" },
-      { chave: "cta_texto", label: "Texto do bot\xE3o", tipo: "texto_curto", placeholder: "Ex: Quero aproveitar" }
+      { chave: "cta_texto", label: "Texto do bot\xE3o", tipo: "texto_curto", padrao: "Quero saber mais", placeholder: "Ex: Quero aproveitar" }
     ],
     Render: ({ conteudo, onLead }) => /* @__PURE__ */ jsxs3("div", { className: "max-w-lg mx-auto px-5 py-10", children: [
       /* @__PURE__ */ jsxs3("div", { "data-secao": "hero", className: "text-center mb-6", children: [
         conteudo.imagem_url && /* @__PURE__ */ jsx3("img", { src: conteudo.imagem_url, alt: "", className: "w-full rounded-2xl mb-6 object-cover max-h-72" }),
-        /* @__PURE__ */ jsx3("h1", { className: "text-3xl sm:text-4xl font-bold text-gray-900 leading-tight mb-3", children: conteudo.titulo || "T\xEDtulo da promo\xE7\xE3o" }),
+        /* @__PURE__ */ jsx3("h1", { className: "text-3xl sm:text-4xl font-bold text-gray-900 leading-tight mb-3", children: conteudo.titulo }),
         conteudo.subtitulo && /* @__PURE__ */ jsx3("p", { className: "text-lg sm:text-xl text-gray-700 leading-relaxed", children: conteudo.subtitulo })
       ] }),
       Array.isArray(conteudo.beneficios) && conteudo.beneficios.length > 0 && /* @__PURE__ */ jsx3("ul", { "data-secao": "beneficios", className: "space-y-3 mb-8", children: conteudo.beneficios.filter(Boolean).map((b, i) => /* @__PURE__ */ jsxs3("li", { className: "flex items-start gap-3 text-base sm:text-lg text-gray-800 leading-snug", children: [
@@ -740,20 +771,21 @@ var LANDING_PAGE_TEMPLATES = {
     secaoContatoPadrao: "contato",
     cores: () => ({ principal: "#059669" }),
     campos: [
-      { chave: "titulo", label: "T\xEDtulo (hero)", tipo: "texto_curto", placeholder: "Ex: Agende sua consulta" },
+      { chave: "titulo", label: "T\xEDtulo (hero)", tipo: "texto_curto", padrao: "Agende sua consulta" },
       { chave: "subtitulo", label: "Subt\xEDtulo", tipo: "texto_curto" },
       { chave: "imagem_url", label: "Imagem principal", tipo: "imagem" },
       { chave: "whatsapp_numero", label: "N\xFAmero do WhatsApp (s\xF3 d\xEDgitos, com DDI)", tipo: "texto_curto", placeholder: "Ex: 5511999999999" },
-      { chave: "whatsapp_mensagem", label: "Mensagem pr\xE9-preenchida do WhatsApp", tipo: "texto_curto", placeholder: "Ex: Ol\xE1, quero agendar uma consulta" },
+      { chave: "whatsapp_mensagem", label: "Mensagem pr\xE9-preenchida do WhatsApp", tipo: "texto_curto", padrao: "Ol\xE1, quero agendar uma consulta" },
+      // Sem `padrao` de propósito: o texto padrão muda com o WhatsApp preenchido ou não.
       { chave: "cta_texto", label: "Texto do bot\xE3o de WhatsApp", tipo: "texto_curto", placeholder: "Ex: Agendar pelo WhatsApp" },
       { chave: "faq", label: "Perguntas frequentes", tipo: "lista_faq" }
     ],
     Render: ({ conteudo, onLead }) => {
-      const wppUrl = conteudo.whatsapp_numero ? `https://wa.me/${conteudo.whatsapp_numero}?text=${encodeURIComponent(conteudo.whatsapp_mensagem || "Ol\xE1, quero agendar uma consulta")}` : null;
+      const wppUrl = conteudo.whatsapp_numero ? `https://wa.me/${conteudo.whatsapp_numero}?text=${encodeURIComponent(conteudo.whatsapp_mensagem)}` : null;
       return /* @__PURE__ */ jsxs3("div", { className: "max-w-lg mx-auto px-5 py-10", children: [
         /* @__PURE__ */ jsxs3("div", { "data-secao": "hero", className: "text-center mb-6", children: [
           conteudo.imagem_url && /* @__PURE__ */ jsx3("img", { src: conteudo.imagem_url, alt: "", className: "w-full rounded-2xl mb-6 object-cover max-h-72" }),
-          /* @__PURE__ */ jsx3("h1", { className: "text-3xl sm:text-4xl font-bold text-gray-900 leading-tight mb-3", children: conteudo.titulo || "Agende sua consulta" }),
+          /* @__PURE__ */ jsx3("h1", { className: "text-3xl sm:text-4xl font-bold text-gray-900 leading-tight mb-3", children: conteudo.titulo }),
           conteudo.subtitulo && /* @__PURE__ */ jsx3("p", { className: "text-lg sm:text-xl text-gray-700 leading-relaxed", children: conteudo.subtitulo })
         ] }),
         /* @__PURE__ */ jsx3("div", { "data-secao": "contato", children: wppUrl ? /* @__PURE__ */ jsxs3(
@@ -800,34 +832,34 @@ var LANDING_PAGE_TEMPLATES = {
     campos: [
       { chave: "cor_primaria", label: "Cor principal (t\xEDtulos, bot\xF5es)", tipo: "cor", padrao: "#1E3A5F" },
       { chave: "cor_secundaria", label: "Cor de destaque (se\xE7\xE3o feminino)", tipo: "cor", padrao: "#E5B3A0" },
-      { chave: "selo_texto", label: "Selo no topo do hero", tipo: "texto_curto", placeholder: "Ex: SUA MARCA" },
+      { chave: "selo_texto", label: "Selo no topo do hero", tipo: "texto_curto", padrao: "SUA MARCA", placeholder: "Ex: SUA MARCA" },
       { chave: "hero_imagem", label: "Imagem de fundo do hero", tipo: "imagem" },
       { chave: "hero_escurecimento", label: "Pel\xEDcula escura sobre a imagem do hero", tipo: "intensidade", min: 0, max: 80, passo: 5, padrao: 25, unidade: "%", rotuloMin: "Mais clara", rotuloMax: "Mais escura" },
-      { chave: "hero_titulo", label: "T\xEDtulo do hero", tipo: "texto_curto", placeholder: "Ex: O QUE PROCURAR EM \xD3CULOS DE QUALIDADE" },
-      { chave: "hero_cta_texto", label: "Texto do bot\xE3o do hero", tipo: "texto_curto", placeholder: "Ex: VER COLE\xC7\xC3O" },
+      { chave: "hero_titulo", label: "T\xEDtulo do hero", tipo: "texto_curto", padrao: "T\xEDtulo de impacto para o seu produto", placeholder: "Ex: O QUE PROCURAR EM \xD3CULOS DE QUALIDADE" },
+      { chave: "hero_cta_texto", label: "Texto do bot\xE3o do hero", tipo: "texto_curto", padrao: "SAIBA MAIS", placeholder: "Ex: VER COLE\xC7\xC3O" },
       { chave: "hero_cta_url", label: "Link do bot\xE3o do hero", tipo: "texto_curto", placeholder: "https://..." },
       { chave: "features", label: "Selos de confian\xE7a (3 itens)", tipo: "lista_features", padrao: GREATS_FEATURES_PADRAO, icones: GREATS_ICONES },
       { chave: "banner_imagem", label: "Imagem de destaque (detalhe do produto)", tipo: "imagem" },
       { chave: "banner_anotacao", label: "Legenda do detalhe", tipo: "texto_curto", placeholder: "Ex: ARMA\xC7\xC3O 100% ACETATO ITALIANO" },
-      { chave: "bloco_1", label: "Bloco 1 (texto, com CTA)", tipo: "bloco" },
+      { chave: "bloco_1", label: "Bloco 1 (texto, com CTA)", tipo: "bloco", padrao: GREATS_BLOCO_PADRAO },
       { chave: "mosaico_1_imagem", label: "Imagem do mosaico 1 (superior direita)", tipo: "imagem" },
       { chave: "mosaico_2_imagem", label: "Imagem do mosaico 1 (inferior esquerda, maior)", tipo: "imagem" },
-      { chave: "bloco_2", label: "Bloco 2 (texto, com CTA)", tipo: "bloco" },
-      { chave: "bloco_3", label: "Bloco 3 (texto, sem CTA)", tipo: "bloco", semCta: true },
+      { chave: "bloco_2", label: "Bloco 2 (texto, com CTA)", tipo: "bloco", padrao: GREATS_BLOCO_PADRAO },
+      { chave: "bloco_3", label: "Bloco 3 (texto, sem CTA)", tipo: "bloco", padrao: GREATS_BLOCO_PADRAO, semCta: true },
       { chave: "cta2_imagem", label: "Imagem da faixa de CTA", tipo: "imagem" },
-      { chave: "cta2_bloco", label: "Texto da faixa de CTA", tipo: "bloco" },
-      { chave: "bloco_4", label: "Bloco 4 (texto, sem CTA)", tipo: "bloco", semCta: true },
+      { chave: "cta2_bloco", label: "Texto da faixa de CTA", tipo: "bloco", padrao: { titulo: "Confira nossa cole\xE7\xE3o", cta_texto: "VER COLE\xC7\xC3O" } },
+      { chave: "bloco_4", label: "Bloco 4 (texto, sem CTA)", tipo: "bloco", padrao: GREATS_BLOCO_PADRAO, semCta: true },
       { chave: "mosaico_3_imagem", label: "Imagem do mosaico 2 (superior direita)", tipo: "imagem" },
       { chave: "mosaico_4_imagem", label: "Imagem do mosaico 2 (inferior esquerda)", tipo: "imagem" },
-      { chave: "bloco_5", label: "Bloco 5 (texto, sem CTA)", tipo: "bloco", semCta: true },
-      { chave: "men_titulo", label: "T\xEDtulo coluna 1 (ex: MASCULINO)", tipo: "texto_curto", placeholder: "MASCULINO" },
-      { chave: "men_cta_texto", label: "Texto do bot\xE3o \u2014 coluna 1", tipo: "texto_curto", placeholder: "VER COLE\xC7\xC3O" },
+      { chave: "bloco_5", label: "Bloco 5 (texto, sem CTA)", tipo: "bloco", padrao: GREATS_BLOCO_PADRAO, semCta: true },
+      { chave: "men_titulo", label: "T\xEDtulo coluna 1 (ex: MASCULINO)", tipo: "texto_curto", padrao: "MASCULINO", placeholder: "MASCULINO" },
+      { chave: "men_cta_texto", label: "Texto do bot\xE3o \u2014 coluna 1", tipo: "texto_curto", padrao: "VER AGORA", placeholder: "VER COLE\xC7\xC3O" },
       { chave: "men_cta_url", label: "Link do bot\xE3o \u2014 coluna 1", tipo: "texto_curto" },
-      { chave: "women_titulo", label: "T\xEDtulo coluna 2 (ex: FEMININO)", tipo: "texto_curto", placeholder: "FEMININO" },
-      { chave: "women_cta_texto", label: "Texto do bot\xE3o \u2014 coluna 2", tipo: "texto_curto", placeholder: "VER COLE\xC7\xC3O" },
+      { chave: "women_titulo", label: "T\xEDtulo coluna 2 (ex: FEMININO)", tipo: "texto_curto", padrao: "FEMININO", placeholder: "FEMININO" },
+      { chave: "women_cta_texto", label: "Texto do bot\xE3o \u2014 coluna 2", tipo: "texto_curto", padrao: "VER AGORA", placeholder: "VER COLE\xC7\xC3O" },
       { chave: "women_cta_url", label: "Link do bot\xE3o \u2014 coluna 2", tipo: "texto_curto" },
       { chave: "depoimentos", label: "Depoimentos", tipo: "lista_depoimentos", padrao: GREATS_DEPOIMENTOS_PADRAO },
-      { chave: "rodape_texto", label: "Texto do rodap\xE9", tipo: "texto_curto", placeholder: "Ex: \xA9 2026 Sua marca. Todos os direitos reservados." }
+      { chave: "rodape_texto", label: "Texto do rodap\xE9", tipo: "texto_curto", padrao: `\xA9 ${(/* @__PURE__ */ new Date()).getFullYear()} Todos os direitos reservados.`, placeholder: "Ex: \xA9 2026 Sua marca. Todos os direitos reservados." }
     ],
     Render: ({ conteudo }) => /* @__PURE__ */ jsx3(GreatsRender, { conteudo })
   },
@@ -857,63 +889,83 @@ var LANDING_PAGE_TEMPLATES = {
       { chave: "cor_destaque", label: "Cor de destaque (bot\xF5es, palavras em destaque)", tipo: "cor", padrao: LEADER_COR_DESTAQUE },
       { chave: "degrade_largura", label: "Largura do degrad\xEA entre a cor e a foto (banners)", tipo: "intensidade", min: 20, max: 80, passo: 5, padrao: 50, unidade: "%", rotuloMin: "Transi\xE7\xE3o curta", rotuloMax: "Transi\xE7\xE3o longa" },
       { chave: "whatsapp_numero", label: "WhatsApp dos bot\xF5es (com DDD)", tipo: "texto_curto", placeholder: "Ex: 11 99999-9999 \u2014 em branco, os bot\xF5es levam ao formul\xE1rio" },
-      { chave: "whatsapp_mensagem", label: "Mensagem pr\xE9-preenchida do WhatsApp", tipo: "texto_curto", placeholder: "Ex: Ol\xE1! Vim pela p\xE1gina e gostaria de mais informa\xE7\xF5es." },
-      { chave: "botao_texto", label: "Texto dos bot\xF5es", tipo: "texto_curto", placeholder: "Falar pelo WhatsApp" },
+      { chave: "whatsapp_mensagem", label: "Mensagem pr\xE9-preenchida do WhatsApp", tipo: "texto_curto", padrao: LEADER_TEXTOS.whatsapp_mensagem, placeholder: "Ex: Ol\xE1! Vim pela p\xE1gina e gostaria de mais informa\xE7\xF5es." },
+      { chave: "botao_texto", label: "Texto dos bot\xF5es", tipo: "texto_curto", padrao: LEADER_TEXTOS.botao_texto, padrao: LEADER_TEXTOS.botao_texto },
       { chave: "hero_imagem", label: "Topo: foto da loja (fica \xE0 direita, fundindo com a cor escura)", tipo: "imagem" },
       { chave: "hero_logo", label: "Topo: logo dentro do banner (opcional, PNG claro)", tipo: "imagem" },
-      { chave: "hero_selo", label: "Topo: frase pequena acima do t\xEDtulo", tipo: "texto_curto", placeholder: "Ex: \xD3TICA \u2014 \xD3CULOS DE GRAU, SOL E LENTES DE CONTATO" },
-      { chave: "hero_titulo", label: "Topo: t\xEDtulo", tipo: "texto_curto", placeholder: "Ex: Enxergue melhor ainda hoje." },
+      { chave: "hero_selo", label: "Topo: frase pequena acima do t\xEDtulo", tipo: "texto_curto", padrao: LEADER_TEXTOS.hero_selo, placeholder: "Ex: \xD3TICA \u2014 \xD3CULOS DE GRAU, SOL E LENTES DE CONTATO" },
+      { chave: "hero_titulo", label: "Topo: t\xEDtulo", tipo: "texto_curto", padrao: LEADER_TEXTOS.hero_titulo, placeholder: "Ex: Enxergue melhor ainda hoje." },
       { chave: "hero_titulo_destaque", label: "Topo: final do t\xEDtulo, na cor de destaque", tipo: "texto_curto", placeholder: "Ex: \xD3culos prontos em at\xE9 40 minutos." },
-      { chave: "hero_texto", label: "Topo: texto", tipo: "texto_longo" },
-      { chave: "hero_link_texto", label: "Topo: link ao lado do bot\xE3o", tipo: "texto_curto", placeholder: "ou visitar a loja" },
+      { chave: "hero_texto", label: "Topo: texto", tipo: "texto_longo", padrao: LEADER_TEXTOS.hero_texto },
+      { chave: "hero_link_texto", label: "Topo: link ao lado do bot\xE3o", tipo: "texto_curto", padrao: LEADER_TEXTOS.hero_link_texto, padrao: LEADER_TEXTOS.hero_link_texto },
       { chave: "hero_link_url", label: "Topo: endere\xE7o do link (ex: Google Maps). Em branco, rola at\xE9 o contato", tipo: "texto_curto", placeholder: "https://maps.google.com/..." },
       { chave: "problema_imagem", label: "O problema: imagem", tipo: "imagem" },
-      { chave: "problema_selo", label: "O problema: frase pequena", tipo: "texto_curto", placeholder: "O PROBLEMA" },
-      { chave: "problema_titulo", label: "O problema: t\xEDtulo", tipo: "texto_curto" },
+      { chave: "problema_selo", label: "O problema: frase pequena", tipo: "texto_curto", padrao: LEADER_TEXTOS.problema_selo, padrao: LEADER_TEXTOS.problema_selo },
+      { chave: "problema_titulo", label: "O problema: t\xEDtulo", tipo: "texto_curto", padrao: LEADER_TEXTOS.problema_titulo },
       { chave: "problema_titulo_destaque", label: "O problema: final do t\xEDtulo em destaque", tipo: "texto_curto" },
-      { chave: "problema_texto", label: "O problema: texto (linha em branco separa par\xE1grafos)", tipo: "texto_longo" },
-      { chave: "problema_caixa", label: "O problema: caixa escura no fim", tipo: "texto_curto", placeholder: "Ex: Aqui \xE9 diferente." },
+      { chave: "problema_texto", label: "O problema: texto (linha em branco separa par\xE1grafos)", tipo: "texto_longo", padrao: LEADER_TEXTOS.problema_texto },
+      { chave: "problema_caixa", label: "O problema: caixa escura no fim", tipo: "texto_curto", padrao: LEADER_TEXTOS.problema_caixa, placeholder: "Ex: Aqui \xE9 diferente." },
       { chave: "solucao_imagem", label: "A solu\xE7\xE3o: foto (fica \xE0 direita, fundindo com o branco)", tipo: "imagem" },
-      { chave: "solucao_selo", label: "A solu\xE7\xE3o: frase pequena", tipo: "texto_curto", placeholder: "A SOLU\xC7\xC3O" },
-      { chave: "solucao_titulo", label: "A solu\xE7\xE3o: t\xEDtulo", tipo: "texto_curto" },
+      { chave: "solucao_selo", label: "A solu\xE7\xE3o: frase pequena", tipo: "texto_curto", padrao: LEADER_TEXTOS.solucao_selo, padrao: LEADER_TEXTOS.solucao_selo },
+      { chave: "solucao_titulo", label: "A solu\xE7\xE3o: t\xEDtulo", tipo: "texto_curto", padrao: LEADER_TEXTOS.solucao_titulo },
       { chave: "solucao_titulo_destaque", label: "A solu\xE7\xE3o: final do t\xEDtulo em destaque", tipo: "texto_curto" },
-      { chave: "solucao_texto", label: "A solu\xE7\xE3o: texto", tipo: "texto_longo" },
-      { chave: "servicos_selo", label: "O que oferecemos: frase pequena", tipo: "texto_curto", placeholder: "O QUE OFERECEMOS" },
-      { chave: "servicos_titulo", label: "O que oferecemos: t\xEDtulo", tipo: "texto_curto" },
+      { chave: "solucao_texto", label: "A solu\xE7\xE3o: texto", tipo: "texto_longo", padrao: LEADER_TEXTOS.solucao_texto },
+      { chave: "servicos_selo", label: "O que oferecemos: frase pequena", tipo: "texto_curto", padrao: LEADER_TEXTOS.servicos_selo, padrao: LEADER_TEXTOS.servicos_selo },
+      { chave: "servicos_titulo", label: "O que oferecemos: t\xEDtulo", tipo: "texto_curto", padrao: LEADER_TEXTOS.servicos_titulo },
       { chave: "servicos_titulo_destaque", label: "O que oferecemos: final do t\xEDtulo em destaque", tipo: "texto_curto" },
       { chave: "servicos", label: "O que oferecemos: cart\xF5es (at\xE9 4)", tipo: "lista_features", padrao: LEADER_SERVICOS_PADRAO, icones: LEADER_SERVICOS_ICONES, placeholderTitulo: "Ex: \xD3culos de grau" },
-      { chave: "faixa_titulo", label: "Faixa escura: t\xEDtulo", tipo: "texto_curto", placeholder: "Ex: Entrega expressa" },
-      { chave: "faixa_texto", label: "Faixa escura: texto", tipo: "texto_curto" },
-      { chave: "passos_selo", label: "Como funciona: frase pequena", tipo: "texto_curto", placeholder: "COMO FUNCIONA" },
-      { chave: "passos_titulo", label: "Como funciona: t\xEDtulo", tipo: "texto_curto" },
+      { chave: "faixa_titulo", label: "Faixa escura: t\xEDtulo", tipo: "texto_curto", padrao: LEADER_TEXTOS.faixa_titulo, placeholder: "Ex: Entrega expressa" },
+      { chave: "faixa_texto", label: "Faixa escura: texto", tipo: "texto_curto", padrao: LEADER_TEXTOS.faixa_texto },
+      { chave: "passos_selo", label: "Como funciona: frase pequena", tipo: "texto_curto", padrao: LEADER_TEXTOS.passos_selo, padrao: LEADER_TEXTOS.passos_selo },
+      { chave: "passos_titulo", label: "Como funciona: t\xEDtulo", tipo: "texto_curto", padrao: LEADER_TEXTOS.passos_titulo },
       { chave: "passos_titulo_destaque", label: "Como funciona: final do t\xEDtulo em destaque", tipo: "texto_curto" },
       { chave: "passos", label: "Como funciona: etapas", tipo: "lista_features", padrao: LEADER_PASSOS_PADRAO, icones: LEADER_PASSOS_ICONES, placeholderTitulo: "Ex: Escolha da arma\xE7\xE3o" },
       { chave: "galeria_1", label: "Fotos da loja: 1", tipo: "imagem" },
       { chave: "galeria_2", label: "Fotos da loja: 2", tipo: "imagem" },
       { chave: "galeria_3", label: "Fotos da loja: 3", tipo: "imagem" },
-      { chave: "prova_selo", label: "Prova social: frase pequena", tipo: "texto_curto", placeholder: "PROVA SOCIAL" },
-      { chave: "prova_titulo", label: "Prova social: t\xEDtulo", tipo: "texto_curto" },
+      { chave: "prova_selo", label: "Prova social: frase pequena", tipo: "texto_curto", padrao: LEADER_TEXTOS.prova_selo, padrao: LEADER_TEXTOS.prova_selo },
+      { chave: "prova_titulo", label: "Prova social: t\xEDtulo", tipo: "texto_curto", padrao: LEADER_TEXTOS.prova_titulo },
       { chave: "prova_titulo_destaque", label: "Prova social: final do t\xEDtulo em destaque", tipo: "texto_curto" },
-      { chave: "prova_texto", label: "Prova social: texto", tipo: "texto_longo" },
+      { chave: "prova_texto", label: "Prova social: texto", tipo: "texto_longo", padrao: LEADER_TEXTOS.prova_texto },
       { chave: "depoimentos", label: "Prova social: depoimentos (opcional, at\xE9 3)", tipo: "lista_depoimentos" },
-      { chave: "faq_selo", label: "D\xFAvidas: frase pequena", tipo: "texto_curto", placeholder: "D\xDAVIDAS FREQUENTES" },
-      { chave: "faq_titulo", label: "D\xFAvidas: t\xEDtulo", tipo: "texto_curto" },
+      { chave: "faq_selo", label: "D\xFAvidas: frase pequena", tipo: "texto_curto", padrao: LEADER_TEXTOS.faq_selo, padrao: LEADER_TEXTOS.faq_selo },
+      { chave: "faq_titulo", label: "D\xFAvidas: t\xEDtulo", tipo: "texto_curto", padrao: LEADER_TEXTOS.faq_titulo },
       { chave: "faq_titulo_destaque", label: "D\xFAvidas: final do t\xEDtulo em destaque", tipo: "texto_curto" },
       { chave: "faq", label: "D\xFAvidas: perguntas e respostas", tipo: "lista_faq", padrao: LEADER_FAQ_PADRAO },
       { chave: "contato_imagem", label: "Contato: imagem (PNG sem fundo fica melhor)", tipo: "imagem" },
-      { chave: "contato_selo", label: "Contato: frase pequena", tipo: "texto_curto", placeholder: "VENHA NOS VISITAR" },
-      { chave: "contato_titulo", label: "Contato: t\xEDtulo", tipo: "texto_curto" },
+      { chave: "contato_selo", label: "Contato: frase pequena", tipo: "texto_curto", padrao: LEADER_TEXTOS.contato_selo, padrao: LEADER_TEXTOS.contato_selo },
+      { chave: "contato_titulo", label: "Contato: t\xEDtulo", tipo: "texto_curto", padrao: LEADER_TEXTOS.contato_titulo },
       { chave: "contato_titulo_destaque", label: "Contato: final do t\xEDtulo em destaque", tipo: "texto_curto" },
-      { chave: "contato_texto", label: "Contato: texto", tipo: "texto_longo" },
+      { chave: "contato_texto", label: "Contato: texto", tipo: "texto_longo", padrao: LEADER_TEXTOS.contato_texto },
       { chave: "endereco_texto", label: "Contato: endere\xE7o", tipo: "texto_curto", placeholder: "Ex: Rua das Flores, 123 \xB7 Centro" },
       { chave: "endereco_url", label: "Contato: link do endere\xE7o (Google Maps)", tipo: "texto_curto", placeholder: "https://maps.google.com/..." },
-      { chave: "rodape_titulo", label: "Rodap\xE9: nome da \xF3tica", tipo: "texto_curto" },
+      { chave: "rodape_titulo", label: "Rodap\xE9: nome da \xF3tica", tipo: "texto_curto", padrao: LEADER_TEXTOS.rodape_titulo },
       { chave: "rodape_itens", label: "Rodap\xE9: diferenciais", tipo: "lista", padrao: LEADER_RODAPE_ITENS_PADRAO, placeholder: "Ex: P\xF3s-venda garantido" },
-      { chave: "rodape_texto", label: "Rodap\xE9: texto da faixa final", tipo: "texto_curto", placeholder: "Ex: \xA9 2026 Sua \xF3tica. Todos os direitos reservados." }
+      { chave: "rodape_texto", label: "Rodap\xE9: texto da faixa final", tipo: "texto_curto", padrao: LEADER_TEXTOS.rodape_texto, placeholder: "Ex: \xA9 2026 Sua \xF3tica. Todos os direitos reservados." }
     ],
-    Render: ({ conteudo, onLead }) => /* @__PURE__ */ jsx3(LeaderRender, { conteudo, onLead, FormularioLead })
+    Render: (props) => /* @__PURE__ */ jsx3(LeaderRender, { ...props, FormularioLead })
   }
 };
+var TIPOS_TEXTO = /* @__PURE__ */ new Set(["texto_curto", "texto_longo"]);
+var vazio = (v) => v === void 0 || v === null || v === "";
+function aplicarPadroes(campos, conteudo) {
+  const c = { ...conteudo || {} };
+  for (const campo of campos || []) {
+    if (campo.padrao === void 0) continue;
+    if (TIPOS_TEXTO.has(campo.tipo)) {
+      if (vazio(c[campo.chave])) c[campo.chave] = campo.padrao;
+    } else if (campo.tipo === "bloco") {
+      const bloco = { ...c[campo.chave] || {} };
+      for (const [k, v] of Object.entries(campo.padrao)) if (vazio(bloco[k])) bloco[k] = v;
+      c[campo.chave] = bloco;
+    }
+  }
+  return c;
+}
+for (const t of Object.values(LANDING_PAGE_TEMPLATES)) {
+  const RenderTemplate = t.Render;
+  t.Render = ({ conteudo, ...resto }) => /* @__PURE__ */ jsx3(RenderTemplate, { ...resto, conteudo: aplicarPadroes(t.campos, conteudo), conteudoOriginal: conteudo || {} });
+}
 function secaoContatoDaPagina(templateId, conteudo) {
   const t = LANDING_PAGE_TEMPLATES[templateId];
   if (!t) return null;
@@ -1079,7 +1131,7 @@ function GreatsBloco({ bloco, corPrimaria, fundo = "branco", className = "" }) {
           {
             className: "text-lg sm:text-2xl font-extrabold uppercase tracking-tight leading-snug break-words",
             style: { color: escuro ? "#fff" : corPrimaria },
-            children: v.titulo || "T\xEDtulo do bloco"
+            children: v.titulo
           }
         ),
         v.texto && /* @__PURE__ */ jsx3("p", { className: "text-base sm:text-lg font-medium leading-relaxed break-words", style: { color: escuro ? "rgba(255,255,255,0.95)" : GREATS_TEXTO }, children: v.texto }),
@@ -1109,11 +1161,11 @@ function GreatsRender({ conteudo }) {
           {
             className: "px-4 py-2 text-sm font-bold tracking-[0.12em] uppercase text-white",
             style: { background: corPrimaria },
-            children: c.selo_texto || "SUA MARCA"
+            children: c.selo_texto
           }
         ),
-        /* @__PURE__ */ jsx3("h1", { className: "text-3xl sm:text-5xl font-extrabold uppercase text-white leading-tight max-w-xl break-words", style: { textShadow: "0 2px 12px rgba(0,0,0,0.55)" }, children: c.hero_titulo || "T\xEDtulo de impacto para o seu produto" }),
-        /* @__PURE__ */ jsx3(GreatsBotao, { texto: c.hero_cta_texto || "SAIBA MAIS", url: c.hero_cta_url, variante: "escuro", cor: corPrimaria })
+        /* @__PURE__ */ jsx3("h1", { className: "text-3xl sm:text-5xl font-extrabold uppercase text-white leading-tight max-w-xl break-words", style: { textShadow: "0 2px 12px rgba(0,0,0,0.55)" }, children: c.hero_titulo }),
+        /* @__PURE__ */ jsx3(GreatsBotao, { texto: c.hero_cta_texto, url: c.hero_cta_url, variante: "escuro", cor: corPrimaria })
       ] })
     ] }),
     /* @__PURE__ */ jsx3("div", { "data-secao": "selos", className: "grid grid-cols-1 sm:grid-cols-3 gap-6 px-6 sm:px-10 py-10", style: { background: "#F7F6F4" }, children: features.slice(0, 3).map((f, i) => {
@@ -1140,9 +1192,9 @@ function GreatsRender({ conteudo }) {
     ] }),
     /* @__PURE__ */ jsxs3("div", { "data-secao": "faixa_cta", className: "grid grid-cols-1 sm:grid-cols-2 items-stretch", style: { background: "#F7F6F4" }, children: [
       /* @__PURE__ */ jsxs3("div", { className: "flex flex-col justify-center gap-3 p-6 sm:p-10", children: [
-        /* @__PURE__ */ jsx3("h3", { className: "text-2xl sm:text-3xl font-extrabold uppercase tracking-tight leading-tight break-words", style: { color: corPrimaria }, children: c.cta2_bloco?.titulo || "Confira nossa cole\xE7\xE3o" }),
+        /* @__PURE__ */ jsx3("h3", { className: "text-2xl sm:text-3xl font-extrabold uppercase tracking-tight leading-tight break-words", style: { color: corPrimaria }, children: c.cta2_bloco?.titulo }),
         c.cta2_bloco?.texto && /* @__PURE__ */ jsx3("p", { className: "text-base sm:text-lg font-medium leading-relaxed", style: { color: GREATS_TEXTO }, children: c.cta2_bloco.texto }),
-        /* @__PURE__ */ jsx3("div", { className: "pt-1", children: /* @__PURE__ */ jsx3(GreatsBotao, { texto: c.cta2_bloco?.cta_texto || "VER COLE\xC7\xC3O", url: c.cta2_bloco?.cta_url, variante: "escuro", cor: corPrimaria }) })
+        /* @__PURE__ */ jsx3("div", { className: "pt-1", children: /* @__PURE__ */ jsx3(GreatsBotao, { texto: c.cta2_bloco?.cta_texto, url: c.cta2_bloco?.cta_url, variante: "escuro", cor: corPrimaria }) })
       ] }),
       /* @__PURE__ */ jsx3(GreatsImg, { src: c.cta2_imagem, className: "w-full h-full min-h-[220px] object-cover" })
     ] }),
@@ -1154,12 +1206,12 @@ function GreatsRender({ conteudo }) {
     ] }),
     /* @__PURE__ */ jsxs3("div", { "data-secao": "colecoes", className: "grid grid-cols-2", children: [
       /* @__PURE__ */ jsxs3("div", { className: "flex flex-col items-center justify-center gap-3 py-14 px-4", style: { background: corPrimaria }, children: [
-        /* @__PURE__ */ jsx3("h3", { className: "text-white text-xl sm:text-2xl font-extrabold uppercase tracking-wide text-center break-words", children: c.men_titulo || "MASCULINO" }),
-        /* @__PURE__ */ jsx3(GreatsBotao, { texto: c.men_cta_texto || "VER AGORA", url: c.men_cta_url, variante: "claro", cor: corPrimaria })
+        /* @__PURE__ */ jsx3("h3", { className: "text-white text-xl sm:text-2xl font-extrabold uppercase tracking-wide text-center break-words", children: c.men_titulo }),
+        /* @__PURE__ */ jsx3(GreatsBotao, { texto: c.men_cta_texto, url: c.men_cta_url, variante: "claro", cor: corPrimaria })
       ] }),
       /* @__PURE__ */ jsxs3("div", { className: "flex flex-col items-center justify-center gap-3 py-14 px-4", style: { background: corSecundaria }, children: [
-        /* @__PURE__ */ jsx3("h3", { className: "text-white text-xl sm:text-2xl font-extrabold uppercase tracking-wide text-center break-words", children: c.women_titulo || "FEMININO" }),
-        /* @__PURE__ */ jsx3(GreatsBotao, { texto: c.women_cta_texto || "VER AGORA", url: c.women_cta_url, variante: "claro", cor: corSecundaria })
+        /* @__PURE__ */ jsx3("h3", { className: "text-white text-xl sm:text-2xl font-extrabold uppercase tracking-wide text-center break-words", children: c.women_titulo }),
+        /* @__PURE__ */ jsx3(GreatsBotao, { texto: c.women_cta_texto, url: c.women_cta_url, variante: "claro", cor: corSecundaria })
       ] })
     ] }),
     /* @__PURE__ */ jsx3("div", { "data-secao": "depoimentos", className: "grid grid-cols-1 sm:grid-cols-2 gap-8 px-6 sm:px-10 py-12 text-center", children: depoimentos.slice(0, 2).map((d, i) => /* @__PURE__ */ jsxs3("div", { className: "flex flex-col items-center gap-2", children: [
@@ -1168,7 +1220,7 @@ function GreatsRender({ conteudo }) {
       /* @__PURE__ */ jsx3("p", { className: "text-base sm:text-lg font-medium leading-relaxed", style: { color: GREATS_TEXTO }, children: d.texto }),
       /* @__PURE__ */ jsx3("p", { className: "text-base font-bold", style: { color: corPrimaria }, children: d.nome })
     ] }, i)) }),
-    /* @__PURE__ */ jsx3("div", { "data-secao": "rodape", className: "text-center text-sm text-gray-600 px-6 py-6 border-t border-gray-200", children: c.rodape_texto || `\xA9 ${(/* @__PURE__ */ new Date()).getFullYear()} Todos os direitos reservados.` })
+    /* @__PURE__ */ jsx3("div", { "data-secao": "rodape", className: "text-center text-sm text-gray-600 px-6 py-6 border-t border-gray-200", children: c.rodape_texto })
   ] });
 }
 
@@ -2159,9 +2211,9 @@ function CampoEditor({ campo, valor, onChange }) {
       /* @__PURE__ */ jsx6(
         "input",
         {
-          value: valor ?? "",
+          value: valor ?? campo.padrao ?? "",
           onChange: (e) => onChange(e.target.value),
-          placeholder: campo.placeholder,
+          placeholder: campo.placeholder || campo.padrao,
           className: "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
         }
       )
@@ -2173,9 +2225,9 @@ function CampoEditor({ campo, valor, onChange }) {
       /* @__PURE__ */ jsx6(
         "textarea",
         {
-          value: valor ?? "",
+          value: valor ?? campo.padrao ?? "",
           onChange: (e) => onChange(e.target.value),
-          placeholder: campo.placeholder,
+          placeholder: campo.placeholder || campo.padrao,
           rows: 4,
           className: "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 resize-none"
         }
@@ -2270,6 +2322,8 @@ function CampoCor({ campo, valor, onChange }) {
 }
 function CampoBloco({ campo, valor, onChange }) {
   const v = valor || {};
+  const p = campo.padrao || {};
+  const mostrar = (chave) => v[chave] ?? p[chave] ?? "";
   function set(chave, texto) {
     onChange({ ...v, [chave]: texto });
   }
@@ -2278,7 +2332,7 @@ function CampoBloco({ campo, valor, onChange }) {
     /* @__PURE__ */ jsx6(
       "input",
       {
-        value: v.titulo || "",
+        value: mostrar("titulo"),
         onChange: (e) => set("titulo", e.target.value),
         placeholder: "T\xEDtulo do bloco",
         className: "w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-violet-400"
@@ -2287,7 +2341,7 @@ function CampoBloco({ campo, valor, onChange }) {
     /* @__PURE__ */ jsx6(
       "textarea",
       {
-        value: v.texto || "",
+        value: mostrar("texto"),
         onChange: (e) => set("texto", e.target.value),
         placeholder: "Texto (opcional)",
         rows: 2,
@@ -2298,7 +2352,7 @@ function CampoBloco({ campo, valor, onChange }) {
       /* @__PURE__ */ jsx6(
         "input",
         {
-          value: v.cta_texto || "",
+          value: mostrar("cta_texto"),
           onChange: (e) => set("cta_texto", e.target.value),
           placeholder: "Texto do bot\xE3o (opcional)",
           className: "flex-1 rounded-lg border border-gray-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
@@ -2307,7 +2361,7 @@ function CampoBloco({ campo, valor, onChange }) {
       /* @__PURE__ */ jsx6(
         "input",
         {
-          value: v.cta_url || "",
+          value: mostrar("cta_url"),
           onChange: (e) => set("cta_url", e.target.value),
           placeholder: "Link (opcional)",
           className: "flex-1 rounded-lg border border-gray-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"

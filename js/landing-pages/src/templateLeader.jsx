@@ -23,6 +23,40 @@ export const LEADER_COR_ESCURA = '#020B26'
 export const LEADER_COR_DESTAQUE = '#00B6D5'
 const LEADER_DEGRADE_PADRAO = 50
 
+// Textos padrão de cada campo (vão no `padrao` dos campos em templates.jsx). A página recebe o
+// conteúdo já mesclado com eles (`aplicarPadroes`), e o editor os mostra dentro das caixas.
+export const LEADER_TEXTOS = {
+  whatsapp_mensagem: 'Olá! Vim pela página e gostaria de mais informações.',
+  botao_texto: 'Falar pelo WhatsApp',
+  hero_selo: 'Ótica · óculos de grau, sol e lentes de contato',
+  hero_titulo: 'Enxergue melhor ainda hoje.',
+  hero_texto: 'Atendimento consultivo, armação certa para o seu rosto e lentes indicadas para a sua rotina.',
+  hero_link_texto: 'ou visitar a loja',
+  problema_selo: 'O problema',
+  problema_titulo: 'Enxergar mal afeta muito mais do que parece.',
+  problema_texto: 'Dor de cabeça, vista cansada, dificuldade para ler ou enxergar longe. Muita gente convive com isso por tanto tempo que nem percebe o quanto está perdendo.',
+  problema_caixa: 'Aqui é diferente.',
+  solucao_selo: 'A solução',
+  solucao_titulo: 'A ótica que resolve o seu problema de visão.',
+  solucao_texto: 'Não viemos só vender óculos. O atendimento começa entendendo a sua rotina e o que você precisa enxergar melhor; a partir daí, indicamos a armação e as lentes ideais para o seu caso.',
+  servicos_selo: 'O que oferecemos',
+  servicos_titulo: 'Tudo que você precisa para enxergar melhor',
+  faixa_titulo: 'Atendimento sem pressa',
+  faixa_texto: 'Tire suas dúvidas antes de sair de casa: respondemos pelo WhatsApp.',
+  passos_selo: 'Como funciona',
+  passos_titulo: 'Do atendimento ao óculos no rosto',
+  prova_selo: 'Prova social',
+  prova_titulo: 'Clientes que chegaram com dor de cabeça e saíram enxergando.',
+  prova_texto: 'Depois dos óculos certos: menos dor de cabeça, mais disposição e a autoestima lá em cima.',
+  faq_selo: 'Dúvidas frequentes',
+  faq_titulo: 'Dúvidas que aparecem antes de escolher uma ótica',
+  contato_selo: 'Venha nos visitar',
+  contato_titulo: 'Hoje você ainda pode sair enxergando melhor.',
+  contato_texto: 'Venha até a loja ou fale pelo WhatsApp. A gente cuida do resto, do atendimento à entrega dos óculos ajustados no seu rosto.',
+  rodape_titulo: 'Sua ótica — óculos de grau, sol e lentes de contato',
+  rodape_texto: `© ${new Date().getFullYear()} Todos os direitos reservados.`,
+}
+
 export const LEADER_SERVICOS_PADRAO = [
   { titulo: 'Óculos de grau', descricao: 'Armações para todos os estilos e formatos de rosto, com a lente indicada para a sua receita.' },
   { titulo: 'Óculos de sol', descricao: 'Proteção de verdade para os olhos, com armações que combinam com o seu jeito.' },
@@ -266,12 +300,11 @@ function Imagem({ src, className }) {
   return <div className={`${className} olp-ld-vazio`}><ImageIcon size={32} /></div>
 }
 
-function Titulo({ como: Tag = 'h2', className, texto, destaque, padrao }) {
-  const principal = texto || (destaque ? '' : padrao)
+function Titulo({ como: Tag = 'h2', className, texto, destaque }) {
   return (
     <Tag className={className}>
-      {principal}
-      {principal && destaque ? ' ' : ''}
+      {texto}
+      {texto && destaque ? ' ' : ''}
       {destaque && <span className="olp-ld-dest">{destaque}</span>}
     </Tag>
   )
@@ -337,7 +370,7 @@ const temTexto = v => typeof v === 'string' ? v.trim() !== '' : Boolean(v)
 
 // ─── Página ─────────────────────────────────────────────────────────────────
 
-export function LeaderRender({ conteudo, onLead, FormularioLead }) {
+export function LeaderRender({ conteudo, conteudoOriginal, onLead, FormularioLead }) {
   useFontesLeader()
   const c = conteudo || {}
   const escura = hexParaRgb(c.cor_escura) ? c.cor_escura : LEADER_COR_ESCURA
@@ -346,8 +379,8 @@ export function LeaderRender({ conteudo, onLead, FormularioLead }) {
     ? Number(c.degrade_largura) : LEADER_DEGRADE_PADRAO
 
   const numero = numeroWhatsApp(c.whatsapp_numero)
-  const wpp = numero ? linkWhatsApp(numero, c.whatsapp_mensagem || 'Olá! Vim pela página e gostaria de mais informações.') : null
-  const textoBotao = c.botao_texto || 'Falar pelo WhatsApp'
+  const wpp = numero ? linkWhatsApp(numero, c.whatsapp_mensagem) : null
+  const textoBotao = c.botao_texto
 
   const servicos = lista(c.servicos, LEADER_SERVICOS_PADRAO).slice(0, 4)
   const passos = lista(c.passos, LEADER_PASSOS_PADRAO)
@@ -389,17 +422,17 @@ export function LeaderRender({ conteudo, onLead, FormularioLead }) {
         alturaDesk="660px" alturaTab="540px" larguraFotoDesk="62%" larguraFotoTab="58%" larguraTextoDesk="640px" larguraTextoTab="62%"
       >
         {c.hero_logo && <img src={c.hero_logo} alt="" className="olp-ld-logo" />}
-        <p className="olp-ld-selo">{c.hero_selo || 'Ótica · óculos de grau, sol e lentes de contato'}</p>
-        <Titulo como="h1" className="olp-ld-h1" texto={c.hero_titulo} destaque={c.hero_titulo_destaque} padrao="Enxergue melhor ainda hoje." />
+        <p className="olp-ld-selo">{c.hero_selo}</p>
+        <Titulo como="h1" className="olp-ld-h1" texto={c.hero_titulo} destaque={c.hero_titulo_destaque} />
         <p className="olp-ld-corpo" style={{ color: 'rgba(255,255,255,.92)', marginTop: 20, maxWidth: 520 }}>
-          {c.hero_texto || 'Atendimento consultivo, armação certa para o seu rosto e lentes indicadas para a sua rotina.'}
+          {c.hero_texto}
         </p>
         <div className="olp-ld-acoes">
           {acaoPrincipal}
           {/* Link secundário: endereço/mapa, se tiver; senão rola até a seção de contato. */}
           {c.hero_link_url
-            ? <a href={c.hero_link_url} target="_blank" rel="noopener noreferrer" className="olp-ld-link">{c.hero_link_texto || 'ou visitar a loja'}</a>
-            : <button type="button" onClick={irParaContato} className="olp-ld-link">{c.hero_link_texto || 'ou visitar a loja'}</button>}
+            ? <a href={c.hero_link_url} target="_blank" rel="noopener noreferrer" className="olp-ld-link">{c.hero_link_texto}</a>
+            : <button type="button" onClick={irParaContato} className="olp-ld-link">{c.hero_link_texto}</button>}
         </div>
       </BannerDegrade>
 
@@ -408,12 +441,12 @@ export function LeaderRender({ conteudo, onLead, FormularioLead }) {
         <div className="olp-ld-wrap olp-ld-duo">
           <Imagem src={c.problema_imagem} className="olp-ld-duo-img" />
           <div className="olp-ld-duo-texto">
-            <p className="olp-ld-selo">{c.problema_selo || 'O problema'}</p>
-            <Titulo className="olp-ld-h2" texto={c.problema_titulo} destaque={c.problema_titulo_destaque} padrao="Enxergar mal afeta muito mais do que parece." />
+            <p className="olp-ld-selo">{c.problema_selo}</p>
+            <Titulo className="olp-ld-h2" texto={c.problema_titulo} destaque={c.problema_titulo_destaque} />
             <p className="olp-ld-corpo" style={{ marginTop: 20 }}>
-              {c.problema_texto || 'Dor de cabeça, vista cansada, dificuldade para ler ou enxergar longe. Muita gente convive com isso por tanto tempo que nem percebe o quanto está perdendo.'}
+              {c.problema_texto}
             </p>
-            <p className="olp-ld-caixa">{c.problema_caixa || 'Aqui é diferente.'}</p>
+            <p className="olp-ld-caixa">{c.problema_caixa}</p>
           </div>
         </div>
       </section>
@@ -423,10 +456,10 @@ export function LeaderRender({ conteudo, onLead, FormularioLead }) {
         secao="solucao" fundo="#FFFFFF" imagem={c.solucao_imagem} degrade={degrade}
         alturaDesk="680px" alturaTab="560px" larguraFotoDesk="58%" larguraFotoTab="50%" larguraTextoDesk="470px" larguraTextoTab="48%"
       >
-        <p className="olp-ld-selo">{c.solucao_selo || 'A solução'}</p>
-        <Titulo className="olp-ld-h2" texto={c.solucao_titulo} destaque={c.solucao_titulo_destaque} padrao="A ótica que resolve o seu problema de visão." />
+        <p className="olp-ld-selo">{c.solucao_selo}</p>
+        <Titulo className="olp-ld-h2" texto={c.solucao_titulo} destaque={c.solucao_titulo_destaque} />
         <p className="olp-ld-corpo" style={{ marginTop: 20 }}>
-          {c.solucao_texto || 'Não viemos só vender óculos. O atendimento começa entendendo a sua rotina e o que você precisa enxergar melhor; a partir daí, indicamos a armação e as lentes ideais para o seu caso.'}
+          {c.solucao_texto}
         </p>
       </BannerDegrade>
 
@@ -434,8 +467,8 @@ export function LeaderRender({ conteudo, onLead, FormularioLead }) {
       <section data-secao="servicos" className="olp-ld-sec olp-ld-claro">
         <div className="olp-ld-wrap">
           <div className="olp-ld-centro">
-            <p className="olp-ld-selo">{c.servicos_selo || 'O que oferecemos'}</p>
-            <Titulo className="olp-ld-h2" texto={c.servicos_titulo} destaque={c.servicos_titulo_destaque} padrao="Tudo que você precisa para enxergar melhor" />
+            <p className="olp-ld-selo">{c.servicos_selo}</p>
+            <Titulo className="olp-ld-h2" texto={c.servicos_titulo} destaque={c.servicos_titulo_destaque} />
           </div>
           <div className="olp-ld-cards" data-n={servicos.length}>
             {servicos.map((s, i) => (
@@ -448,8 +481,8 @@ export function LeaderRender({ conteudo, onLead, FormularioLead }) {
           </div>
           <div className="olp-ld-faixa">
             <div>
-              <h3>{c.faixa_titulo || 'Atendimento sem pressa'}</h3>
-              <p>{c.faixa_texto || 'Tire suas dúvidas antes de sair de casa: respondemos pelo WhatsApp.'}</p>
+              <h3>{c.faixa_titulo}</h3>
+              <p>{c.faixa_texto}</p>
             </div>
             <div className="olp-ld-acoes">{acaoPrincipal}</div>
           </div>
@@ -460,8 +493,8 @@ export function LeaderRender({ conteudo, onLead, FormularioLead }) {
       <section data-secao="como_funciona" className="olp-ld-sec">
         <div className="olp-ld-wrap">
           <div className="olp-ld-centro">
-            <p className="olp-ld-selo">{c.passos_selo || 'Como funciona'}</p>
-            <Titulo className="olp-ld-h2" texto={c.passos_titulo} destaque={c.passos_titulo_destaque} padrao="Do atendimento ao óculos no rosto" />
+            <p className="olp-ld-selo">{c.passos_selo}</p>
+            <Titulo className="olp-ld-h2" texto={c.passos_titulo} destaque={c.passos_titulo_destaque} />
           </div>
           <div className="olp-ld-passos">
             {passos.map((p, i) => (
@@ -491,10 +524,10 @@ export function LeaderRender({ conteudo, onLead, FormularioLead }) {
       {/* Prova social */}
       <section data-secao="prova_social" className="olp-ld-sec olp-ld-escuro">
         <div className="olp-ld-wrap olp-ld-centro">
-          <p className="olp-ld-selo">{c.prova_selo || 'Prova social'}</p>
-          <Titulo className="olp-ld-h2" texto={c.prova_titulo} destaque={c.prova_titulo_destaque} padrao="Clientes que chegaram com dor de cabeça e saíram enxergando." />
+          <p className="olp-ld-selo">{c.prova_selo}</p>
+          <Titulo className="olp-ld-h2" texto={c.prova_titulo} destaque={c.prova_titulo_destaque} />
           <p className="olp-ld-corpo" style={{ marginTop: 20, maxWidth: 680, marginLeft: 'auto', marginRight: 'auto' }}>
-            {c.prova_texto || 'Depois dos óculos certos: menos dor de cabeça, mais disposição e a autoestima lá em cima.'}
+            {c.prova_texto}
           </p>
           {depoimentos.length > 0 && (
             <div className="olp-ld-depos" data-n={depoimentos.length}>
@@ -514,8 +547,8 @@ export function LeaderRender({ conteudo, onLead, FormularioLead }) {
       <section data-secao="faq" className="olp-ld-sec olp-ld-claro">
         <div className="olp-ld-wrap">
           <div className="olp-ld-centro">
-            <p className="olp-ld-selo">{c.faq_selo || 'Dúvidas frequentes'}</p>
-            <Titulo className="olp-ld-h2" texto={c.faq_titulo} destaque={c.faq_titulo_destaque} padrao="Dúvidas que aparecem antes de escolher uma ótica" />
+            <p className="olp-ld-selo">{c.faq_selo}</p>
+            <Titulo className="olp-ld-h2" texto={c.faq_titulo} destaque={c.faq_titulo_destaque} />
           </div>
           <div className="olp-ld-faq">
             {faq.map((f, i) => <ItemFaq key={i} item={f} />)}
@@ -527,16 +560,17 @@ export function LeaderRender({ conteudo, onLead, FormularioLead }) {
       <section data-secao="contato" className="olp-ld-sec olp-ld-contato" style={{ paddingBottom: 0 }}>
         <div className="olp-ld-wrap olp-ld-duo" style={{ alignItems: 'end' }}>
           <div className="olp-ld-duo-texto" style={{ alignSelf: 'center', paddingBottom: 40 }}>
-            <p className="olp-ld-selo">{c.contato_selo || 'Venha nos visitar'}</p>
-            <Titulo className="olp-ld-h2" texto={c.contato_titulo} destaque={c.contato_titulo_destaque} padrao="Hoje você ainda pode sair enxergando melhor." />
+            <p className="olp-ld-selo">{c.contato_selo}</p>
+            <Titulo className="olp-ld-h2" texto={c.contato_titulo} destaque={c.contato_titulo_destaque} />
             <p className="olp-ld-corpo" style={{ marginTop: 20 }}>
-              {c.contato_texto || 'Venha até a loja ou fale pelo WhatsApp. A gente cuida do resto, do atendimento à entrega dos óculos ajustados no seu rosto.'}
+              {c.contato_texto}
             </p>
             {wpp ? (
               <div className="olp-ld-acoes">{acaoPrincipal}</div>
             ) : (
               <div className="olp-ld-form">
-                <FormularioLead ctaTexto={c.botao_texto || 'Quero ser atendido'} onLead={onLead} />
+                {/* Sem WhatsApp, o botão é de formulário: "Falar pelo WhatsApp" (padrão) não serve aqui. */}
+                <FormularioLead ctaTexto={conteudoOriginal?.botao_texto || 'Quero ser atendido'} onLead={onLead} />
               </div>
             )}
             {temTexto(c.endereco_texto) && (
@@ -559,11 +593,11 @@ export function LeaderRender({ conteudo, onLead, FormularioLead }) {
       <footer data-secao="rodape">
         <div className="olp-ld-escuro olp-ld-rodape">
           <div className="olp-ld-wrap">
-            <h3>{c.rodape_titulo || 'Sua ótica — óculos de grau, sol e lentes de contato'}</h3>
+            <h3>{c.rodape_titulo}</h3>
             {rodapeItens.length > 0 && <ul>{rodapeItens.map((t, i) => <li key={i}>{t}</li>)}</ul>}
           </div>
         </div>
-        <p className="olp-ld-copy">{c.rodape_texto || `© ${new Date().getFullYear()} Todos os direitos reservados.`}</p>
+        <p className="olp-ld-copy">{c.rodape_texto}</p>
       </footer>
     </div>
   )

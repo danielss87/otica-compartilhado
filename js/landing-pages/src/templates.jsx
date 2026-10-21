@@ -7,7 +7,7 @@ import { Image as ImageIcon, MessageCircle, Gem, Footprints, RotateCcw, Star, Qu
 import { getConfig } from './config'
 import {
   LeaderRender, LeaderCardPreview, LEADER_COR_ESCURA, LEADER_COR_DESTAQUE, LEADER_SERVICOS_PADRAO, LEADER_SERVICOS_ICONES,
-  LEADER_PASSOS_PADRAO, LEADER_PASSOS_ICONES, LEADER_FAQ_PADRAO, LEADER_RODAPE_ITENS_PADRAO,
+  LEADER_PASSOS_PADRAO, LEADER_PASSOS_ICONES, LEADER_FAQ_PADRAO, LEADER_RODAPE_ITENS_PADRAO, LEADER_TEXTOS,
 } from './templateLeader'
 
 // Textos de exemplo que a página mostra enquanto a lista está vazia. Os campos do
@@ -19,6 +19,7 @@ const GREATS_FEATURES_PADRAO = [
   { titulo: 'TROCA GRÁTIS', descricao: 'Se não servir perfeitamente, trocamos sem custo em até 21 dias.' },
 ]
 // Ícone padrão de cada selo (por posição) quando o selo não tem `icone_url` enviado.
+const GREATS_BLOCO_PADRAO = { titulo: 'Título do bloco' }
 const GREATS_DEPOIMENTOS_PADRAO = [
   { texto: 'Atendimento incrível e produto de altíssima qualidade.', nome: 'Cliente satisfeito' },
   { texto: 'Chegou rápido e é ainda melhor do que nas fotos.', nome: 'Cliente satisfeito' },
@@ -33,11 +34,11 @@ export const LANDING_PAGE_TEMPLATES = {
     secoes: [{ id: 'hero', nome: 'Topo (título e imagem)' }, { id: 'texto', nome: 'Texto livre' }, { id: 'formulario', nome: 'Formulário de contato' }],
     secaoContatoPadrao: 'formulario',
     campos: [
-      { chave: 'titulo', label: 'Título (hero)', tipo: 'texto_curto', placeholder: 'Ex: Óculos completo a partir de R$ 250' },
+      { chave: 'titulo', label: 'Título (hero)', tipo: 'texto_curto', padrao: 'Título da oferta', placeholder: 'Ex: Óculos completo a partir de R$ 250' },
       { chave: 'subtitulo', label: 'Subtítulo', tipo: 'texto_curto', placeholder: 'Ex: Armação + lente, com receita ou sem' },
       { chave: 'imagem_url', label: 'Imagem principal', tipo: 'imagem' },
       { chave: 'texto', label: 'Texto livre', tipo: 'texto_longo', placeholder: 'Conte mais sobre a oferta...' },
-      { chave: 'cta_texto', label: 'Texto do botão', tipo: 'texto_curto', placeholder: 'Ex: Quero garantir o meu' },
+      { chave: 'cta_texto', label: 'Texto do botão', tipo: 'texto_curto', padrao: 'Quero saber mais', placeholder: 'Ex: Quero garantir o meu' },
     ],
     Render: ({ conteudo, onLead }) => (
       <div className="max-w-lg mx-auto px-5 py-10 text-center">
@@ -45,7 +46,7 @@ export const LANDING_PAGE_TEMPLATES = {
           {conteudo.imagem_url && (
             <img src={conteudo.imagem_url} alt="" className="w-full rounded-2xl mb-6 object-cover max-h-72" />
           )}
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 leading-tight mb-3">{conteudo.titulo || 'Título da oferta'}</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 leading-tight mb-3">{conteudo.titulo}</h1>
           {conteudo.subtitulo && <p className="text-lg sm:text-xl text-gray-700 leading-relaxed mb-5">{conteudo.subtitulo}</p>}
         </div>
         {conteudo.texto && <p data-secao="texto" className="text-base sm:text-lg text-gray-800 leading-relaxed whitespace-pre-wrap mb-8">{conteudo.texto}</p>}
@@ -63,11 +64,11 @@ export const LANDING_PAGE_TEMPLATES = {
     secaoContatoPadrao: 'formulario',
     cores: () => ({ destaque: '#8B5CF6' }),
     campos: [
-      { chave: 'titulo', label: 'Título (hero)', tipo: 'texto_curto', placeholder: 'Ex: Promoção de agosto' },
+      { chave: 'titulo', label: 'Título (hero)', tipo: 'texto_curto', padrao: 'Título da promoção', placeholder: 'Ex: Promoção de agosto' },
       { chave: 'subtitulo', label: 'Subtítulo', tipo: 'texto_curto' },
       { chave: 'imagem_url', label: 'Imagem do produto', tipo: 'imagem' },
       { chave: 'beneficios', label: 'Benefícios', tipo: 'lista', placeholder: 'Ex: Frete grátis pra SC' },
-      { chave: 'cta_texto', label: 'Texto do botão', tipo: 'texto_curto', placeholder: 'Ex: Quero aproveitar' },
+      { chave: 'cta_texto', label: 'Texto do botão', tipo: 'texto_curto', padrao: 'Quero saber mais', placeholder: 'Ex: Quero aproveitar' },
     ],
     Render: ({ conteudo, onLead }) => (
       <div className="max-w-lg mx-auto px-5 py-10">
@@ -75,7 +76,7 @@ export const LANDING_PAGE_TEMPLATES = {
           {conteudo.imagem_url && (
             <img src={conteudo.imagem_url} alt="" className="w-full rounded-2xl mb-6 object-cover max-h-72" />
           )}
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 leading-tight mb-3">{conteudo.titulo || 'Título da promoção'}</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 leading-tight mb-3">{conteudo.titulo}</h1>
           {conteudo.subtitulo && <p className="text-lg sm:text-xl text-gray-700 leading-relaxed">{conteudo.subtitulo}</p>}
         </div>
         {Array.isArray(conteudo.beneficios) && conteudo.beneficios.length > 0 && (
@@ -102,17 +103,18 @@ export const LANDING_PAGE_TEMPLATES = {
     secaoContatoPadrao: 'contato',
     cores: () => ({ principal: '#059669' }),
     campos: [
-      { chave: 'titulo', label: 'Título (hero)', tipo: 'texto_curto', placeholder: 'Ex: Agende sua consulta' },
+      { chave: 'titulo', label: 'Título (hero)', tipo: 'texto_curto', padrao: 'Agende sua consulta' },
       { chave: 'subtitulo', label: 'Subtítulo', tipo: 'texto_curto' },
       { chave: 'imagem_url', label: 'Imagem principal', tipo: 'imagem' },
       { chave: 'whatsapp_numero', label: 'Número do WhatsApp (só dígitos, com DDI)', tipo: 'texto_curto', placeholder: 'Ex: 5511999999999' },
-      { chave: 'whatsapp_mensagem', label: 'Mensagem pré-preenchida do WhatsApp', tipo: 'texto_curto', placeholder: 'Ex: Olá, quero agendar uma consulta' },
+      { chave: 'whatsapp_mensagem', label: 'Mensagem pré-preenchida do WhatsApp', tipo: 'texto_curto', padrao: 'Olá, quero agendar uma consulta' },
+      // Sem `padrao` de propósito: o texto padrão muda com o WhatsApp preenchido ou não.
       { chave: 'cta_texto', label: 'Texto do botão de WhatsApp', tipo: 'texto_curto', placeholder: 'Ex: Agendar pelo WhatsApp' },
       { chave: 'faq', label: 'Perguntas frequentes', tipo: 'lista_faq' },
     ],
     Render: ({ conteudo, onLead }) => {
       const wppUrl = conteudo.whatsapp_numero
-        ? `https://wa.me/${conteudo.whatsapp_numero}?text=${encodeURIComponent(conteudo.whatsapp_mensagem || 'Olá, quero agendar uma consulta')}`
+        ? `https://wa.me/${conteudo.whatsapp_numero}?text=${encodeURIComponent(conteudo.whatsapp_mensagem)}`
         : null
       return (
         <div className="max-w-lg mx-auto px-5 py-10">
@@ -120,7 +122,7 @@ export const LANDING_PAGE_TEMPLATES = {
             {conteudo.imagem_url && (
               <img src={conteudo.imagem_url} alt="" className="w-full rounded-2xl mb-6 object-cover max-h-72" />
             )}
-            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 leading-tight mb-3">{conteudo.titulo || 'Agende sua consulta'}</h1>
+            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 leading-tight mb-3">{conteudo.titulo}</h1>
             {conteudo.subtitulo && <p className="text-lg sm:text-xl text-gray-700 leading-relaxed">{conteudo.subtitulo}</p>}
           </div>
           <div data-secao="contato">
@@ -172,11 +174,11 @@ export const LANDING_PAGE_TEMPLATES = {
       { chave: 'cor_primaria', label: 'Cor principal (títulos, botões)', tipo: 'cor', padrao: '#1E3A5F' },
       { chave: 'cor_secundaria', label: 'Cor de destaque (seção feminino)', tipo: 'cor', padrao: '#E5B3A0' },
 
-      { chave: 'selo_texto', label: 'Selo no topo do hero', tipo: 'texto_curto', placeholder: 'Ex: SUA MARCA' },
+      { chave: 'selo_texto', label: 'Selo no topo do hero', tipo: 'texto_curto', padrao: 'SUA MARCA', placeholder: 'Ex: SUA MARCA' },
       { chave: 'hero_imagem', label: 'Imagem de fundo do hero', tipo: 'imagem' },
       { chave: 'hero_escurecimento', label: 'Película escura sobre a imagem do hero', tipo: 'intensidade', min: 0, max: 80, passo: 5, padrao: 25, unidade: '%', rotuloMin: 'Mais clara', rotuloMax: 'Mais escura' },
-      { chave: 'hero_titulo', label: 'Título do hero', tipo: 'texto_curto', placeholder: 'Ex: O QUE PROCURAR EM ÓCULOS DE QUALIDADE' },
-      { chave: 'hero_cta_texto', label: 'Texto do botão do hero', tipo: 'texto_curto', placeholder: 'Ex: VER COLEÇÃO' },
+      { chave: 'hero_titulo', label: 'Título do hero', tipo: 'texto_curto', padrao: 'Título de impacto para o seu produto', placeholder: 'Ex: O QUE PROCURAR EM ÓCULOS DE QUALIDADE' },
+      { chave: 'hero_cta_texto', label: 'Texto do botão do hero', tipo: 'texto_curto', padrao: 'SAIBA MAIS', placeholder: 'Ex: VER COLEÇÃO' },
       { chave: 'hero_cta_url', label: 'Link do botão do hero', tipo: 'texto_curto', placeholder: 'https://...' },
 
       { chave: 'features', label: 'Selos de confiança (3 itens)', tipo: 'lista_features', padrao: GREATS_FEATURES_PADRAO, icones: GREATS_ICONES },
@@ -184,29 +186,29 @@ export const LANDING_PAGE_TEMPLATES = {
       { chave: 'banner_imagem', label: 'Imagem de destaque (detalhe do produto)', tipo: 'imagem' },
       { chave: 'banner_anotacao', label: 'Legenda do detalhe', tipo: 'texto_curto', placeholder: 'Ex: ARMAÇÃO 100% ACETATO ITALIANO' },
 
-      { chave: 'bloco_1', label: 'Bloco 1 (texto, com CTA)', tipo: 'bloco' },
+      { chave: 'bloco_1', label: 'Bloco 1 (texto, com CTA)', tipo: 'bloco', padrao: GREATS_BLOCO_PADRAO },
       { chave: 'mosaico_1_imagem', label: 'Imagem do mosaico 1 (superior direita)', tipo: 'imagem' },
       { chave: 'mosaico_2_imagem', label: 'Imagem do mosaico 1 (inferior esquerda, maior)', tipo: 'imagem' },
-      { chave: 'bloco_2', label: 'Bloco 2 (texto, com CTA)', tipo: 'bloco' },
-      { chave: 'bloco_3', label: 'Bloco 3 (texto, sem CTA)', tipo: 'bloco', semCta: true },
+      { chave: 'bloco_2', label: 'Bloco 2 (texto, com CTA)', tipo: 'bloco', padrao: GREATS_BLOCO_PADRAO },
+      { chave: 'bloco_3', label: 'Bloco 3 (texto, sem CTA)', tipo: 'bloco', padrao: GREATS_BLOCO_PADRAO, semCta: true },
 
       { chave: 'cta2_imagem', label: 'Imagem da faixa de CTA', tipo: 'imagem' },
-      { chave: 'cta2_bloco', label: 'Texto da faixa de CTA', tipo: 'bloco' },
+      { chave: 'cta2_bloco', label: 'Texto da faixa de CTA', tipo: 'bloco', padrao: { titulo: 'Confira nossa coleção', cta_texto: 'VER COLEÇÃO' } },
 
-      { chave: 'bloco_4', label: 'Bloco 4 (texto, sem CTA)', tipo: 'bloco', semCta: true },
+      { chave: 'bloco_4', label: 'Bloco 4 (texto, sem CTA)', tipo: 'bloco', padrao: GREATS_BLOCO_PADRAO, semCta: true },
       { chave: 'mosaico_3_imagem', label: 'Imagem do mosaico 2 (superior direita)', tipo: 'imagem' },
       { chave: 'mosaico_4_imagem', label: 'Imagem do mosaico 2 (inferior esquerda)', tipo: 'imagem' },
-      { chave: 'bloco_5', label: 'Bloco 5 (texto, sem CTA)', tipo: 'bloco', semCta: true },
+      { chave: 'bloco_5', label: 'Bloco 5 (texto, sem CTA)', tipo: 'bloco', padrao: GREATS_BLOCO_PADRAO, semCta: true },
 
-      { chave: 'men_titulo', label: 'Título coluna 1 (ex: MASCULINO)', tipo: 'texto_curto', placeholder: 'MASCULINO' },
-      { chave: 'men_cta_texto', label: 'Texto do botão — coluna 1', tipo: 'texto_curto', placeholder: 'VER COLEÇÃO' },
+      { chave: 'men_titulo', label: 'Título coluna 1 (ex: MASCULINO)', tipo: 'texto_curto', padrao: 'MASCULINO', placeholder: 'MASCULINO' },
+      { chave: 'men_cta_texto', label: 'Texto do botão — coluna 1', tipo: 'texto_curto', padrao: 'VER AGORA', placeholder: 'VER COLEÇÃO' },
       { chave: 'men_cta_url', label: 'Link do botão — coluna 1', tipo: 'texto_curto' },
-      { chave: 'women_titulo', label: 'Título coluna 2 (ex: FEMININO)', tipo: 'texto_curto', placeholder: 'FEMININO' },
-      { chave: 'women_cta_texto', label: 'Texto do botão — coluna 2', tipo: 'texto_curto', placeholder: 'VER COLEÇÃO' },
+      { chave: 'women_titulo', label: 'Título coluna 2 (ex: FEMININO)', tipo: 'texto_curto', padrao: 'FEMININO', placeholder: 'FEMININO' },
+      { chave: 'women_cta_texto', label: 'Texto do botão — coluna 2', tipo: 'texto_curto', padrao: 'VER AGORA', placeholder: 'VER COLEÇÃO' },
       { chave: 'women_cta_url', label: 'Link do botão — coluna 2', tipo: 'texto_curto' },
 
       { chave: 'depoimentos', label: 'Depoimentos', tipo: 'lista_depoimentos', padrao: GREATS_DEPOIMENTOS_PADRAO },
-      { chave: 'rodape_texto', label: 'Texto do rodapé', tipo: 'texto_curto', placeholder: 'Ex: © 2026 Sua marca. Todos os direitos reservados.' },
+      { chave: 'rodape_texto', label: 'Texto do rodapé', tipo: 'texto_curto', padrao: `© ${new Date().getFullYear()} Todos os direitos reservados.`, placeholder: 'Ex: © 2026 Sua marca. Todos os direitos reservados.' },
     ],
     Render: ({ conteudo }) => <GreatsRender conteudo={conteudo} />,
   },
@@ -232,40 +234,40 @@ export const LANDING_PAGE_TEMPLATES = {
       { chave: 'degrade_largura', label: 'Largura do degradê entre a cor e a foto (banners)', tipo: 'intensidade', min: 20, max: 80, passo: 5, padrao: 50, unidade: '%', rotuloMin: 'Transição curta', rotuloMax: 'Transição longa' },
 
       { chave: 'whatsapp_numero', label: 'WhatsApp dos botões (com DDD)', tipo: 'texto_curto', placeholder: 'Ex: 11 99999-9999 — em branco, os botões levam ao formulário' },
-      { chave: 'whatsapp_mensagem', label: 'Mensagem pré-preenchida do WhatsApp', tipo: 'texto_curto', placeholder: 'Ex: Olá! Vim pela página e gostaria de mais informações.' },
-      { chave: 'botao_texto', label: 'Texto dos botões', tipo: 'texto_curto', placeholder: 'Falar pelo WhatsApp' },
+      { chave: 'whatsapp_mensagem', label: 'Mensagem pré-preenchida do WhatsApp', tipo: 'texto_curto', padrao: LEADER_TEXTOS.whatsapp_mensagem, placeholder: 'Ex: Olá! Vim pela página e gostaria de mais informações.' },
+      { chave: 'botao_texto', label: 'Texto dos botões', tipo: 'texto_curto', padrao: LEADER_TEXTOS.botao_texto, padrao: LEADER_TEXTOS.botao_texto },
 
       { chave: 'hero_imagem', label: 'Topo: foto da loja (fica à direita, fundindo com a cor escura)', tipo: 'imagem' },
       { chave: 'hero_logo', label: 'Topo: logo dentro do banner (opcional, PNG claro)', tipo: 'imagem' },
-      { chave: 'hero_selo', label: 'Topo: frase pequena acima do título', tipo: 'texto_curto', placeholder: 'Ex: ÓTICA — ÓCULOS DE GRAU, SOL E LENTES DE CONTATO' },
-      { chave: 'hero_titulo', label: 'Topo: título', tipo: 'texto_curto', placeholder: 'Ex: Enxergue melhor ainda hoje.' },
+      { chave: 'hero_selo', label: 'Topo: frase pequena acima do título', tipo: 'texto_curto', padrao: LEADER_TEXTOS.hero_selo, placeholder: 'Ex: ÓTICA — ÓCULOS DE GRAU, SOL E LENTES DE CONTATO' },
+      { chave: 'hero_titulo', label: 'Topo: título', tipo: 'texto_curto', padrao: LEADER_TEXTOS.hero_titulo, placeholder: 'Ex: Enxergue melhor ainda hoje.' },
       { chave: 'hero_titulo_destaque', label: 'Topo: final do título, na cor de destaque', tipo: 'texto_curto', placeholder: 'Ex: Óculos prontos em até 40 minutos.' },
-      { chave: 'hero_texto', label: 'Topo: texto', tipo: 'texto_longo' },
-      { chave: 'hero_link_texto', label: 'Topo: link ao lado do botão', tipo: 'texto_curto', placeholder: 'ou visitar a loja' },
+      { chave: 'hero_texto', label: 'Topo: texto', tipo: 'texto_longo', padrao: LEADER_TEXTOS.hero_texto },
+      { chave: 'hero_link_texto', label: 'Topo: link ao lado do botão', tipo: 'texto_curto', padrao: LEADER_TEXTOS.hero_link_texto, padrao: LEADER_TEXTOS.hero_link_texto },
       { chave: 'hero_link_url', label: 'Topo: endereço do link (ex: Google Maps). Em branco, rola até o contato', tipo: 'texto_curto', placeholder: 'https://maps.google.com/...' },
 
       { chave: 'problema_imagem', label: 'O problema: imagem', tipo: 'imagem' },
-      { chave: 'problema_selo', label: 'O problema: frase pequena', tipo: 'texto_curto', placeholder: 'O PROBLEMA' },
-      { chave: 'problema_titulo', label: 'O problema: título', tipo: 'texto_curto' },
+      { chave: 'problema_selo', label: 'O problema: frase pequena', tipo: 'texto_curto', padrao: LEADER_TEXTOS.problema_selo, padrao: LEADER_TEXTOS.problema_selo },
+      { chave: 'problema_titulo', label: 'O problema: título', tipo: 'texto_curto', padrao: LEADER_TEXTOS.problema_titulo },
       { chave: 'problema_titulo_destaque', label: 'O problema: final do título em destaque', tipo: 'texto_curto' },
-      { chave: 'problema_texto', label: 'O problema: texto (linha em branco separa parágrafos)', tipo: 'texto_longo' },
-      { chave: 'problema_caixa', label: 'O problema: caixa escura no fim', tipo: 'texto_curto', placeholder: 'Ex: Aqui é diferente.' },
+      { chave: 'problema_texto', label: 'O problema: texto (linha em branco separa parágrafos)', tipo: 'texto_longo', padrao: LEADER_TEXTOS.problema_texto },
+      { chave: 'problema_caixa', label: 'O problema: caixa escura no fim', tipo: 'texto_curto', padrao: LEADER_TEXTOS.problema_caixa, placeholder: 'Ex: Aqui é diferente.' },
 
       { chave: 'solucao_imagem', label: 'A solução: foto (fica à direita, fundindo com o branco)', tipo: 'imagem' },
-      { chave: 'solucao_selo', label: 'A solução: frase pequena', tipo: 'texto_curto', placeholder: 'A SOLUÇÃO' },
-      { chave: 'solucao_titulo', label: 'A solução: título', tipo: 'texto_curto' },
+      { chave: 'solucao_selo', label: 'A solução: frase pequena', tipo: 'texto_curto', padrao: LEADER_TEXTOS.solucao_selo, padrao: LEADER_TEXTOS.solucao_selo },
+      { chave: 'solucao_titulo', label: 'A solução: título', tipo: 'texto_curto', padrao: LEADER_TEXTOS.solucao_titulo },
       { chave: 'solucao_titulo_destaque', label: 'A solução: final do título em destaque', tipo: 'texto_curto' },
-      { chave: 'solucao_texto', label: 'A solução: texto', tipo: 'texto_longo' },
+      { chave: 'solucao_texto', label: 'A solução: texto', tipo: 'texto_longo', padrao: LEADER_TEXTOS.solucao_texto },
 
-      { chave: 'servicos_selo', label: 'O que oferecemos: frase pequena', tipo: 'texto_curto', placeholder: 'O QUE OFERECEMOS' },
-      { chave: 'servicos_titulo', label: 'O que oferecemos: título', tipo: 'texto_curto' },
+      { chave: 'servicos_selo', label: 'O que oferecemos: frase pequena', tipo: 'texto_curto', padrao: LEADER_TEXTOS.servicos_selo, padrao: LEADER_TEXTOS.servicos_selo },
+      { chave: 'servicos_titulo', label: 'O que oferecemos: título', tipo: 'texto_curto', padrao: LEADER_TEXTOS.servicos_titulo },
       { chave: 'servicos_titulo_destaque', label: 'O que oferecemos: final do título em destaque', tipo: 'texto_curto' },
       { chave: 'servicos', label: 'O que oferecemos: cartões (até 4)', tipo: 'lista_features', padrao: LEADER_SERVICOS_PADRAO, icones: LEADER_SERVICOS_ICONES, placeholderTitulo: 'Ex: Óculos de grau' },
-      { chave: 'faixa_titulo', label: 'Faixa escura: título', tipo: 'texto_curto', placeholder: 'Ex: Entrega expressa' },
-      { chave: 'faixa_texto', label: 'Faixa escura: texto', tipo: 'texto_curto' },
+      { chave: 'faixa_titulo', label: 'Faixa escura: título', tipo: 'texto_curto', padrao: LEADER_TEXTOS.faixa_titulo, placeholder: 'Ex: Entrega expressa' },
+      { chave: 'faixa_texto', label: 'Faixa escura: texto', tipo: 'texto_curto', padrao: LEADER_TEXTOS.faixa_texto },
 
-      { chave: 'passos_selo', label: 'Como funciona: frase pequena', tipo: 'texto_curto', placeholder: 'COMO FUNCIONA' },
-      { chave: 'passos_titulo', label: 'Como funciona: título', tipo: 'texto_curto' },
+      { chave: 'passos_selo', label: 'Como funciona: frase pequena', tipo: 'texto_curto', padrao: LEADER_TEXTOS.passos_selo, padrao: LEADER_TEXTOS.passos_selo },
+      { chave: 'passos_titulo', label: 'Como funciona: título', tipo: 'texto_curto', padrao: LEADER_TEXTOS.passos_titulo },
       { chave: 'passos_titulo_destaque', label: 'Como funciona: final do título em destaque', tipo: 'texto_curto' },
       { chave: 'passos', label: 'Como funciona: etapas', tipo: 'lista_features', padrao: LEADER_PASSOS_PADRAO, icones: LEADER_PASSOS_ICONES, placeholderTitulo: 'Ex: Escolha da armação' },
 
@@ -273,31 +275,61 @@ export const LANDING_PAGE_TEMPLATES = {
       { chave: 'galeria_2', label: 'Fotos da loja: 2', tipo: 'imagem' },
       { chave: 'galeria_3', label: 'Fotos da loja: 3', tipo: 'imagem' },
 
-      { chave: 'prova_selo', label: 'Prova social: frase pequena', tipo: 'texto_curto', placeholder: 'PROVA SOCIAL' },
-      { chave: 'prova_titulo', label: 'Prova social: título', tipo: 'texto_curto' },
+      { chave: 'prova_selo', label: 'Prova social: frase pequena', tipo: 'texto_curto', padrao: LEADER_TEXTOS.prova_selo, padrao: LEADER_TEXTOS.prova_selo },
+      { chave: 'prova_titulo', label: 'Prova social: título', tipo: 'texto_curto', padrao: LEADER_TEXTOS.prova_titulo },
       { chave: 'prova_titulo_destaque', label: 'Prova social: final do título em destaque', tipo: 'texto_curto' },
-      { chave: 'prova_texto', label: 'Prova social: texto', tipo: 'texto_longo' },
+      { chave: 'prova_texto', label: 'Prova social: texto', tipo: 'texto_longo', padrao: LEADER_TEXTOS.prova_texto },
       { chave: 'depoimentos', label: 'Prova social: depoimentos (opcional, até 3)', tipo: 'lista_depoimentos' },
 
-      { chave: 'faq_selo', label: 'Dúvidas: frase pequena', tipo: 'texto_curto', placeholder: 'DÚVIDAS FREQUENTES' },
-      { chave: 'faq_titulo', label: 'Dúvidas: título', tipo: 'texto_curto' },
+      { chave: 'faq_selo', label: 'Dúvidas: frase pequena', tipo: 'texto_curto', padrao: LEADER_TEXTOS.faq_selo, padrao: LEADER_TEXTOS.faq_selo },
+      { chave: 'faq_titulo', label: 'Dúvidas: título', tipo: 'texto_curto', padrao: LEADER_TEXTOS.faq_titulo },
       { chave: 'faq_titulo_destaque', label: 'Dúvidas: final do título em destaque', tipo: 'texto_curto' },
       { chave: 'faq', label: 'Dúvidas: perguntas e respostas', tipo: 'lista_faq', padrao: LEADER_FAQ_PADRAO },
 
       { chave: 'contato_imagem', label: 'Contato: imagem (PNG sem fundo fica melhor)', tipo: 'imagem' },
-      { chave: 'contato_selo', label: 'Contato: frase pequena', tipo: 'texto_curto', placeholder: 'VENHA NOS VISITAR' },
-      { chave: 'contato_titulo', label: 'Contato: título', tipo: 'texto_curto' },
+      { chave: 'contato_selo', label: 'Contato: frase pequena', tipo: 'texto_curto', padrao: LEADER_TEXTOS.contato_selo, padrao: LEADER_TEXTOS.contato_selo },
+      { chave: 'contato_titulo', label: 'Contato: título', tipo: 'texto_curto', padrao: LEADER_TEXTOS.contato_titulo },
       { chave: 'contato_titulo_destaque', label: 'Contato: final do título em destaque', tipo: 'texto_curto' },
-      { chave: 'contato_texto', label: 'Contato: texto', tipo: 'texto_longo' },
+      { chave: 'contato_texto', label: 'Contato: texto', tipo: 'texto_longo', padrao: LEADER_TEXTOS.contato_texto },
       { chave: 'endereco_texto', label: 'Contato: endereço', tipo: 'texto_curto', placeholder: 'Ex: Rua das Flores, 123 · Centro' },
       { chave: 'endereco_url', label: 'Contato: link do endereço (Google Maps)', tipo: 'texto_curto', placeholder: 'https://maps.google.com/...' },
 
-      { chave: 'rodape_titulo', label: 'Rodapé: nome da ótica', tipo: 'texto_curto' },
+      { chave: 'rodape_titulo', label: 'Rodapé: nome da ótica', tipo: 'texto_curto', padrao: LEADER_TEXTOS.rodape_titulo },
       { chave: 'rodape_itens', label: 'Rodapé: diferenciais', tipo: 'lista', padrao: LEADER_RODAPE_ITENS_PADRAO, placeholder: 'Ex: Pós-venda garantido' },
-      { chave: 'rodape_texto', label: 'Rodapé: texto da faixa final', tipo: 'texto_curto', placeholder: 'Ex: © 2026 Sua ótica. Todos os direitos reservados.' },
+      { chave: 'rodape_texto', label: 'Rodapé: texto da faixa final', tipo: 'texto_curto', padrao: LEADER_TEXTOS.rodape_texto, placeholder: 'Ex: © 2026 Sua ótica. Todos os direitos reservados.' },
     ],
-    Render: ({ conteudo, onLead }) => <LeaderRender conteudo={conteudo} onLead={onLead} FormularioLead={FormularioLead} />,
+    Render: (props) => <LeaderRender {...props} FormularioLead={FormularioLead} />,
   },
+}
+
+// Textos padrão (v0.11.0): o texto que a página mostra num campo vazio mora SÓ no `padrao` do
+// campo (texto_curto, texto_longo e as chaves de um `bloco`). O editor mostra esse mesmo texto
+// dentro da caixa, pra dar pra achar no Ctrl+F, e o Render recebe o conteúdo já mesclado com os
+// padrões (vazio, nulo ou "" → padrão, igual ao antigo `valor || 'texto'`). `conteudoOriginal`
+// fica disponível pro caso raro em que o padrão depende de outro campo.
+const TIPOS_TEXTO = new Set(['texto_curto', 'texto_longo'])
+const vazio = v => v === undefined || v === null || v === ''
+
+export function aplicarPadroes(campos, conteudo) {
+  const c = { ...(conteudo || {}) }
+  for (const campo of campos || []) {
+    if (campo.padrao === undefined) continue
+    if (TIPOS_TEXTO.has(campo.tipo)) {
+      if (vazio(c[campo.chave])) c[campo.chave] = campo.padrao
+    } else if (campo.tipo === 'bloco') {
+      const bloco = { ...(c[campo.chave] || {}) }
+      for (const [k, v] of Object.entries(campo.padrao)) if (vazio(bloco[k])) bloco[k] = v
+      c[campo.chave] = bloco
+    }
+  }
+  return c
+}
+
+for (const t of Object.values(LANDING_PAGE_TEMPLATES)) {
+  const RenderTemplate = t.Render
+  t.Render = ({ conteudo, ...resto }) => (
+    <RenderTemplate {...resto} conteudo={aplicarPadroes(t.campos, conteudo)} conteudoOriginal={conteudo || {}} />
+  )
 }
 
 // `secoes`: blocos marcados com `data-secao` no Render — a página escolhe um como "seção de
@@ -508,7 +540,7 @@ function GreatsBloco({ bloco, corPrimaria, fundo = 'branco', className = '' }) {
         className="text-lg sm:text-2xl font-extrabold uppercase tracking-tight leading-snug break-words"
         style={{ color: escuro ? '#fff' : corPrimaria }}
       >
-        {v.titulo || 'Título do bloco'}
+        {v.titulo}
       </h3>
       {v.texto && (
         <p className="text-base sm:text-lg font-medium leading-relaxed break-words" style={{ color: escuro ? 'rgba(255,255,255,0.95)' : GREATS_TEXTO }}>
@@ -559,12 +591,12 @@ function GreatsRender({ conteudo }) {
             className="px-4 py-2 text-sm font-bold tracking-[0.12em] uppercase text-white"
             style={{ background: corPrimaria }}
           >
-            {c.selo_texto || 'SUA MARCA'}
+            {c.selo_texto}
           </span>
           <h1 className="text-3xl sm:text-5xl font-extrabold uppercase text-white leading-tight max-w-xl break-words" style={{ textShadow: '0 2px 12px rgba(0,0,0,0.55)' }}>
-            {c.hero_titulo || 'Título de impacto para o seu produto'}
+            {c.hero_titulo}
           </h1>
-          <GreatsBotao texto={c.hero_cta_texto || 'SAIBA MAIS'} url={c.hero_cta_url} variante="escuro" cor={corPrimaria} />
+          <GreatsBotao texto={c.hero_cta_texto} url={c.hero_cta_url} variante="escuro" cor={corPrimaria} />
         </div>
       </div>
 
@@ -616,11 +648,11 @@ function GreatsRender({ conteudo }) {
       <div data-secao="faixa_cta" className="grid grid-cols-1 sm:grid-cols-2 items-stretch" style={{ background: '#F7F6F4' }}>
         <div className="flex flex-col justify-center gap-3 p-6 sm:p-10">
           <h3 className="text-2xl sm:text-3xl font-extrabold uppercase tracking-tight leading-tight break-words" style={{ color: corPrimaria }}>
-            {c.cta2_bloco?.titulo || 'Confira nossa coleção'}
+            {c.cta2_bloco?.titulo}
           </h3>
           {c.cta2_bloco?.texto && <p className="text-base sm:text-lg font-medium leading-relaxed" style={{ color: GREATS_TEXTO }}>{c.cta2_bloco.texto}</p>}
           <div className="pt-1">
-            <GreatsBotao texto={c.cta2_bloco?.cta_texto || 'VER COLEÇÃO'} url={c.cta2_bloco?.cta_url} variante="escuro" cor={corPrimaria} />
+            <GreatsBotao texto={c.cta2_bloco?.cta_texto} url={c.cta2_bloco?.cta_url} variante="escuro" cor={corPrimaria} />
           </div>
         </div>
         <GreatsImg src={c.cta2_imagem} className="w-full h-full min-h-[220px] object-cover" />
@@ -638,15 +670,15 @@ function GreatsRender({ conteudo }) {
       <div data-secao="colecoes" className="grid grid-cols-2">
         <div className="flex flex-col items-center justify-center gap-3 py-14 px-4" style={{ background: corPrimaria }}>
           <h3 className="text-white text-xl sm:text-2xl font-extrabold uppercase tracking-wide text-center break-words">
-            {c.men_titulo || 'MASCULINO'}
+            {c.men_titulo}
           </h3>
-          <GreatsBotao texto={c.men_cta_texto || 'VER AGORA'} url={c.men_cta_url} variante="claro" cor={corPrimaria} />
+          <GreatsBotao texto={c.men_cta_texto} url={c.men_cta_url} variante="claro" cor={corPrimaria} />
         </div>
         <div className="flex flex-col items-center justify-center gap-3 py-14 px-4" style={{ background: corSecundaria }}>
           <h3 className="text-white text-xl sm:text-2xl font-extrabold uppercase tracking-wide text-center break-words">
-            {c.women_titulo || 'FEMININO'}
+            {c.women_titulo}
           </h3>
-          <GreatsBotao texto={c.women_cta_texto || 'VER AGORA'} url={c.women_cta_url} variante="claro" cor={corSecundaria} />
+          <GreatsBotao texto={c.women_cta_texto} url={c.women_cta_url} variante="claro" cor={corSecundaria} />
         </div>
       </div>
 
@@ -668,7 +700,7 @@ function GreatsRender({ conteudo }) {
 
       {/* Rodapé */}
       <div data-secao="rodape" className="text-center text-sm text-gray-600 px-6 py-6 border-t border-gray-200">
-        {c.rodape_texto || `© ${new Date().getFullYear()} Todos os direitos reservados.`}
+        {c.rodape_texto}
       </div>
     </div>
   )
