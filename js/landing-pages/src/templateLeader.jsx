@@ -13,9 +13,9 @@
 // desktop de verdade. O CSS é próprio (prefixo `olp-ld-`, injetado num <style>) porque o
 // Tailwind 3 (Ariel) não tem container query e o 4 (4 Olhos) tem sintaxe diferente.
 // Cores de runtime entram por variáveis CSS no elemento raiz.
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
-  Image as ImageIcon, Eye, Sun, CircleDot, Zap, User, Glasses, Wrench, CircleCheck, MapPin, Plus, Star, Car, Navigation, ArrowRight,
+  Image as ImageIcon, Eye, Sun, CircleDot, Zap, User, Glasses, Wrench, CircleCheck, MapPin, Plus, Star, Car, Navigation, ArrowRight, ChevronLeft, ChevronRight,
 } from 'lucide-react'
 import { IconeWhatsApp, linkWhatsApp, rolarSuaveAte } from './Moldura'
 import { useAvaliacoesGoogle, formatarNota, LogoGoogle, FotoAutor } from './avaliacoesGoogle'
@@ -267,7 +267,22 @@ a.olp-ld-google-resumo:hover { filter: brightness(.97); }
 .olp-ld-depo-texto { display: -webkit-box; -webkit-line-clamp: 12; -webkit-box-orient: vertical; overflow: hidden; }
 .olp-ld-depo-link { display: inline-block; margin-top: 12px; font-size: 14px; font-weight: 700; color: var(--ld-destaque); text-decoration: underline; text-underline-offset: 3px; }
 .olp-ld-google-todas { margin-top: 28px; }
-.olp-ld-depos-google .olp-ld-depo:nth-child(n+4) { display: none; }
+
+/* Carrossel das avaliações (v0.17.0): celular 1 cartão (com a ponta do próximo), tablet 2, desktop 3.
+   Desliza com o dedo/trackpad (scroll-snap) ou pelas setas; bolinhas mostram a posição. */
+.olp-ld-carrossel { margin-top: 36px; text-align: left; }
+.olp-ld-trilho { display: grid; grid-auto-flow: column; grid-auto-columns: 86%; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory;
+  scrollbar-width: none; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+.olp-ld-trilho::-webkit-scrollbar { display: none; }
+.olp-ld-trilho > .olp-ld-depo { scroll-snap-align: start; }
+.olp-ld-carrossel-nav { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 20px; }
+.olp-ld-seta { width: 44px; height: 44px; border-radius: 999px; border: 1px solid rgba(255,255,255,.25); background: rgba(255,255,255,.08); color: #fff;
+  display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: background .15s, opacity .15s; }
+.olp-ld-seta:hover:not(:disabled) { background: rgba(255,255,255,.18); }
+.olp-ld-seta:disabled { opacity: .3; cursor: default; }
+.olp-ld-pontos { display: flex; gap: 8px; }
+.olp-ld-pontos button { width: 10px; height: 10px; padding: 0; border-radius: 999px; border: 0; cursor: pointer; background: rgba(255,255,255,.3); transition: width .2s, background .2s; }
+.olp-ld-pontos button[aria-current="true"] { width: 24px; background: var(--ld-destaque); }
 
 /* FAQ */
 .olp-ld-faq { max-width: 720px; margin: 36px auto 0; display: flex; flex-direction: column; gap: 12px; }
@@ -344,7 +359,7 @@ a.olp-ld-endereco:hover { text-decoration: underline; }
   .olp-ld-galeria { grid-auto-flow: row; grid-auto-columns: auto; grid-template-columns: repeat(3, 1fr); overflow: visible; padding: 0 32px; }
 
   .olp-ld-depos { grid-template-columns: repeat(2, 1fr); }
-  .olp-ld-depos-google .olp-ld-depo:nth-child(n+4) { display: block; }
+  .olp-ld-trilho { grid-auto-columns: calc((100% - 16px) / 2); }
 }
 
 /* ── Desktop ── */
@@ -362,11 +377,12 @@ a.olp-ld-endereco:hover { text-decoration: underline; }
   .olp-ld-faixa { padding: 32px 40px; }
   .olp-ld-galeria { gap: 16px; }
   .olp-ld-depos { grid-template-columns: repeat(3, 1fr); }
+  .olp-ld-trilho { grid-auto-columns: calc((100% - 32px) / 3); }
   .olp-ld-depos[data-n="2"] { grid-template-columns: repeat(2, 1fr); }
   .olp-ld-depos[data-n="1"] { grid-template-columns: 1fr; max-width: 640px; margin-left: auto; margin-right: auto; }
 }
 
-@media (prefers-reduced-motion: reduce) { .olp-ld-btn, .olp-ld-faq-q svg, .olp-ld-chegar a { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .olp-ld-btn, .olp-ld-faq-q svg, .olp-ld-chegar a, .olp-ld-seta, .olp-ld-pontos button { transition: none; } .olp-ld-trilho { scroll-behavior: auto; } }
 `
 
 // ─── Peças ──────────────────────────────────────────────────────────────────
@@ -449,12 +465,72 @@ function Estrelas({ nota = 5, size = 18 }) {
   )
 }
 
+// Carrossel horizontal: quantos cartões cabem por vez vem do CSS (container query); daqui só se
+// calcula a "página" atual pela rolagem, para as bolinhas e as setas.
+function Carrossel({ children }) {
+  const trilho = useRef(null)
+  const [estado, setEstado] = useState({ pagina: 0, paginas: 1 })
+
+  // Largura de um cartão + espaço, e quantos cabem por vez.
+  function geometria(t) {
+    const card = t?.firstElementChild
+    if (!card) return null
+    const passo = card.offsetWidth + (parseFloat(getComputedStyle(t).columnGap) || 0)
+    return { passo, porVez: Math.max(1, Math.round((t.clientWidth + 1) / passo)) }
+  }
+
+  function medir() {
+    const t = trilho.current
+    const g = geometria(t)
+    if (!g) return
+    const { passo, porVez } = g
+    const paginas = Math.max(1, Math.ceil(t.children.length / porVez))
+    const fim = t.scrollLeft + t.clientWidth >= t.scrollWidth - 4
+    const pagina = fim ? paginas - 1 : Math.min(paginas - 1, Math.round(t.scrollLeft / (passo * porVez)))
+    setEstado(e => (e.pagina === pagina && e.paginas === paginas ? e : { pagina, paginas }))
+  }
+
+  useEffect(() => {
+    medir()
+    const t = trilho.current
+    if (!t || typeof ResizeObserver === 'undefined') return
+    const obs = new ResizeObserver(medir)
+    obs.observe(t)
+    return () => obs.disconnect()
+  }, [])
+
+  function irPara(pagina) {
+    const t = trilho.current
+    const g = geometria(t)
+    if (!g) return
+    const reduzido = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    t.scrollTo({ left: pagina * g.porVez * g.passo, behavior: reduzido ? 'auto' : 'smooth' })
+  }
+
+  const { pagina, paginas } = estado
+  return (
+    <div className="olp-ld-carrossel">
+      <div ref={trilho} className="olp-ld-trilho" onScroll={medir}>{children}</div>
+      {paginas > 1 && (
+        <div className="olp-ld-carrossel-nav">
+          <button type="button" className="olp-ld-seta" onClick={() => irPara(pagina - 1)} disabled={pagina === 0} aria-label="Avaliações anteriores"><ChevronLeft size={22} /></button>
+          <div className="olp-ld-pontos">
+            {Array.from({ length: paginas }).map((_, i) => (
+              <button key={i} type="button" onClick={() => irPara(i)} aria-label={`Ir para o grupo ${i + 1}`} aria-current={i === pagina} />
+            ))}
+          </div>
+          <button type="button" className="olp-ld-seta" onClick={() => irPara(pagina + 1)} disabled={pagina === paginas - 1} aria-label="Mais avaliações"><ChevronRight size={22} /></button>
+        </div>
+      )}
+    </div>
+  )
+}
+
 // Prova social com as avaliações do Google: nota média e total (link para a ficha da loja) e
 // os cartões no mesmo visual dos depoimentos.
-// Ao vivo: até 3 (uma linha no desktop), na ordem de relevância do Google. Copiadas: até 6;
-// no celular só as 3 primeiras, para a seção não ficar comprida demais.
-function AvaliacoesGoogleLeader({ google, limite = 3 }) {
-  const itens = google.avaliacoes.slice(0, limite)
+// Em carrossel (v0.17.0): só uma "página" de cartões ocupa a altura, o resto se vê deslizando.
+function AvaliacoesGoogleLeader({ google }) {
+  const itens = google.avaliacoes
   const Resumo = google.url ? 'a' : 'div'
   return (
     <>
@@ -466,7 +542,7 @@ function AvaliacoesGoogleLeader({ google, limite = 3 }) {
           {google.total > 0 && <span>{google.total.toLocaleString('pt-BR')} avaliações no Google</span>}
         </Resumo>
       )}
-      <div className="olp-ld-depos olp-ld-depos-google" data-n={itens.length}>
+      <Carrossel>
         {itens.map((a, i) => (
           <div key={i} className="olp-ld-depo">
             <div className="olp-ld-depo-autor">
@@ -482,7 +558,7 @@ function AvaliacoesGoogleLeader({ google, limite = 3 }) {
             {a.url && <a href={a.url} target="_blank" rel="noopener noreferrer" className="olp-ld-depo-link">Ler no Google</a>}
           </div>
         ))}
-      </div>
+      </Carrossel>
       {google.url && (
         <div className="olp-ld-google-todas">
           <a href={google.url} target="_blank" rel="noopener noreferrer" className="olp-ld-link">Ver todas as avaliações no Google</a>
@@ -690,7 +766,7 @@ export function LeaderRender({ conteudo, conteudoOriginal, onLead, FormularioLea
             {c.prova_texto}
           </p>
           {googleAoVivo ? <AvaliacoesGoogleLeader google={googleAoVivo} />
-            : copiadas ? <AvaliacoesGoogleLeader google={copiadas} limite={6} />
+            : copiadas ? <AvaliacoesGoogleLeader google={copiadas} />
             : depoimentos.length > 0 && (
             <div className="olp-ld-depos" data-n={depoimentos.length}>
               {depoimentos.map((d, i) => (

@@ -36,7 +36,7 @@ import { useState as useState3, useEffect as useEffect3 } from "react";
 import { Image as ImageIcon2, MessageCircle, Gem, Footprints, RotateCcw, Star as Star2, Quote } from "lucide-react";
 
 // js/landing-pages/src/templateLeader.jsx
-import { useEffect as useEffect2, useState as useState2 } from "react";
+import { useEffect as useEffect2, useRef as useRef2, useState as useState2 } from "react";
 import {
   Image as ImageIcon,
   Eye,
@@ -52,7 +52,9 @@ import {
   Star,
   Car,
   Navigation,
-  ArrowRight
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 
 // js/landing-pages/src/Moldura.jsx
@@ -632,7 +634,22 @@ a.olp-ld-google-resumo:hover { filter: brightness(.97); }
 .olp-ld-depo-texto { display: -webkit-box; -webkit-line-clamp: 12; -webkit-box-orient: vertical; overflow: hidden; }
 .olp-ld-depo-link { display: inline-block; margin-top: 12px; font-size: 14px; font-weight: 700; color: var(--ld-destaque); text-decoration: underline; text-underline-offset: 3px; }
 .olp-ld-google-todas { margin-top: 28px; }
-.olp-ld-depos-google .olp-ld-depo:nth-child(n+4) { display: none; }
+
+/* Carrossel das avalia\xE7\xF5es (v0.17.0): celular 1 cart\xE3o (com a ponta do pr\xF3ximo), tablet 2, desktop 3.
+   Desliza com o dedo/trackpad (scroll-snap) ou pelas setas; bolinhas mostram a posi\xE7\xE3o. */
+.olp-ld-carrossel { margin-top: 36px; text-align: left; }
+.olp-ld-trilho { display: grid; grid-auto-flow: column; grid-auto-columns: 86%; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory;
+  scrollbar-width: none; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+.olp-ld-trilho::-webkit-scrollbar { display: none; }
+.olp-ld-trilho > .olp-ld-depo { scroll-snap-align: start; }
+.olp-ld-carrossel-nav { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 20px; }
+.olp-ld-seta { width: 44px; height: 44px; border-radius: 999px; border: 1px solid rgba(255,255,255,.25); background: rgba(255,255,255,.08); color: #fff;
+  display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: background .15s, opacity .15s; }
+.olp-ld-seta:hover:not(:disabled) { background: rgba(255,255,255,.18); }
+.olp-ld-seta:disabled { opacity: .3; cursor: default; }
+.olp-ld-pontos { display: flex; gap: 8px; }
+.olp-ld-pontos button { width: 10px; height: 10px; padding: 0; border-radius: 999px; border: 0; cursor: pointer; background: rgba(255,255,255,.3); transition: width .2s, background .2s; }
+.olp-ld-pontos button[aria-current="true"] { width: 24px; background: var(--ld-destaque); }
 
 /* FAQ */
 .olp-ld-faq { max-width: 720px; margin: 36px auto 0; display: flex; flex-direction: column; gap: 12px; }
@@ -709,7 +726,7 @@ a.olp-ld-endereco:hover { text-decoration: underline; }
   .olp-ld-galeria { grid-auto-flow: row; grid-auto-columns: auto; grid-template-columns: repeat(3, 1fr); overflow: visible; padding: 0 32px; }
 
   .olp-ld-depos { grid-template-columns: repeat(2, 1fr); }
-  .olp-ld-depos-google .olp-ld-depo:nth-child(n+4) { display: block; }
+  .olp-ld-trilho { grid-auto-columns: calc((100% - 16px) / 2); }
 }
 
 /* \u2500\u2500 Desktop \u2500\u2500 */
@@ -727,11 +744,12 @@ a.olp-ld-endereco:hover { text-decoration: underline; }
   .olp-ld-faixa { padding: 32px 40px; }
   .olp-ld-galeria { gap: 16px; }
   .olp-ld-depos { grid-template-columns: repeat(3, 1fr); }
+  .olp-ld-trilho { grid-auto-columns: calc((100% - 32px) / 3); }
   .olp-ld-depos[data-n="2"] { grid-template-columns: repeat(2, 1fr); }
   .olp-ld-depos[data-n="1"] { grid-template-columns: 1fr; max-width: 640px; margin-left: auto; margin-right: auto; }
 }
 
-@media (prefers-reduced-motion: reduce) { .olp-ld-btn, .olp-ld-faq-q svg, .olp-ld-chegar a { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .olp-ld-btn, .olp-ld-faq-q svg, .olp-ld-chegar a, .olp-ld-seta, .olp-ld-pontos button { transition: none; } .olp-ld-trilho { scroll-behavior: auto; } }
 `;
 function Imagem({ src, className }) {
   if (src) return /* @__PURE__ */ jsx3("img", { src, alt: "", className });
@@ -790,8 +808,52 @@ function IconeItem({ item, Padrao, size }) {
 function Estrelas({ nota = 5, size = 18 }) {
   return /* @__PURE__ */ jsx3("div", { className: "olp-ld-estrelas", "aria-label": `${nota} de 5 estrelas`, children: Array.from({ length: 5 }).map((_, j) => /* @__PURE__ */ jsx3(Star, { size, fill: j < Math.round(nota) ? "currentColor" : "none" }, j)) });
 }
-function AvaliacoesGoogleLeader({ google, limite = 3 }) {
-  const itens = google.avaliacoes.slice(0, limite);
+function Carrossel({ children }) {
+  const trilho = useRef2(null);
+  const [estado, setEstado] = useState2({ pagina: 0, paginas: 1 });
+  function geometria(t) {
+    const card = t?.firstElementChild;
+    if (!card) return null;
+    const passo = card.offsetWidth + (parseFloat(getComputedStyle(t).columnGap) || 0);
+    return { passo, porVez: Math.max(1, Math.round((t.clientWidth + 1) / passo)) };
+  }
+  function medir() {
+    const t = trilho.current;
+    const g = geometria(t);
+    if (!g) return;
+    const { passo, porVez } = g;
+    const paginas2 = Math.max(1, Math.ceil(t.children.length / porVez));
+    const fim = t.scrollLeft + t.clientWidth >= t.scrollWidth - 4;
+    const pagina2 = fim ? paginas2 - 1 : Math.min(paginas2 - 1, Math.round(t.scrollLeft / (passo * porVez)));
+    setEstado((e) => e.pagina === pagina2 && e.paginas === paginas2 ? e : { pagina: pagina2, paginas: paginas2 });
+  }
+  useEffect2(() => {
+    medir();
+    const t = trilho.current;
+    if (!t || typeof ResizeObserver === "undefined") return;
+    const obs = new ResizeObserver(medir);
+    obs.observe(t);
+    return () => obs.disconnect();
+  }, []);
+  function irPara(pagina2) {
+    const t = trilho.current;
+    const g = geometria(t);
+    if (!g) return;
+    const reduzido = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    t.scrollTo({ left: pagina2 * g.porVez * g.passo, behavior: reduzido ? "auto" : "smooth" });
+  }
+  const { pagina, paginas } = estado;
+  return /* @__PURE__ */ jsxs3("div", { className: "olp-ld-carrossel", children: [
+    /* @__PURE__ */ jsx3("div", { ref: trilho, className: "olp-ld-trilho", onScroll: medir, children }),
+    paginas > 1 && /* @__PURE__ */ jsxs3("div", { className: "olp-ld-carrossel-nav", children: [
+      /* @__PURE__ */ jsx3("button", { type: "button", className: "olp-ld-seta", onClick: () => irPara(pagina - 1), disabled: pagina === 0, "aria-label": "Avalia\xE7\xF5es anteriores", children: /* @__PURE__ */ jsx3(ChevronLeft, { size: 22 }) }),
+      /* @__PURE__ */ jsx3("div", { className: "olp-ld-pontos", children: Array.from({ length: paginas }).map((_, i) => /* @__PURE__ */ jsx3("button", { type: "button", onClick: () => irPara(i), "aria-label": `Ir para o grupo ${i + 1}`, "aria-current": i === pagina }, i)) }),
+      /* @__PURE__ */ jsx3("button", { type: "button", className: "olp-ld-seta", onClick: () => irPara(pagina + 1), disabled: pagina === paginas - 1, "aria-label": "Mais avalia\xE7\xF5es", children: /* @__PURE__ */ jsx3(ChevronRight, { size: 22 }) })
+    ] })
+  ] });
+}
+function AvaliacoesGoogleLeader({ google }) {
+  const itens = google.avaliacoes;
   const Resumo = google.url ? "a" : "div";
   return /* @__PURE__ */ jsxs3(Fragment, { children: [
     google.nota > 0 && /* @__PURE__ */ jsxs3(Resumo, { ...google.url ? { href: google.url, target: "_blank", rel: "noopener noreferrer" } : {}, className: "olp-ld-google-resumo", children: [
@@ -803,7 +865,7 @@ function AvaliacoesGoogleLeader({ google, limite = 3 }) {
         " avalia\xE7\xF5es no Google"
       ] })
     ] }),
-    /* @__PURE__ */ jsx3("div", { className: "olp-ld-depos olp-ld-depos-google", "data-n": itens.length, children: itens.map((a, i) => /* @__PURE__ */ jsxs3("div", { className: "olp-ld-depo", children: [
+    /* @__PURE__ */ jsx3(Carrossel, { children: itens.map((a, i) => /* @__PURE__ */ jsxs3("div", { className: "olp-ld-depo", children: [
       /* @__PURE__ */ jsxs3("div", { className: "olp-ld-depo-autor", children: [
         /* @__PURE__ */ jsx3(FotoAutor, { avaliacao: a, size: 44 }),
         /* @__PURE__ */ jsxs3("div", { children: [
@@ -970,7 +1032,7 @@ function LeaderRender({ conteudo, conteudoOriginal, onLead, FormularioLead: Form
       /* @__PURE__ */ jsx3("p", { className: "olp-ld-selo", children: c.prova_selo }),
       /* @__PURE__ */ jsx3(Titulo, { className: "olp-ld-h2", texto: c.prova_titulo, destaque: c.prova_titulo_destaque }),
       /* @__PURE__ */ jsx3("p", { className: "olp-ld-corpo", style: { marginTop: 20, maxWidth: 680, marginLeft: "auto", marginRight: "auto" }, children: c.prova_texto }),
-      googleAoVivo ? /* @__PURE__ */ jsx3(AvaliacoesGoogleLeader, { google: googleAoVivo }) : copiadas ? /* @__PURE__ */ jsx3(AvaliacoesGoogleLeader, { google: copiadas, limite: 6 }) : depoimentos.length > 0 && /* @__PURE__ */ jsx3("div", { className: "olp-ld-depos", "data-n": depoimentos.length, children: depoimentos.map((d, i) => /* @__PURE__ */ jsxs3("div", { className: "olp-ld-depo", children: [
+      googleAoVivo ? /* @__PURE__ */ jsx3(AvaliacoesGoogleLeader, { google: googleAoVivo }) : copiadas ? /* @__PURE__ */ jsx3(AvaliacoesGoogleLeader, { google: copiadas }) : depoimentos.length > 0 && /* @__PURE__ */ jsx3("div", { className: "olp-ld-depos", "data-n": depoimentos.length, children: depoimentos.map((d, i) => /* @__PURE__ */ jsxs3("div", { className: "olp-ld-depo", children: [
         /* @__PURE__ */ jsx3("div", { className: "olp-ld-estrelas", children: Array.from({ length: 5 }).map((_, j) => /* @__PURE__ */ jsx3(Star, { size: 18, fill: "currentColor" }, j)) }),
         /* @__PURE__ */ jsx3("p", { children: d.texto }),
         d.nome && /* @__PURE__ */ jsx3("strong", { children: d.nome })
@@ -1600,7 +1662,7 @@ import { useNavigate } from "react-router-dom";
 import { Rocket, Plus as Plus2, X as X2, Copy, CopyPlus, Trash2 as Trash22, Eye as Eye2, Users, ExternalLink, Play, Pause, Check, Settings } from "lucide-react";
 
 // js/landing-pages/src/ModalConfiguracoes.jsx
-import { useEffect as useEffect4, useRef as useRef2, useState as useState4 } from "react";
+import { useEffect as useEffect4, useRef as useRef3, useState as useState4 } from "react";
 import { X, Upload, Trash2 } from "lucide-react";
 import { Fragment as Fragment2, jsx as jsx5, jsxs as jsxs5 } from "react/jsx-runtime";
 var inputCls = "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400";
@@ -1626,8 +1688,8 @@ function ModalConfiguracoes({ onClose }) {
   const [enviandoFavicon, setEnviandoFavicon] = useState4(false);
   const [erro, setErro] = useState4("");
   const [salvo, setSalvo] = useState4(false);
-  const inputLogo = useRef2(null);
-  const inputFavicon = useRef2(null);
+  const inputLogo = useRef3(null);
+  const inputFavicon = useRef3(null);
   const [testeGoogle, setTesteGoogle] = useState4(null);
   useEffect4(() => {
     obterConfiguracoes().then(setCfg).catch((e) => setErroCarregar(e.message));
@@ -2217,7 +2279,7 @@ function ModalEscolherTemplate({ onClose, onCriado }) {
 }
 
 // js/landing-pages/src/LandingPageEditor.jsx
-import { useEffect as useEffect6, useState as useState6, useRef as useRef3, useCallback } from "react";
+import { useEffect as useEffect6, useState as useState6, useRef as useRef4, useCallback } from "react";
 import { useParams, useNavigate as useNavigate2 } from "react-router-dom";
 import { ArrowLeft, Save, Play as Play2, Pause as Pause2, Copy as Copy2, Check as Check2, Upload as Upload2, X as X3, Plus as Plus3, Trash2 as Trash23, Smartphone, Tablet, Monitor } from "lucide-react";
 import { Fragment as Fragment4, jsx as jsx7, jsxs as jsxs7 } from "react/jsx-runtime";
@@ -2231,7 +2293,7 @@ function LandingPageEditor() {
   const [carregando, setCarregando] = useState6(true);
   const [salvando, setSalvando] = useState6(false);
   const [copiado, setCopiado] = useState6(false);
-  const saveTimeout = useRef3(null);
+  const saveTimeout = useRef4(null);
   const [configuracoes, setConfiguracoes] = useState6(null);
   const [dispositivo, setDispositivo] = useState6("celular");
   useEffect6(() => {
@@ -2380,7 +2442,7 @@ function SeletorDispositivo({ valor, onChange }) {
   )) });
 }
 function MolduraDispositivo({ largura, children }) {
-  const ref = useRef3(null);
+  const ref = useRef4(null);
   const [disponivel, setDisponivel] = useState6(0);
   useEffect6(() => {
     const el = ref.current;
@@ -2483,7 +2545,7 @@ function CamposPagina({ lp, nome, onNomeChange, onSalvo, rotaPublica }) {
 function MetaCampos({ lp, nome, onSalvo }) {
   const [metaTitulo, setMetaTitulo] = useState6(lp.meta_titulo || "");
   const [metaDescricao, setMetaDescricao] = useState6(lp.meta_descricao || "");
-  const timeout = useRef3(null);
+  const timeout = useRef4(null);
   function agendar(novoTitulo, novaDescricao) {
     if (timeout.current) clearTimeout(timeout.current);
     timeout.current = setTimeout(() => {
@@ -2721,8 +2783,8 @@ function listaOuPadrao(valor, campo) {
 function CampoListaFeatures({ campo, valor, onChange }) {
   const itens = listaOuPadrao(valor, campo);
   const [enviando, setEnviando] = useState6(null);
-  const inputIcone = useRef3(null);
-  const alvoIcone = useRef3(null);
+  const inputIcone = useRef4(null);
+  const alvoIcone = useRef4(null);
   async function handleIcone(file) {
     const i = alvoIcone.current;
     if (!file || i == null) return;
@@ -2830,8 +2892,8 @@ function IconeSelo({ item, IconePadrao, enviando, onTrocar, onRemover }) {
 function CampoListaDepoimentos({ campo, valor, onChange }) {
   const itens = listaOuPadrao(valor, campo);
   const [enviando, setEnviando] = useState6(null);
-  const inputFoto = useRef3(null);
-  const alvoFoto = useRef3(null);
+  const inputFoto = useRef4(null);
+  const alvoFoto = useRef4(null);
   async function handleFoto(file) {
     const i = alvoFoto.current;
     if (!file || i == null) return;
@@ -2915,7 +2977,7 @@ function CampoListaDepoimentos({ campo, valor, onChange }) {
 }
 function CampoImagem({ campo, valor, onChange }) {
   const [enviando, setEnviando] = useState6(false);
-  const inputRef = useRef3(null);
+  const inputRef = useRef4(null);
   async function handleFile(file) {
     if (!file) return;
     setEnviando(true);
