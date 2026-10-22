@@ -334,8 +334,23 @@ async function handlePublico(res) {
   }
   return res.json();
 }
+var esperar = (ms) => new Promise((r) => setTimeout(r, ms));
+async function comRetentativa(tentar, limiteMs) {
+  const inicio = Date.now();
+  let espera = 1e3;
+  for (; ; ) {
+    try {
+      return await tentar();
+    } catch (e) {
+      const temporario = !e.status || e.status >= 500;
+      if (!temporario || Date.now() - inicio + espera > limiteMs) throw e;
+      await esperar(espera);
+      espera = Math.min(espera * 2, 8e3);
+    }
+  }
+}
 async function buscarLandingPagePublica(slug) {
-  return handlePublico(await fetch(`${basePublica()}/${slug}`));
+  return comRetentativa(async () => handlePublico(await fetch(`${basePublica()}/${slug}`)), 9e4);
 }
 async function registrarVisualizacao(slug) {
   try {
@@ -344,11 +359,11 @@ async function registrarVisualizacao(slug) {
   }
 }
 async function enviarLeadLandingPage(slug, payload) {
-  return handlePublico(await fetch(`${basePublica()}/${slug}/lead`, {
+  return comRetentativa(async () => handlePublico(await fetch(`${basePublica()}/${slug}/lead`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload)
-  }));
+  })), 6e4);
 }
 async function obterConfiguracoes() {
   return handle(await req(`${base()}/configuracoes`, { headers: headers() }));

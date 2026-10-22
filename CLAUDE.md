@@ -21,7 +21,7 @@ package.json                     # npm: otica-compartilhado (raiz do repo)
 
 ## Features
 
-### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.17.0, out/2026
+### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.18.0, out/2026
 Origem: 4 Olhos (ago/2026). Páginas de captura por template pronto com edição guiada (4 templates:
 `simples`, `promocao`, `agendar_consulta`, `greats`), página pública `/lp/:slug`, contagem de
 visualizações e captura de lead (nome + telefone + fbclid). Quinto template, `leader` (v0.10.0), em
@@ -109,6 +109,13 @@ para todas as opções.
 8. Repo **público**: nunca commitar segredo, credencial, URL interna, dado de cliente ou telefone real.
 
 ## Changelog
+
+### v0.18.0 (22/10/2026)
+- **Página pública não "sai do ar" na troca de versão do backend.** Antes, durante o deploy (~20–60 s de 502 no
+  Render), quem abria a página via "Essa página não está mais disponível". Agora `buscarLandingPagePublica`
+  tenta de novo (1, 2, 4, 8 s...) por até 90 s enquanto o erro for de rede ou 5xx, mostrando "Carregando...".
+  404 continua imediato. O envio de lead faz o mesmo por até 60 s (o botão fica em "Enviando...").
+  Helper `comRetentativa` em `api.js`.
 
 ### v0.17.0 (22/10/2026)
 - Leader: avaliações do Google (copiadas e ao vivo) em **carrossel horizontal** para encurtar a página: 3 cartões

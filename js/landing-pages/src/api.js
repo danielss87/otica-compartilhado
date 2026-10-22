@@ -97,8 +97,27 @@ async function handlePublico(res) {
   return res.json()
 }
 
+// Tenta de novo enquanto o servidor está fora do ar (v0.18.0): sem resposta (rede) ou 5xx, como na
+// troca de versão do backend, que leva ~20–60 s no Render. Erro "de verdade" (404, 422...) não repete.
+// Espera crescente (1 s, 2 s, 4 s, até 8 s) até `limiteMs`; depois, devolve o último erro.
+const esperar = ms => new Promise(r => setTimeout(r, ms))
+async function comRetentativa(tentar, limiteMs) {
+  const inicio = Date.now()
+  let espera = 1000
+  for (;;) {
+    try {
+      return await tentar()
+    } catch (e) {
+      const temporario = !e.status || e.status >= 500
+      if (!temporario || Date.now() - inicio + espera > limiteMs) throw e
+      await esperar(espera)
+      espera = Math.min(espera * 2, 8000)
+    }
+  }
+}
+
 export async function buscarLandingPagePublica(slug) {
-  return handlePublico(await fetch(`${basePublica()}/${slug}`))
+  return comRetentativa(async () => handlePublico(await fetch(`${basePublica()}/${slug}`)), 90000)
 }
 
 export async function registrarVisualizacao(slug) {
@@ -109,12 +128,13 @@ export async function registrarVisualizacao(slug) {
   }
 }
 
+// Lead não pode se perder: repete enquanto o servidor estiver fora do ar (o botão fica em "enviando").
 export async function enviarLeadLandingPage(slug, payload) {
-  return handlePublico(await fetch(`${basePublica()}/${slug}/lead`, {
+  return comRetentativa(async () => handlePublico(await fetch(`${basePublica()}/${slug}/lead`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
-  }))
+  })), 60000)
 }
 
 // ─── Configurações gerais (valem para todas as landing pages) ──────────────
