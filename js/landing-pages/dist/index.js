@@ -629,9 +629,10 @@ a.olp-ld-google-resumo:hover { filter: brightness(.97); }
 .olp-ld-depo-autor > div { min-width: 0; flex: 1; }
 .olp-ld-depo .olp-ld-depo-autor strong { margin: 0; }
 .olp-ld-depo-autor span { display: block; font-size: 14px; color: rgba(255,255,255,.7); }
-.olp-ld-depo-texto { display: -webkit-box; -webkit-line-clamp: 8; -webkit-box-orient: vertical; overflow: hidden; }
+.olp-ld-depo-texto { display: -webkit-box; -webkit-line-clamp: 12; -webkit-box-orient: vertical; overflow: hidden; }
 .olp-ld-depo-link { display: inline-block; margin-top: 12px; font-size: 14px; font-weight: 700; color: var(--ld-destaque); text-decoration: underline; text-underline-offset: 3px; }
 .olp-ld-google-todas { margin-top: 28px; }
+.olp-ld-depos-google .olp-ld-depo:nth-child(n+4) { display: none; }
 
 /* FAQ */
 .olp-ld-faq { max-width: 720px; margin: 36px auto 0; display: flex; flex-direction: column; gap: 12px; }
@@ -708,6 +709,7 @@ a.olp-ld-endereco:hover { text-decoration: underline; }
   .olp-ld-galeria { grid-auto-flow: row; grid-auto-columns: auto; grid-template-columns: repeat(3, 1fr); overflow: visible; padding: 0 32px; }
 
   .olp-ld-depos { grid-template-columns: repeat(2, 1fr); }
+  .olp-ld-depos-google .olp-ld-depo:nth-child(n+4) { display: block; }
 }
 
 /* \u2500\u2500 Desktop \u2500\u2500 */
@@ -788,11 +790,11 @@ function IconeItem({ item, Padrao, size }) {
 function Estrelas({ nota = 5, size = 18 }) {
   return /* @__PURE__ */ jsx3("div", { className: "olp-ld-estrelas", "aria-label": `${nota} de 5 estrelas`, children: Array.from({ length: 5 }).map((_, j) => /* @__PURE__ */ jsx3(Star, { size, fill: j < Math.round(nota) ? "currentColor" : "none" }, j)) });
 }
-function AvaliacoesGoogleLeader({ google }) {
-  const itens = google.avaliacoes.slice(0, 3);
+function AvaliacoesGoogleLeader({ google, limite = 3 }) {
+  const itens = google.avaliacoes.slice(0, limite);
   const Resumo = google.url ? "a" : "div";
   return /* @__PURE__ */ jsxs3(Fragment, { children: [
-    /* @__PURE__ */ jsxs3(Resumo, { ...google.url ? { href: google.url, target: "_blank", rel: "noopener noreferrer" } : {}, className: "olp-ld-google-resumo", children: [
+    google.nota > 0 && /* @__PURE__ */ jsxs3(Resumo, { ...google.url ? { href: google.url, target: "_blank", rel: "noopener noreferrer" } : {}, className: "olp-ld-google-resumo", children: [
       /* @__PURE__ */ jsx3(LogoGoogle, { size: 24 }),
       /* @__PURE__ */ jsx3("strong", { children: formatarNota(google.nota) }),
       /* @__PURE__ */ jsx3(Estrelas, { nota: google.nota }),
@@ -801,7 +803,7 @@ function AvaliacoesGoogleLeader({ google }) {
         " avalia\xE7\xF5es no Google"
       ] })
     ] }),
-    /* @__PURE__ */ jsx3("div", { className: "olp-ld-depos", "data-n": itens.length, children: itens.map((a, i) => /* @__PURE__ */ jsxs3("div", { className: "olp-ld-depo", children: [
+    /* @__PURE__ */ jsx3("div", { className: "olp-ld-depos olp-ld-depos-google", "data-n": itens.length, children: itens.map((a, i) => /* @__PURE__ */ jsxs3("div", { className: "olp-ld-depo", children: [
       /* @__PURE__ */ jsxs3("div", { className: "olp-ld-depo-autor", children: [
         /* @__PURE__ */ jsx3(FotoAutor, { avaliacao: a, size: 44 }),
         /* @__PURE__ */ jsxs3("div", { children: [
@@ -817,6 +819,15 @@ function AvaliacoesGoogleLeader({ google }) {
     google.url && /* @__PURE__ */ jsx3("div", { className: "olp-ld-google-todas", children: /* @__PURE__ */ jsx3("a", { href: google.url, target: "_blank", rel: "noopener noreferrer", className: "olp-ld-link", children: "Ver todas as avalia\xE7\xF5es no Google" }) })
   ] });
 }
+function avaliacoesCopiadas(c, depoimentos) {
+  const numero = (v) => Number(String(v ?? "").replace(/[^\d,.]/g, "").replace(/\.(?=\d{3})/g, "").replace(",", ".")) || 0;
+  return {
+    nota: numero(c.google_nota),
+    total: Math.round(numero(c.google_total)),
+    url: (c.google_url || "").trim() || null,
+    avaliacoes: depoimentos.map((d) => ({ autor: d.nome || "Cliente", foto_url: d.foto_url, nota: Number(d.nota) || 5, texto: d.texto, quando: "", url: null }))
+  };
+}
 var lista = (valor, padrao2) => Array.isArray(valor) && valor.length > 0 ? valor : padrao2;
 var temTexto = (v) => typeof v === "string" ? v.trim() !== "" : Boolean(v);
 function LeaderRender({ conteudo, conteudoOriginal, onLead, FormularioLead: FormularioLead2 }) {
@@ -831,10 +842,12 @@ function LeaderRender({ conteudo, conteudoOriginal, onLead, FormularioLead: Form
   const servicos = lista(c.servicos, LEADER_SERVICOS_PADRAO).slice(0, 4);
   const passos = lista(c.passos, LEADER_PASSOS_PADRAO);
   const faq = lista(c.faq, LEADER_FAQ_PADRAO).filter((f) => temTexto(f?.pergunta));
-  const depoimentos = (Array.isArray(c.depoimentos) ? c.depoimentos : []).filter((d) => temTexto(d?.texto)).slice(0, 3);
+  const todosDepoimentos = (Array.isArray(c.depoimentos) ? c.depoimentos : []).filter((d) => temTexto(d?.texto));
+  const depoimentos = todosDepoimentos.slice(0, 3);
   const rodapeItens = lista(c.rodape_itens, LEADER_RODAPE_ITENS_PADRAO).filter(temTexto);
   const galeria = [c.galeria_1, c.galeria_2, c.galeria_3];
-  const google = useAvaliacoesGoogle(c.prova_google === "sim");
+  const googleAoVivo = useAvaliacoesGoogle(c.prova_google === "sim");
+  const copiadas = (c.prova_google === "copiadas" || c.prova_google === "sim") && todosDepoimentos.length > 0 ? avaliacoesCopiadas(c, todosDepoimentos) : null;
   const destaqueTexto = misturar(destaque, escura, 0.18);
   const estiloRaiz = {
     "--ld-escura": escura,
@@ -957,7 +970,7 @@ function LeaderRender({ conteudo, conteudoOriginal, onLead, FormularioLead: Form
       /* @__PURE__ */ jsx3("p", { className: "olp-ld-selo", children: c.prova_selo }),
       /* @__PURE__ */ jsx3(Titulo, { className: "olp-ld-h2", texto: c.prova_titulo, destaque: c.prova_titulo_destaque }),
       /* @__PURE__ */ jsx3("p", { className: "olp-ld-corpo", style: { marginTop: 20, maxWidth: 680, marginLeft: "auto", marginRight: "auto" }, children: c.prova_texto }),
-      google ? /* @__PURE__ */ jsx3(AvaliacoesGoogleLeader, { google }) : depoimentos.length > 0 && /* @__PURE__ */ jsx3("div", { className: "olp-ld-depos", "data-n": depoimentos.length, children: depoimentos.map((d, i) => /* @__PURE__ */ jsxs3("div", { className: "olp-ld-depo", children: [
+      googleAoVivo ? /* @__PURE__ */ jsx3(AvaliacoesGoogleLeader, { google: googleAoVivo }) : copiadas ? /* @__PURE__ */ jsx3(AvaliacoesGoogleLeader, { google: copiadas, limite: 6 }) : depoimentos.length > 0 && /* @__PURE__ */ jsx3("div", { className: "olp-ld-depos", "data-n": depoimentos.length, children: depoimentos.map((d, i) => /* @__PURE__ */ jsxs3("div", { className: "olp-ld-depo", children: [
         /* @__PURE__ */ jsx3("div", { className: "olp-ld-estrelas", children: Array.from({ length: 5 }).map((_, j) => /* @__PURE__ */ jsx3(Star, { size: 18, fill: "currentColor" }, j)) }),
         /* @__PURE__ */ jsx3("p", { children: d.texto }),
         d.nome && /* @__PURE__ */ jsx3("strong", { children: d.nome })
@@ -1266,8 +1279,18 @@ var LANDING_PAGE_TEMPLATES = {
       { chave: "prova_titulo", label: "Prova social: t\xEDtulo", tipo: "texto_curto", padrao: LEADER_TEXTOS.prova_titulo },
       { chave: "prova_titulo_destaque", label: "Prova social: final do t\xEDtulo em destaque", tipo: "texto_curto" },
       { chave: "prova_texto", label: "Prova social: texto", tipo: "texto_longo", padrao: LEADER_TEXTOS.prova_texto },
-      { chave: "prova_google", label: "Prova social: avalia\xE7\xF5es do Google", tipo: "opcoes", padrao: "nao", opcoes: [["nao", "N\xE3o mostrar"], ["sim", "Mostrar (no lugar dos depoimentos)"]], ajuda: "Configure a loja em Configura\xE7\xF5es \u2192 Avalia\xE7\xF5es do Google. Se o Google n\xE3o responder, aparecem os depoimentos abaixo." },
-      { chave: "depoimentos", label: "Prova social: depoimentos (opcional, at\xE9 3)", tipo: "lista_depoimentos" },
+      {
+        chave: "prova_google",
+        label: "Prova social: estilo dos depoimentos",
+        tipo: "opcoes",
+        padrao: "nao",
+        opcoes: [["nao", "Depoimentos simples"], ["copiadas", "Avalia\xE7\xF5es copiadas do Google"], ["sim", "Avalia\xE7\xF5es do Google ao vivo"]],
+        ajuda: "Copiadas: os depoimentos abaixo no visual do Google (com foto, nota e link para a ficha). Ao vivo: busca no Google (Configura\xE7\xF5es \u2192 Avalia\xE7\xF5es do Google, precisa da chave da API); se o Google n\xE3o responder, mostra as copiadas."
+      },
+      { chave: "google_nota", label: "Prova social: nota no Google (para o selo)", tipo: "texto_curto", placeholder: "Ex: 5,0" },
+      { chave: "google_total", label: "Prova social: total de avalia\xE7\xF5es no Google", tipo: "texto_curto", placeholder: "Ex: 178" },
+      { chave: "google_url", label: 'Prova social: link da ficha no Google (bot\xE3o "Ver todas")', tipo: "texto_curto", placeholder: "https://share.google/..." },
+      { chave: "depoimentos", label: "Prova social: depoimentos (simples: at\xE9 3; copiadas do Google: at\xE9 6)", tipo: "lista_depoimentos", comFoto: true },
       { chave: "faq_selo", label: "D\xFAvidas: frase pequena", tipo: "texto_curto", padrao: LEADER_TEXTOS.faq_selo, padrao: LEADER_TEXTOS.faq_selo },
       { chave: "faq_titulo", label: "D\xFAvidas: t\xEDtulo", tipo: "texto_curto", padrao: LEADER_TEXTOS.faq_titulo },
       { chave: "faq_titulo_destaque", label: "D\xFAvidas: final do t\xEDtulo em destaque", tipo: "texto_curto" },
@@ -2806,6 +2829,23 @@ function IconeSelo({ item, IconePadrao, enviando, onTrocar, onRemover }) {
 }
 function CampoListaDepoimentos({ campo, valor, onChange }) {
   const itens = listaOuPadrao(valor, campo);
+  const [enviando, setEnviando] = useState6(null);
+  const inputFoto = useRef3(null);
+  const alvoFoto = useRef3(null);
+  async function handleFoto(file) {
+    const i = alvoFoto.current;
+    if (!file || i == null) return;
+    setEnviando(i);
+    try {
+      const { url } = await uploadImagemLandingPage(file);
+      atualizarItem(i, "foto_url", url);
+    } catch (e) {
+      alert(e.message);
+    } finally {
+      setEnviando(null);
+      if (inputFoto.current) inputFoto.current.value = "";
+    }
+  }
   function atualizarItem(i, chave, texto) {
     const novo = [...itens];
     novo[i] = { ...novo[i] || {}, [chave]: texto };
@@ -2831,16 +2871,33 @@ function CampoListaDepoimentos({ campo, valor, onChange }) {
           ),
           /* @__PURE__ */ jsx7("button", { onClick: () => removerItem(i), className: "p-1.5 rounded-lg hover:bg-red-50 text-red-500 shrink-0", children: /* @__PURE__ */ jsx7(Trash23, { size: 14 }) })
         ] }),
-        /* @__PURE__ */ jsx7(
-          "input",
-          {
-            value: item?.nome || "",
-            onChange: (e) => atualizarItem(i, "nome", e.target.value),
-            placeholder: "Nome de quem falou",
-            className: "w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
-          }
-        )
+        /* @__PURE__ */ jsxs7("div", { className: "flex items-center gap-1.5", children: [
+          campo.comFoto && /* @__PURE__ */ jsx7(
+            "button",
+            {
+              type: "button",
+              onClick: () => {
+                alvoFoto.current = i;
+                inputFoto.current?.click();
+              },
+              title: item?.foto_url ? "Trocar foto" : "Enviar foto",
+              className: "relative w-9 h-9 rounded-full border border-dashed border-gray-300 overflow-hidden shrink-0 flex items-center justify-center text-gray-400 hover:border-violet-400",
+              children: enviando === i ? /* @__PURE__ */ jsx7("span", { className: "text-[10px]", children: "..." }) : item?.foto_url ? /* @__PURE__ */ jsx7("img", { src: item.foto_url, alt: "", className: "w-full h-full object-cover" }) : /* @__PURE__ */ jsx7(Upload2, { size: 13 })
+            }
+          ),
+          /* @__PURE__ */ jsx7(
+            "input",
+            {
+              value: item?.nome || "",
+              onChange: (e) => atualizarItem(i, "nome", e.target.value),
+              placeholder: "Nome de quem falou",
+              className: "flex-1 min-w-0 rounded-lg border border-gray-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
+            }
+          ),
+          campo.comFoto && item?.foto_url && /* @__PURE__ */ jsx7("button", { type: "button", onClick: () => atualizarItem(i, "foto_url", null), className: "text-xs text-red-500 hover:text-red-600 shrink-0", children: "Tirar foto" })
+        ] })
       ] }, i)),
+      campo.comFoto && /* @__PURE__ */ jsx7("input", { ref: inputFoto, type: "file", accept: "image/*", className: "hidden", onChange: (e) => handleFoto(e.target.files?.[0]) }),
       /* @__PURE__ */ jsxs7(
         "button",
         {

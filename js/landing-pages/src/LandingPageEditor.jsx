@@ -649,6 +649,25 @@ function IconeSelo({ item, IconePadrao, enviando, onTrocar, onRemover }) {
 
 function CampoListaDepoimentos({ campo, valor, onChange }) {
   const itens = listaOuPadrao(valor, campo)
+  // `comFoto` (v0.16.0): foto de quem falou (ex: avaliação copiada do Google), redonda na página.
+  const [enviando, setEnviando] = useState(null)
+  const inputFoto = useRef(null)
+  const alvoFoto = useRef(null)
+
+  async function handleFoto(file) {
+    const i = alvoFoto.current
+    if (!file || i == null) return
+    setEnviando(i)
+    try {
+      const { url } = await uploadImagemLandingPage(file)
+      atualizarItem(i, 'foto_url', url)
+    } catch (e) {
+      alert(e.message)
+    } finally {
+      setEnviando(null)
+      if (inputFoto.current) inputFoto.current.value = ''
+    }
+  }
 
   function atualizarItem(i, chave, texto) {
     const novo = [...itens]
@@ -678,14 +697,34 @@ function CampoListaDepoimentos({ campo, valor, onChange }) {
                 <Trash2 size={14} />
               </button>
             </div>
-            <input
-              value={item?.nome || ''}
-              onChange={e => atualizarItem(i, 'nome', e.target.value)}
-              placeholder="Nome de quem falou"
-              className="w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
-            />
+            <div className="flex items-center gap-1.5">
+              {campo.comFoto && (
+                <button
+                  type="button"
+                  onClick={() => { alvoFoto.current = i; inputFoto.current?.click() }}
+                  title={item?.foto_url ? 'Trocar foto' : 'Enviar foto'}
+                  className="relative w-9 h-9 rounded-full border border-dashed border-gray-300 overflow-hidden shrink-0 flex items-center justify-center text-gray-400 hover:border-violet-400"
+                >
+                  {enviando === i ? <span className="text-[10px]">...</span>
+                    : item?.foto_url ? <img src={item.foto_url} alt="" className="w-full h-full object-cover" />
+                    : <Upload size={13} />}
+                </button>
+              )}
+              <input
+                value={item?.nome || ''}
+                onChange={e => atualizarItem(i, 'nome', e.target.value)}
+                placeholder="Nome de quem falou"
+                className="flex-1 min-w-0 rounded-lg border border-gray-200 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
+              />
+              {campo.comFoto && item?.foto_url && (
+                <button type="button" onClick={() => atualizarItem(i, 'foto_url', null)} className="text-xs text-red-500 hover:text-red-600 shrink-0">
+                  Tirar foto
+                </button>
+              )}
+            </div>
           </div>
         ))}
+        {campo.comFoto && <input ref={inputFoto} type="file" accept="image/*" className="hidden" onChange={e => handleFoto(e.target.files?.[0])} />}
         <button
           type="button"
           onClick={() => onChange([...itens, { texto: '', nome: '' }])}

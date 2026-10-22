@@ -21,7 +21,7 @@ package.json                     # npm: otica-compartilhado (raiz do repo)
 
 ## Features
 
-### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.15.0, out/2026
+### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.16.0, out/2026
 Origem: 4 Olhos (ago/2026). Páginas de captura por template pronto com edição guiada (4 templates:
 `simples`, `promocao`, `agendar_consulta`, `greats`), página pública `/lp/:slug`, contagem de
 visualizações e captura de lead (nome + telefone + fbclid). Quinto template, `leader` (v0.10.0), em
@@ -109,6 +109,14 @@ para todas as opções.
 8. Repo **público**: nunca commitar segredo, credencial, URL interna, dado de cliente ou telefone real.
 
 ## Changelog
+
+### v0.16.0 (22/10/2026)
+- Leader: o campo da prova social virou **"estilo dos depoimentos"**: `nao` (depoimentos simples, como antes),
+  `copiadas` (depoimentos escritos no editor no visual das avaliações do Google: foto, estrelas, selo com nota e
+  total, link "Ver todas" para a ficha) e `sim` (ao vivo, v0.15.0; sem resposta do Google, mostra as copiadas).
+  Campos novos: `google_nota`, `google_total`, `google_url`. Copiadas: até 6 (no celular, só as 3 primeiras).
+- `lista_depoimentos` aceita `comFoto: true` (foto redonda por depoimento, `foto_url`, mesmo `/upload-imagem`).
+- Páginas publicadas não mudam (`nao` continua o padrão).
 
 ### v0.15.0 (22/10/2026)
 - **Avaliações do Google na prova social** (Leader: campo "Prova social: avaliações do Google", desligado por

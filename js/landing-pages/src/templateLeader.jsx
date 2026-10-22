@@ -264,9 +264,10 @@ a.olp-ld-google-resumo:hover { filter: brightness(.97); }
 .olp-ld-depo-autor > div { min-width: 0; flex: 1; }
 .olp-ld-depo .olp-ld-depo-autor strong { margin: 0; }
 .olp-ld-depo-autor span { display: block; font-size: 14px; color: rgba(255,255,255,.7); }
-.olp-ld-depo-texto { display: -webkit-box; -webkit-line-clamp: 8; -webkit-box-orient: vertical; overflow: hidden; }
+.olp-ld-depo-texto { display: -webkit-box; -webkit-line-clamp: 12; -webkit-box-orient: vertical; overflow: hidden; }
 .olp-ld-depo-link { display: inline-block; margin-top: 12px; font-size: 14px; font-weight: 700; color: var(--ld-destaque); text-decoration: underline; text-underline-offset: 3px; }
 .olp-ld-google-todas { margin-top: 28px; }
+.olp-ld-depos-google .olp-ld-depo:nth-child(n+4) { display: none; }
 
 /* FAQ */
 .olp-ld-faq { max-width: 720px; margin: 36px auto 0; display: flex; flex-direction: column; gap: 12px; }
@@ -343,6 +344,7 @@ a.olp-ld-endereco:hover { text-decoration: underline; }
   .olp-ld-galeria { grid-auto-flow: row; grid-auto-columns: auto; grid-template-columns: repeat(3, 1fr); overflow: visible; padding: 0 32px; }
 
   .olp-ld-depos { grid-template-columns: repeat(2, 1fr); }
+  .olp-ld-depos-google .olp-ld-depo:nth-child(n+4) { display: block; }
 }
 
 /* ── Desktop ── */
@@ -449,19 +451,22 @@ function Estrelas({ nota = 5, size = 18 }) {
 
 // Prova social com as avaliações do Google: nota média e total (link para a ficha da loja) e
 // os cartões no mesmo visual dos depoimentos.
-// Até 3 (uma linha no desktop), na ordem de relevância do Google.
-function AvaliacoesGoogleLeader({ google }) {
-  const itens = google.avaliacoes.slice(0, 3)
+// Ao vivo: até 3 (uma linha no desktop), na ordem de relevância do Google. Copiadas: até 6;
+// no celular só as 3 primeiras, para a seção não ficar comprida demais.
+function AvaliacoesGoogleLeader({ google, limite = 3 }) {
+  const itens = google.avaliacoes.slice(0, limite)
   const Resumo = google.url ? 'a' : 'div'
   return (
     <>
-      <Resumo {...(google.url ? { href: google.url, target: '_blank', rel: 'noopener noreferrer' } : {})} className="olp-ld-google-resumo">
-        <LogoGoogle size={24} />
-        <strong>{formatarNota(google.nota)}</strong>
-        <Estrelas nota={google.nota} />
-        {google.total > 0 && <span>{google.total.toLocaleString('pt-BR')} avaliações no Google</span>}
-      </Resumo>
-      <div className="olp-ld-depos" data-n={itens.length}>
+      {google.nota > 0 && (
+        <Resumo {...(google.url ? { href: google.url, target: '_blank', rel: 'noopener noreferrer' } : {})} className="olp-ld-google-resumo">
+          <LogoGoogle size={24} />
+          <strong>{formatarNota(google.nota)}</strong>
+          <Estrelas nota={google.nota} />
+          {google.total > 0 && <span>{google.total.toLocaleString('pt-BR')} avaliações no Google</span>}
+        </Resumo>
+      )}
+      <div className="olp-ld-depos olp-ld-depos-google" data-n={itens.length}>
         {itens.map((a, i) => (
           <div key={i} className="olp-ld-depo">
             <div className="olp-ld-depo-autor">
@@ -487,6 +492,17 @@ function AvaliacoesGoogleLeader({ google }) {
   )
 }
 
+// Depoimentos escritos no editor, no formato das avaliações do Google (modo "copiadas").
+function avaliacoesCopiadas(c, depoimentos) {
+  const numero = v => Number(String(v ?? '').replace(/[^\d,.]/g, '').replace(/\.(?=\d{3})/g, '').replace(',', '.')) || 0
+  return {
+    nota: numero(c.google_nota),
+    total: Math.round(numero(c.google_total)),
+    url: (c.google_url || '').trim() || null,
+    avaliacoes: depoimentos.map(d => ({ autor: d.nome || 'Cliente', foto_url: d.foto_url, nota: Number(d.nota) || 5, texto: d.texto, quando: '', url: null })),
+  }
+}
+
 const lista = (valor, padrao) => (Array.isArray(valor) && valor.length > 0 ? valor : padrao)
 const temTexto = v => typeof v === 'string' ? v.trim() !== '' : Boolean(v)
 
@@ -507,11 +523,14 @@ export function LeaderRender({ conteudo, conteudoOriginal, onLead, FormularioLea
   const servicos = lista(c.servicos, LEADER_SERVICOS_PADRAO).slice(0, 4)
   const passos = lista(c.passos, LEADER_PASSOS_PADRAO)
   const faq = lista(c.faq, LEADER_FAQ_PADRAO).filter(f => temTexto(f?.pergunta))
-  const depoimentos = (Array.isArray(c.depoimentos) ? c.depoimentos : []).filter(d => temTexto(d?.texto)).slice(0, 3)
+  const todosDepoimentos = (Array.isArray(c.depoimentos) ? c.depoimentos : []).filter(d => temTexto(d?.texto))
+  const depoimentos = todosDepoimentos.slice(0, 3)
   const rodapeItens = lista(c.rodape_itens, LEADER_RODAPE_ITENS_PADRAO).filter(temTexto)
   const galeria = [c.galeria_1, c.galeria_2, c.galeria_3]
   // Avaliações do Google no lugar dos depoimentos escritos (sem avaliações, ficam os escritos).
-  const google = useAvaliacoesGoogle(c.prova_google === 'sim')
+  const googleAoVivo = useAvaliacoesGoogle(c.prova_google === 'sim')
+  const copiadas = (c.prova_google === 'copiadas' || c.prova_google === 'sim') && todosDepoimentos.length > 0
+    ? avaliacoesCopiadas(c, todosDepoimentos) : null
 
   // Texto em cima do fundo claro: a cor de destaque pura (ciano) pode ficar fraca demais;
   // escurece um pouco só pra texto, mantendo o tom.
@@ -670,7 +689,9 @@ export function LeaderRender({ conteudo, conteudoOriginal, onLead, FormularioLea
           <p className="olp-ld-corpo" style={{ marginTop: 20, maxWidth: 680, marginLeft: 'auto', marginRight: 'auto' }}>
             {c.prova_texto}
           </p>
-          {google ? <AvaliacoesGoogleLeader google={google} /> : depoimentos.length > 0 && (
+          {googleAoVivo ? <AvaliacoesGoogleLeader google={googleAoVivo} />
+            : copiadas ? <AvaliacoesGoogleLeader google={copiadas} limite={6} />
+            : depoimentos.length > 0 && (
             <div className="olp-ld-depos" data-n={depoimentos.length}>
               {depoimentos.map((d, i) => (
                 <div key={i} className="olp-ld-depo">
