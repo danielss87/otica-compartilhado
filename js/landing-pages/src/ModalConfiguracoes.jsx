@@ -2,8 +2,9 @@
 // da listagem). Formato espelhado de python/.../landing_pages/config.py.
 import { useEffect, useRef, useState } from 'react'
 import { X, Upload, Trash2 } from 'lucide-react'
-import { obterConfiguracoes, salvarConfiguracoes, uploadImagemLandingPage } from './api'
+import { obterConfiguracoes, salvarConfiguracoes, uploadImagemLandingPage, testarAvaliacoesGoogle } from './api'
 import { IconeWhatsApp } from './Moldura'
+import { LogoGoogle, formatarNota } from './avaliacoesGoogle'
 
 const inputCls = 'w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400'
 
@@ -32,6 +33,7 @@ export default function ModalConfiguracoes({ onClose }) {
   const [salvo, setSalvo] = useState(false)
   const inputLogo = useRef(null)
   const inputFavicon = useRef(null)
+  const [testeGoogle, setTesteGoogle] = useState(null) // { carregando } | { ok: dados } | { erro }
 
   useEffect(() => {
     obterConfiguracoes().then(setCfg).catch(e => setErroCarregar(e.message))
@@ -45,6 +47,21 @@ export default function ModalConfiguracoes({ onClose }) {
   function setMenu(campo, valor) {
     setCfg(c => ({ ...c, menu: { ...c.menu, [campo]: valor } }))
     setSalvo(false)
+  }
+
+  function setGoogle(campo, valor) {
+    setCfg(c => ({ ...c, google: { busca: '', nota_minima: 4, ...c.google, [campo]: valor } }))
+    setSalvo(false)
+    if (campo === 'busca') setTesteGoogle(null)
+  }
+
+  async function handleTestarGoogle() {
+    setTesteGoogle({ carregando: true })
+    try {
+      setTesteGoogle({ ok: await testarAvaliacoesGoogle(cfg.google?.busca || '') })
+    } catch (e) {
+      setTesteGoogle({ erro: e.message })
+    }
   }
 
   function setMarca(campo, url) {
@@ -87,7 +104,7 @@ export default function ModalConfiguracoes({ onClose }) {
     setSalvando(true)
     setErro('')
     try {
-      const atualizado = await salvarConfiguracoes({ whatsapp: cfg.whatsapp, marca: cfg.marca, menu: cfg.menu })
+      const atualizado = await salvarConfiguracoes({ whatsapp: cfg.whatsapp, marca: cfg.marca, menu: cfg.menu, ...(cfg.google ? { google: cfg.google } : {}) })
       setCfg(atualizado)
       setSalvo(true)
     } catch (e) {
@@ -323,6 +340,65 @@ export default function ModalConfiguracoes({ onClose }) {
                     )}
                   </div>
                 )}
+              </section>
+
+              <section className="space-y-3 pt-5 border-t border-gray-100">
+                <div className="flex items-center gap-2.5">
+                  <span className="flex items-center justify-center w-8 h-8 rounded-full bg-white border border-gray-200"><LogoGoogle size={18} /></span>
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900">Avaliações do Google</p>
+                    <p className="text-xs text-gray-500">
+                      Mostra as avaliações do seu Perfil da Empresa no Google na prova social das páginas. Cada página liga
+                      no editor (Leader: "Prova social: avaliações do Google").
+                    </p>
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-gray-500 mb-1 block">Loja no Google</label>
+                  <div className="flex gap-2">
+                    <input
+                      value={cfg.google?.busca || ''}
+                      onChange={e => setGoogle('busca', e.target.value)}
+                      placeholder="Ex: Ótica Exemplo, São Paulo SP (ou o Place ID)"
+                      className={inputCls}
+                    />
+                    <button
+                      type="button"
+                      onClick={handleTestarGoogle}
+                      disabled={!(cfg.google?.busca || '').trim() || testeGoogle?.carregando}
+                      className="shrink-0 px-3 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                    >
+                      {testeGoogle?.carregando ? 'Buscando...' : 'Testar'}
+                    </button>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1">Nome da loja e cidade, como você buscaria no Google Maps. Em branco, desliga.</p>
+                  {testeGoogle?.ok && (
+                    <p className="text-xs text-emerald-700 mt-1">
+                      Encontrado: <strong>{testeGoogle.ok.nome}</strong>, nota {formatarNota(testeGoogle.ok.nota)} ({testeGoogle.ok.total} avaliações).
+                      O Google libera até 5 avaliações; {testeGoogle.ok.avaliacoes.filter(a => a.texto && a.nota >= (cfg.google?.nota_minima || 1)).length} passam
+                      na nota mínima.
+                    </p>
+                  )}
+                  {testeGoogle?.erro && <p className="text-xs text-red-600 mt-1">{testeGoogle.erro}</p>}
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-gray-500 mb-1 block">Mostrar só avaliações a partir de</label>
+                  <div className="flex gap-2">
+                    {[3, 4, 5].map(n => (
+                      <button
+                        key={n}
+                        type="button"
+                        onClick={() => setGoogle('nota_minima', n)}
+                        className={`flex-1 rounded-lg border-2 px-3 py-2 text-sm font-medium transition-colors ${
+                          (cfg.google?.nota_minima ?? 4) === n ? 'border-violet-500 bg-violet-50 text-violet-700' : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                        }`}
+                      >
+                        {n} {n === 1 ? 'estrela' : 'estrelas'}
+                      </button>
+                    ))}
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1">As avaliações são atualizadas sozinhas algumas vezes por dia.</p>
+                </div>
               </section>
             </>
           )}

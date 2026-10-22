@@ -238,7 +238,9 @@ export const LANDING_PAGE_TEMPLATES = {
       { chave: 'botao_texto', label: 'Texto dos botões', tipo: 'texto_curto', padrao: LEADER_TEXTOS.botao_texto, padrao: LEADER_TEXTOS.botao_texto },
 
       { chave: 'hero_imagem', label: 'Topo: foto da loja (fica à direita, fundindo com a cor escura)', tipo: 'imagem' },
-      { chave: 'hero_logo', label: 'Topo: logo dentro do banner (opcional, PNG claro)', tipo: 'imagem' },
+      { chave: 'hero_logo', label: 'Topo: logo dentro do banner, acima da frase pequena (opcional, PNG com fundo transparente)', tipo: 'imagem' },
+      { chave: 'hero_logo_cor', label: 'Topo: cor do logo', tipo: 'opcoes', padrao: 'original', opcoes: [['original', 'Cores originais'], ['branca', 'Todo branco']] },
+      { chave: 'hero_logo_celular', label: 'Topo: logo no celular', tipo: 'opcoes', padrao: 'mostrar', opcoes: [['mostrar', 'Mostrar'], ['ocultar', 'Esconder (só tablet e computador)']] },
       { chave: 'hero_selo', label: 'Topo: frase pequena acima do título', tipo: 'texto_curto', padrao: LEADER_TEXTOS.hero_selo, placeholder: 'Ex: ÓTICA — ÓCULOS DE GRAU, SOL E LENTES DE CONTATO' },
       { chave: 'hero_titulo', label: 'Topo: título', tipo: 'texto_curto', padrao: LEADER_TEXTOS.hero_titulo, placeholder: 'Ex: Enxergue melhor ainda hoje.' },
       { chave: 'hero_titulo_destaque', label: 'Topo: final do título, na cor de destaque', tipo: 'texto_curto', placeholder: 'Ex: Óculos prontos em até 40 minutos.' },
@@ -251,7 +253,8 @@ export const LANDING_PAGE_TEMPLATES = {
       { chave: 'problema_titulo', label: 'O problema: título', tipo: 'texto_curto', padrao: LEADER_TEXTOS.problema_titulo },
       { chave: 'problema_titulo_destaque', label: 'O problema: final do título em destaque', tipo: 'texto_curto' },
       { chave: 'problema_texto', label: 'O problema: texto (linha em branco separa parágrafos)', tipo: 'texto_longo', padrao: LEADER_TEXTOS.problema_texto },
-      { chave: 'problema_caixa', label: 'O problema: caixa escura no fim', tipo: 'texto_curto', padrao: LEADER_TEXTOS.problema_caixa, placeholder: 'Ex: Aqui é diferente.' },
+      { chave: 'problema_caixa_acao', label: 'O problema: elemento no fim do texto', tipo: 'opcoes', padrao: 'caixa', opcoes: [['caixa', 'Caixa escura (só texto)'], ['contato', 'Botão que leva ao contato']] },
+      { chave: 'problema_caixa', label: 'O problema: texto da caixa escura ou do botão', tipo: 'texto_curto', padrao: LEADER_TEXTOS.problema_caixa, placeholder: 'Ex: Aqui é diferente. / Entrar em contato' },
 
       { chave: 'solucao_imagem', label: 'A solução: foto (fica à direita, fundindo com o branco)', tipo: 'imagem' },
       { chave: 'solucao_selo', label: 'A solução: frase pequena', tipo: 'texto_curto', padrao: LEADER_TEXTOS.solucao_selo, padrao: LEADER_TEXTOS.solucao_selo },
@@ -279,6 +282,7 @@ export const LANDING_PAGE_TEMPLATES = {
       { chave: 'prova_titulo', label: 'Prova social: título', tipo: 'texto_curto', padrao: LEADER_TEXTOS.prova_titulo },
       { chave: 'prova_titulo_destaque', label: 'Prova social: final do título em destaque', tipo: 'texto_curto' },
       { chave: 'prova_texto', label: 'Prova social: texto', tipo: 'texto_longo', padrao: LEADER_TEXTOS.prova_texto },
+      { chave: 'prova_google', label: 'Prova social: avaliações do Google', tipo: 'opcoes', padrao: 'nao', opcoes: [['nao', 'Não mostrar'], ['sim', 'Mostrar (no lugar dos depoimentos)']], ajuda: 'Configure a loja em Configurações → Avaliações do Google. Se o Google não responder, aparecem os depoimentos abaixo.' },
       { chave: 'depoimentos', label: 'Prova social: depoimentos (opcional, até 3)', tipo: 'lista_depoimentos' },
 
       { chave: 'faq_selo', label: 'Dúvidas: frase pequena', tipo: 'texto_curto', padrao: LEADER_TEXTOS.faq_selo, padrao: LEADER_TEXTOS.faq_selo },
@@ -321,6 +325,8 @@ export function aplicarPadroes(campos, conteudo) {
     if (campo.padrao === undefined) continue
     if (TIPOS_TEXTO.has(campo.tipo)) {
       if (vazio(c[campo.chave])) c[campo.chave] = campo.padrao
+    } else if (campo.tipo === 'opcoes') {
+      if (!campo.opcoes.some(([v]) => v === c[campo.chave])) c[campo.chave] = campo.padrao
     } else if (campo.tipo === 'bloco') {
       const bloco = { ...(c[campo.chave] || {}) }
       for (const [k, v] of Object.entries(campo.padrao)) if (vazio(bloco[k])) bloco[k] = v

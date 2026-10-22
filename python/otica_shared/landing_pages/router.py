@@ -20,6 +20,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from . import config as cfg_lp
+from . import google_avaliacoes as google
 from .schemas import (
     LandingPageCreate,
     LandingPageLeadCreate,
@@ -78,13 +79,18 @@ def criar_routers(
     upload_imagem: UploadImagem,
     info_criador: Optional[InfoCriador] = None,
     LandingPagesConfig=None,
+    google_places_api_key: Optional[str] = None,
 ) -> Tuple[APIRouter, APIRouter]:
     """Monta `(router, router_publico)` ligados aos modelos e dependências do app.
 
     `LandingPagesConfig` (de `criar_modelo_config`) liga as configurações gerais
     (botão de WhatsApp, logo). Sem ele, as rotas de configuração respondem 404 e
     as páginas saem sem logo/botão.
+
+    `google_places_api_key` (Places API (New) do Google) liga as avaliações do Google na
+    prova social. Sem ela, a rota pública de avaliações responde `{"ativo": false}`.
     """
+    cache_google = google.CacheAvaliacoes()
 
     def _ler_config(db: Session) -> dict:
         if LandingPagesConfig is None:
@@ -176,6 +182,10 @@ def criar_routers(
         if "marca" in novo:
             for chave in ("logo_url", "favicon_url"):
                 novo["marca"][chave] = (novo["marca"].get(chave) or "").strip() or None
+        if "google" in novo:
+            g = novo["google"]
+            g["busca"] = (g.get("busca") or "").strip()
+            g["nota_minima"] = min(5, max(1, int(g.get("nota_minima") or 1)))
         for secao, valores in novo.items():
             atual[secao].update(valores)
         if "menu" in novo:
@@ -200,6 +210,22 @@ def criar_routers(
         linha.dados = json.dumps(atual)
         db.commit()
         return atual
+
+    # Painel: consulta o Google agora (sem cache) para conferir a configuração. Recebe a busca
+    # digitada no modal, antes de salvar. Erro do Google → 400 (nunca 401: deslogaria a pessoa).
+    @router.get("/avaliacoes-google/teste")
+    def testar_avaliacoes_google(busca: str = ""):
+        if not google_places_api_key:
+            raise HTTPException(400, "A chave da API do Google (Places API) não está configurada no servidor.")
+        busca = busca.strip()
+        if not busca:
+            raise HTTPException(400, "Informe o nome da loja no Google ou o Place ID.")
+        try:
+            dados = google.buscar_no_google(busca, google_places_api_key)
+        except google.ErroGoogle as e:
+            raise HTTPException(400, str(e))
+        cache_google.guardar(busca, dados)
+        return dados
 
     @router.get("", response_model=list[LandingPageOut])
     def listar(db: Session = Depends(get_db)):
@@ -319,6 +345,17 @@ def criar_routers(
     # ─── Público (sem auth) ─────────────────────────────────────────────────
 
     router_publico = APIRouter(prefix="/publico/landing-pages", tags=["Landing Pages (público)"])
+
+    # Antes de "/{slug}" para "avaliacoes-google" não ser lido como slug.
+    @router_publico.get("/avaliacoes-google")
+    def avaliacoes_google(db: Session = Depends(get_db)):
+        g = _ler_config(db)["google"]
+        if not google_places_api_key or not g["busca"]:
+            return {"ativo": False}
+        dados = cache_google.obter(g["busca"], google_places_api_key)
+        if not dados:
+            return {"ativo": False}
+        return google.para_pagina(dados, g["nota_minima"])
 
     @router_publico.get("/{slug}", response_model=LandingPagePublicaOut)
     def obter_publica(slug: str, db: Session = Depends(get_db)):

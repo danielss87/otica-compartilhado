@@ -59,17 +59,28 @@ class ConfigMenu(BaseModel):
     cta_tilt: bool = False  # botão do menu balança de leve de tempos em tempos
 
 
-class LandingPagesConfigOut(BaseModel):
-    """Configurações que valem para todas as landing pages."""
+class ConfigGoogle(BaseModel):
+    busca: str = ""  # Place ID ou "nome da loja, cidade"; vazio = desligado
+    nota_minima: int = 4
+
+
+class ConfigPublicaOut(BaseModel):
+    """Parte das configurações que a página pública recebe (ver `config.publica`)."""
     whatsapp: ConfigWhatsapp
     marca: ConfigMarca
     menu: ConfigMenu
+
+
+class LandingPagesConfigOut(ConfigPublicaOut):
+    """Configurações que valem para todas as landing pages."""
+    google: ConfigGoogle = ConfigGoogle()
 
 
 class LandingPagesConfigUpdate(BaseModel):
     whatsapp: Optional[ConfigWhatsapp] = None
     marca: Optional[ConfigMarca] = None
     menu: Optional[ConfigMenu] = None
+    google: Optional[ConfigGoogle] = None
 
 
 class LandingPagePublicaOut(BaseModel):
@@ -79,7 +90,7 @@ class LandingPagePublicaOut(BaseModel):
     conteudo: Optional[Dict[str, Any]] = None
     meta_titulo: Optional[str] = None
     meta_descricao: Optional[str] = None
-    configuracoes: Optional[LandingPagesConfigOut] = None
+    configuracoes: Optional[ConfigPublicaOut] = None
 
 
 class LandingPageLeadCreate(BaseModel):

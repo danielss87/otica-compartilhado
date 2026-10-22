@@ -21,7 +21,7 @@ package.json                     # npm: otica-compartilhado (raiz do repo)
 
 ## Features
 
-### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.14.0, out/2026
+### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.15.0, out/2026
 Origem: 4 Olhos (ago/2026). Páginas de captura por template pronto com edição guiada (4 templates:
 `simples`, `promocao`, `agendar_consulta`, `greats`), página pública `/lp/:slug`, contagem de
 visualizações e captura de lead (nome + telefone + fbclid). Quinto template, `leader` (v0.10.0), em
@@ -59,6 +59,13 @@ preferir este modelo. Os templates antigos usam `sm:` (viewport) e não responde
   - Sempre nascer **desligada** por padrão, para não mudar páginas já publicadas de nenhum dos sistemas.
   - O que a página pública pode ver passa por `config.publica()`. Nunca devolver a config inteira na
     rota pública.
+- **Avaliações do Google** (v0.15.0, `google_avaliacoes.py` + `avaliacoesGoogle.jsx`): Places API (New) com a
+  chave injetada (`criar_routers(..., google_places_api_key=...)`; sem chave, desligado). A loja fica em
+  `config.google.busca` (Place ID ou "nome, cidade"); cache em memória de 6 h, então o tráfego da página não
+  vira custo. A API só devolve **até 5 avaliações**. Para pôr num template: campo `tipo: 'opcoes'` que liga
+  + `useAvaliacoesGoogle(ligado)` no `Render` + visual próprio (peças `LogoGoogle`, `FotoAutor`,
+  `formatarNota`). Sem avaliações, o hook devolve `null` e o template mostra o conteúdo manual. Hoje: Leader.
+  Ao mostrar avaliações do Google, manter o nome do autor e a marca do Google (exigência do Google).
 - Upload de logo/imagem: o Ariel recusa SVG (risco de script num SVG servido pelo próprio backend).
   Não sugerir SVG na interface.
 
@@ -102,6 +109,21 @@ para todas as opções.
 8. Repo **público**: nunca commitar segredo, credencial, URL interna, dado de cliente ou telefone real.
 
 ## Changelog
+
+### v0.15.0 (22/10/2026)
+- **Avaliações do Google na prova social** (Leader: campo "Prova social: avaliações do Google", desligado por
+  padrão). Nota média, total, link para a ficha e até 3 avaliações no lugar dos depoimentos escritos; se o
+  Google não responder, os depoimentos escritos voltam. Configuração geral nova **Avaliações do Google**
+  (loja + nota mínima, padrão 4 estrelas, com botão "Testar"). Rotas novas: `GET /publico/landing-pages/avaliacoes-google`
+  e `GET /landing-pages/avaliacoes-google/teste?busca=`. **Apps precisam** passar `google_places_api_key` em
+  `criar_routers` para ligar; sem isso nada muda. A config pública não ganhou campo (schema `ConfigPublicaOut`).
+- Editor: campo novo `tipo: 'opcoes'` (`opcoes: [[valor, rótulo]]`, `padrao`, `ajuda`), mesclado com o padrão
+  em `aplicarPadroes` como os textos.
+- Leader: **logo do topo todo branco** (`hero_logo_cor: 'branca'`, filtro CSS; precisa de PNG transparente) e
+  opção de **esconder no celular** (`hero_logo_celular: 'ocultar'`).
+- Leader: a caixa escura do fim de "O problema" pode virar **botão que rola até o contato**
+  (`problema_caixa_acao: 'contato'`; o texto continua em `problema_caixa`).
+- Páginas publicadas não mudam (tudo nasce desligado).
 
 ### v0.14.0 (21/10/2026)
 - Leader: campo **complemento do endereço** (`endereco_complemento`, ex: "Loja 91"), mostrado em negrito depois do

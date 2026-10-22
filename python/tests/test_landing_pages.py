@@ -330,3 +330,90 @@ def test_menu_cta_tilt(client):
     client.put("/api/landing-pages/configuracoes", headers=AUTH, json=corpo)
     pub = client.get(f"/api/publico/landing-pages/{lp['slug']}").json()["configuracoes"]
     assert pub["menu"]["cta_tilt"] is False
+
+
+# ─── Avaliações do Google (v0.15.0) ─────────────────────────────────────────
+
+from otica_shared.landing_pages import google_avaliacoes
+
+RESPOSTA_GOOGLE = {
+    "displayName": {"text": "Ótica Exemplo"},
+    "rating": 4.8,
+    "userRatingCount": 120,
+    "googleMapsUri": "https://maps.google.com/?cid=1",
+    "reviews": [
+        {"rating": 5, "text": {"text": "Ótimo atendimento"}, "authorAttribution": {"displayName": "Ana"}, "relativePublishTimeDescription": "há 1 mês"},
+        {"rating": 2, "text": {"text": "Demorou"}, "authorAttribution": {"displayName": "Beto"}},
+        {"rating": 5, "authorAttribution": {"displayName": "Sem texto"}},
+    ],
+}
+
+
+def _app_com_chave(chave):
+    r, rp = criar_routers(
+        LandingPage, LandingPageLead,
+        get_db=get_db, get_usuario_atual=get_usuario_atual, upload_imagem=upload_imagem,
+        LandingPagesConfig=LandingPagesConfig, google_places_api_key=chave,
+    )
+    a = FastAPI()
+    a.include_router(rp, prefix="/api")
+    a.include_router(r, prefix="/api")
+    return TestClient(a)
+
+
+@pytest.fixture
+def google_falso(monkeypatch):
+    chamadas = []
+
+    def requisicao(url, chave, campos, corpo=None):
+        chamadas.append(url)
+        if corpo is not None:
+            return {"places": [{"id": "ChIJexemplo0000000000000"}]}
+        return RESPOSTA_GOOGLE
+
+    monkeypatch.setattr(google_avaliacoes, "_requisicao", requisicao)
+    return chamadas
+
+
+def test_google_desligado_por_padrao(client):
+    assert client.get("/api/publico/landing-pages/avaliacoes-google").json() == {"ativo": False}
+    assert client.get("/api/landing-pages/configuracoes", headers=AUTH).json()["google"] == {"busca": "", "nota_minima": 4}
+    assert client.get("/api/landing-pages/avaliacoes-google/teste?busca=x", headers=AUTH).status_code == 400
+
+
+def test_google_avaliacoes_publicas_com_cache(google_falso):
+    c = _app_com_chave("chave")
+    # sem busca configurada: desligado, sem chamar o Google
+    assert c.get("/api/publico/landing-pages/avaliacoes-google").json() == {"ativo": False}
+    c.put("/api/landing-pages/configuracoes", headers=AUTH, json={"google": {"busca": " Ótica Exemplo, Cidade ", "nota_minima": 4}})
+    r = c.get("/api/publico/landing-pages/avaliacoes-google").json()
+    assert r["ativo"] is True and r["nota"] == 4.8 and r["total"] == 120
+    # só nota >= 4 e com texto
+    assert [a["autor"] for a in r["avaliacoes"]] == ["Ana"]
+    assert "place_id" not in r
+    # busca de texto (achar o ID) + detalhes; a segunda visita vem do cache
+    assert len(google_falso) == 2
+    c.get("/api/publico/landing-pages/avaliacoes-google")
+    assert len(google_falso) == 2
+
+
+def test_google_place_id_direto_e_teste_no_painel(google_falso):
+    c = _app_com_chave("chave")
+    r = c.get("/api/landing-pages/avaliacoes-google/teste?busca=ChIJabcdefghijklmnopqrstu", headers=AUTH)
+    assert r.status_code == 200 and r.json()["nome"] == "Ótica Exemplo"
+    assert len(google_falso) == 1 and "places/ChIJabcdefghijklmnopqrstu" in google_falso[0]
+    assert c.get("/api/landing-pages/avaliacoes-google/teste?busca=x").status_code == 401
+
+
+def test_google_erro_serve_ultimo_resultado(monkeypatch):
+    cache = google_avaliacoes.CacheAvaliacoes()
+    monkeypatch.setattr(google_avaliacoes, "buscar_no_google", lambda b, k: google_avaliacoes._formatar("id", RESPOSTA_GOOGLE))
+    assert cache.obter("x", "k")["nome"] == "Ótica Exemplo"
+
+    def falha(b, k):
+        raise google_avaliacoes.ErroGoogle("fora do ar")
+
+    monkeypatch.setattr(google_avaliacoes, "buscar_no_google", falha)
+    cache._itens["x"]["em"] -= google_avaliacoes.TTL_CACHE + 1  # cache vencido
+    assert cache.obter("x", "k")["nome"] == "Ótica Exemplo"  # serve o velho
+    assert cache.obter("nunca-deu-certo", "k") is None

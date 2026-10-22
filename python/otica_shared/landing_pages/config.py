@@ -26,6 +26,10 @@ PADRAO = {
     # fixo (v0.6.0): menu preso no topo da tela ao rolar (sticky).
     # cta_tilt (v0.8.0): botão do menu balança de leve a cada poucos segundos (chamar atenção).
     "menu": {"ativo": False, "cta_texto": "Fale conosco", "cta_destino": "whatsapp", "cta_url": "", "cta_cor": "padrao", "fixo": False, "cta_tilt": False},
+    # Avaliações do Google (v0.15.0): `busca` = Place ID ou "nome da loja, cidade" como no
+    # Google Maps (vazio = desligado). Só entram na página avaliações com nota >= nota_minima.
+    # Cada página liga ou não no editor (ex: Leader → "Prova social: avaliações do Google").
+    "google": {"busca": "", "nota_minima": 4},
 }
 
 

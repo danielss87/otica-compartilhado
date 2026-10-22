@@ -15,9 +15,10 @@
 // Cores de runtime entram por variáveis CSS no elemento raiz.
 import { useEffect, useState } from 'react'
 import {
-  Image as ImageIcon, Eye, Sun, CircleDot, Zap, User, Glasses, Wrench, CircleCheck, MapPin, Plus, Star, Car, Navigation,
+  Image as ImageIcon, Eye, Sun, CircleDot, Zap, User, Glasses, Wrench, CircleCheck, MapPin, Plus, Star, Car, Navigation, ArrowRight,
 } from 'lucide-react'
 import { IconeWhatsApp, linkWhatsApp, rolarSuaveAte } from './Moldura'
+import { useAvaliacoesGoogle, formatarNota, LogoGoogle, FotoAutor } from './avaliacoesGoogle'
 
 export const LEADER_COR_ESCURA = '#020B26'
 export const LEADER_COR_DESTAQUE = '#00B6D5'
@@ -203,6 +204,9 @@ const CSS = `
 .olp-ld-banner-texto { position: relative; z-index: 1; margin-top: -72px; padding: 0 20px 52px; text-align: center; }
 .olp-ld-banner-texto .olp-ld-acoes { justify-content: center; }
 .olp-ld-logo { height: 40px; width: auto; max-width: 220px; object-fit: contain; margin: 0 auto 22px; display: block; }
+/* v0.15.0: logo todo branco (PNG com fundo transparente) e opção de esconder no celular. */
+.olp-ld-logo[data-cor="branca"] { filter: brightness(0) invert(1); }
+.olp-ld-logo[data-celular="ocultar"] { display: none; }
 
 /* Problema / contato: imagem + texto */
 .olp-ld-duo { display: grid; grid-template-columns: 1fr; gap: 32px; align-items: center; }
@@ -210,6 +214,7 @@ const CSS = `
 .olp-ld-duo-texto { text-align: center; }
 .olp-ld-duo-texto .olp-ld-acoes { justify-content: center; }
 .olp-ld-caixa { display: inline-block; margin-top: 26px; padding: 16px 22px; border-radius: 12px; color: #fff; font-weight: 700; font-size: 17px; background: var(--ld-caixa); }
+.olp-ld-btn.olp-ld-caixa-btn { margin-top: 26px; }
 .olp-ld-form { margin: 28px auto 0; max-width: 440px; text-align: left; }
 .olp-ld-contato-img { width: 100%; max-height: 420px; object-fit: contain; object-position: bottom; }
 
@@ -248,6 +253,20 @@ const CSS = `
 .olp-ld-depo p { font-size: 16px; line-height: 1.6; }
 .olp-ld-depo strong { display: block; margin-top: 12px; font-family: ${FONTE_TITULO}; font-size: 16px; color: var(--ld-destaque); }
 .olp-ld-estrelas { display: flex; gap: 3px; color: #FBBF24; margin-bottom: 10px; }
+
+/* Avaliações do Google (v0.15.0) */
+.olp-ld-google-resumo { display: inline-flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 12px; margin-top: 28px; padding: 12px 20px; border-radius: 999px;
+  background: #fff; color: #202124; text-decoration: none; font-size: 16px; font-weight: 500; }
+.olp-ld-google-resumo strong { font-family: ${FONTE_TITULO}; font-size: 20px; }
+.olp-ld-google-resumo .olp-ld-estrelas { margin: 0; }
+a.olp-ld-google-resumo:hover { filter: brightness(.97); }
+.olp-ld-depo-autor { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.olp-ld-depo-autor > div { min-width: 0; flex: 1; }
+.olp-ld-depo .olp-ld-depo-autor strong { margin: 0; }
+.olp-ld-depo-autor span { display: block; font-size: 14px; color: rgba(255,255,255,.7); }
+.olp-ld-depo-texto { display: -webkit-box; -webkit-line-clamp: 8; -webkit-box-orient: vertical; overflow: hidden; }
+.olp-ld-depo-link { display: inline-block; margin-top: 12px; font-size: 14px; font-weight: 700; color: var(--ld-destaque); text-decoration: underline; text-underline-offset: 3px; }
+.olp-ld-google-todas { margin-top: 28px; }
 
 /* FAQ */
 .olp-ld-faq { max-width: 720px; margin: 36px auto 0; display: flex; flex-direction: column; gap: 12px; }
@@ -303,6 +322,7 @@ a.olp-ld-endereco:hover { text-decoration: underline; }
   .olp-ld-banner-texto > * { max-width: var(--ld-texto-larg-tab); }
   .olp-ld-banner-texto .olp-ld-acoes { justify-content: flex-start; }
   .olp-ld-logo { margin: 0 0 24px; }
+  .olp-ld-logo[data-celular="ocultar"] { display: block; }
 
   .olp-ld-duo { grid-template-columns: 1fr 1fr; gap: 40px; }
   .olp-ld-duo-texto { text-align: left; }
@@ -419,6 +439,54 @@ function IconeItem({ item, Padrao, size }) {
   return Padrao ? <Padrao size={size} strokeWidth={1.75} /> : null
 }
 
+function Estrelas({ nota = 5, size = 18 }) {
+  return (
+    <div className="olp-ld-estrelas" aria-label={`${nota} de 5 estrelas`}>
+      {Array.from({ length: 5 }).map((_, j) => <Star key={j} size={size} fill={j < Math.round(nota) ? 'currentColor' : 'none'} />)}
+    </div>
+  )
+}
+
+// Prova social com as avaliações do Google: nota média e total (link para a ficha da loja) e
+// os cartões no mesmo visual dos depoimentos.
+// Até 3 (uma linha no desktop), na ordem de relevância do Google.
+function AvaliacoesGoogleLeader({ google }) {
+  const itens = google.avaliacoes.slice(0, 3)
+  const Resumo = google.url ? 'a' : 'div'
+  return (
+    <>
+      <Resumo {...(google.url ? { href: google.url, target: '_blank', rel: 'noopener noreferrer' } : {})} className="olp-ld-google-resumo">
+        <LogoGoogle size={24} />
+        <strong>{formatarNota(google.nota)}</strong>
+        <Estrelas nota={google.nota} />
+        {google.total > 0 && <span>{google.total.toLocaleString('pt-BR')} avaliações no Google</span>}
+      </Resumo>
+      <div className="olp-ld-depos" data-n={itens.length}>
+        {itens.map((a, i) => (
+          <div key={i} className="olp-ld-depo">
+            <div className="olp-ld-depo-autor">
+              <FotoAutor avaliacao={a} size={44} />
+              <div>
+                <strong>{a.autor}</strong>
+                {a.quando && <span>{a.quando}</span>}
+              </div>
+              <LogoGoogle size={20} />
+            </div>
+            <Estrelas nota={a.nota} />
+            <p className="olp-ld-depo-texto">{a.texto}</p>
+            {a.url && <a href={a.url} target="_blank" rel="noopener noreferrer" className="olp-ld-depo-link">Ler no Google</a>}
+          </div>
+        ))}
+      </div>
+      {google.url && (
+        <div className="olp-ld-google-todas">
+          <a href={google.url} target="_blank" rel="noopener noreferrer" className="olp-ld-link">Ver todas as avaliações no Google</a>
+        </div>
+      )}
+    </>
+  )
+}
+
 const lista = (valor, padrao) => (Array.isArray(valor) && valor.length > 0 ? valor : padrao)
 const temTexto = v => typeof v === 'string' ? v.trim() !== '' : Boolean(v)
 
@@ -442,6 +510,8 @@ export function LeaderRender({ conteudo, conteudoOriginal, onLead, FormularioLea
   const depoimentos = (Array.isArray(c.depoimentos) ? c.depoimentos : []).filter(d => temTexto(d?.texto)).slice(0, 3)
   const rodapeItens = lista(c.rodape_itens, LEADER_RODAPE_ITENS_PADRAO).filter(temTexto)
   const galeria = [c.galeria_1, c.galeria_2, c.galeria_3]
+  // Avaliações do Google no lugar dos depoimentos escritos (sem avaliações, ficam os escritos).
+  const google = useAvaliacoesGoogle(c.prova_google === 'sim')
 
   // Texto em cima do fundo claro: a cor de destaque pura (ciano) pode ficar fraca demais;
   // escurece um pouco só pra texto, mantendo o tom.
@@ -486,7 +556,7 @@ export function LeaderRender({ conteudo, conteudoOriginal, onLead, FormularioLea
         secao="hero" className="olp-ld-hero" fundo={escura} imagem={c.hero_imagem} degrade={degrade}
         alturaDesk="660px" alturaTab="540px" larguraFotoDesk="62%" larguraFotoTab="58%" larguraTextoDesk="640px" larguraTextoTab="62%"
       >
-        {c.hero_logo && <img src={c.hero_logo} alt="" className="olp-ld-logo" />}
+        {c.hero_logo && <img src={c.hero_logo} alt="" className="olp-ld-logo" data-cor={c.hero_logo_cor} data-celular={c.hero_logo_celular} />}
         <p className="olp-ld-selo">{c.hero_selo}</p>
         <Titulo como="h1" className="olp-ld-h1" texto={c.hero_titulo} destaque={c.hero_titulo_destaque} />
         <p className="olp-ld-corpo" style={{ color: 'rgba(255,255,255,.92)', marginTop: 20, maxWidth: 520 }}>
@@ -511,7 +581,13 @@ export function LeaderRender({ conteudo, conteudoOriginal, onLead, FormularioLea
             <p className="olp-ld-corpo" style={{ marginTop: 20 }}>
               {c.problema_texto}
             </p>
-            <p className="olp-ld-caixa">{c.problema_caixa}</p>
+            {c.problema_caixa_acao === 'contato' ? (
+              <div>
+                <button type="button" onClick={irParaContato} className="olp-ld-btn olp-ld-caixa-btn">{c.problema_caixa}<ArrowRight /></button>
+              </div>
+            ) : (
+              <p className="olp-ld-caixa">{c.problema_caixa}</p>
+            )}
           </div>
         </div>
       </section>
@@ -594,7 +670,7 @@ export function LeaderRender({ conteudo, conteudoOriginal, onLead, FormularioLea
           <p className="olp-ld-corpo" style={{ marginTop: 20, maxWidth: 680, marginLeft: 'auto', marginRight: 'auto' }}>
             {c.prova_texto}
           </p>
-          {depoimentos.length > 0 && (
+          {google ? <AvaliacoesGoogleLeader google={google} /> : depoimentos.length > 0 && (
             <div className="olp-ld-depos" data-n={depoimentos.length}>
               {depoimentos.map((d, i) => (
                 <div key={i} className="olp-ld-depo">

@@ -130,3 +130,15 @@ export async function salvarConfiguracoes(payload) {
     body: JSON.stringify(payload),
   }))
 }
+
+// ─── Avaliações do Google (v0.15.0) ─────────────────────────────────────────
+
+// Público: avaliações já filtradas para a página ({ ativo, nota, total, url, avaliacoes }).
+export async function buscarAvaliacoesGoogle() {
+  return handlePublico(await fetch(`${basePublica()}/avaliacoes-google`))
+}
+
+// Painel: consulta o Google agora com a busca digitada no modal (antes de salvar).
+export async function testarAvaliacoesGoogle(busca) {
+  return handle(await req(`${base()}/avaliacoes-google/teste?busca=${encodeURIComponent(busca)}`, { headers: headers() }))
+}

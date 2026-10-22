@@ -389,6 +389,9 @@ function CampoEditor({ campo, valor, onChange }) {
   if (campo.tipo === 'intensidade') {
     return <CampoIntensidade campo={campo} valor={valor} onChange={onChange} />
   }
+  if (campo.tipo === 'opcoes') {
+    return <CampoOpcoes campo={campo} valor={valor} onChange={onChange} />
+  }
   if (campo.tipo === 'bloco') {
     return <CampoBloco campo={campo} valor={valor} onChange={onChange} />
   }
@@ -399,6 +402,31 @@ function CampoEditor({ campo, valor, onChange }) {
     return <CampoListaDepoimentos campo={campo} valor={valor} onChange={onChange} />
   }
   return null
+}
+
+// Escolha entre poucas opções fixas (`opcoes: [[valor, rótulo], ...]`). Vazio = `campo.padrao`.
+function CampoOpcoes({ campo, valor, onChange }) {
+  const atual = campo.opcoes.some(([v]) => v === valor) ? valor : campo.padrao
+  return (
+    <div>
+      <label className="text-xs font-medium text-gray-500 mb-1 block">{campo.label}</label>
+      <div className="flex flex-wrap gap-2">
+        {campo.opcoes.map(([v, rotulo]) => (
+          <button
+            key={v}
+            type="button"
+            onClick={() => onChange(v)}
+            className={`flex-1 min-w-[8rem] rounded-lg border-2 px-3 py-2 text-sm font-medium leading-tight transition-colors ${
+              atual === v ? 'border-violet-500 bg-violet-50 text-violet-700' : 'border-gray-200 text-gray-600 hover:border-gray-300'
+            }`}
+          >
+            {rotulo}
+          </button>
+        ))}
+      </div>
+      {campo.ajuda && <p className="text-xs text-gray-400 mt-1">{campo.ajuda}</p>}
+    </div>
+  )
 }
 
 // Controle deslizante numérico (ex: película escura do hero, em %). `valor` vazio = `campo.padrao`.
