@@ -32,6 +32,7 @@ class LandingPageOut(BaseModel):
     criado_por_nome: Optional[str] = None
     criado_por_foto_url: Optional[str] = None
     total_leads: int = 0
+    cliques_whatsapp: int = 0
     criado_em: datetime
     atualizado_em: datetime
     publicada_em: Optional[datetime] = None
@@ -69,11 +70,21 @@ class ConfigDominio(BaseModel):
     pagina_inicial: str = ""  # slug aberto na raiz do domínio
 
 
+class ConfigRastreamento(BaseModel):
+    ga4_id: str = ""  # G-XXXXXXX
+    ads_id: str = ""  # AW-123456789
+    ads_rotulo_lead: str = ""  # rótulo da conversão "lead enviado"
+    ads_rotulo_whatsapp: str = ""  # rótulo da conversão "clique no WhatsApp"
+    hotjar_id: str = ""
+    clarity_id: str = ""
+
+
 class ConfigPublicaOut(BaseModel):
     """Parte das configurações que a página pública recebe (ver `config.publica`)."""
     whatsapp: ConfigWhatsapp
     marca: ConfigMarca
     menu: ConfigMenu
+    rastreamento: ConfigRastreamento = ConfigRastreamento()
 
 
 class LandingPagesConfigOut(ConfigPublicaOut):
@@ -88,6 +99,7 @@ class LandingPagesConfigUpdate(BaseModel):
     menu: Optional[ConfigMenu] = None
     google: Optional[ConfigGoogle] = None
     dominio: Optional[ConfigDominio] = None
+    rastreamento: Optional[ConfigRastreamento] = None
 
 
 class LandingPagePublicaOut(BaseModel):
@@ -106,6 +118,14 @@ class LandingPageLeadCreate(BaseModel):
     telefone: str
     mensagem: Optional[str] = None
     fbclid: Optional[str] = None
+    gclid: Optional[str] = None
+    gbraid: Optional[str] = None
+    wbraid: Optional[str] = None
+    utm_source: Optional[str] = None
+    utm_medium: Optional[str] = None
+    utm_campaign: Optional[str] = None
+    utm_term: Optional[str] = None
+    utm_content: Optional[str] = None
 
 
 class LandingPageLeadOut(BaseModel):
@@ -116,6 +136,14 @@ class LandingPageLeadOut(BaseModel):
     telefone: str
     mensagem: Optional[str] = None
     fbclid: Optional[str] = None
+    gclid: Optional[str] = None
+    gbraid: Optional[str] = None
+    wbraid: Optional[str] = None
+    utm_source: Optional[str] = None
+    utm_medium: Optional[str] = None
+    utm_campaign: Optional[str] = None
+    utm_term: Optional[str] = None
+    utm_content: Optional[str] = None
     criado_em: datetime
 
 

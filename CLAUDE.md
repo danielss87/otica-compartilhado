@@ -21,7 +21,7 @@ package.json                     # npm: otica-compartilhado (raiz do repo)
 
 ## Features
 
-### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.19.0, out/2026
+### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.20.0, out/2026
 Origem: 4 Olhos (ago/2026). Páginas de captura por template pronto com edição guiada (4 templates:
 `simples`, `promocao`, `agendar_consulta`, `greats`), página pública `/lp/:slug`, contagem de
 visualizações e captura de lead (nome + telefone + fbclid). Quinto template, `leader` (v0.10.0), em
@@ -115,6 +115,24 @@ para todas as opções.
 8. Repo **público**: nunca commitar segredo, credencial, URL interna, dado de cliente ou telefone real.
 
 ## Changelog
+
+### v0.20.0 (23/10/2026)
+- **Rastreamento** (Configurações → Rastreamento, tudo vazio por padrão): IDs do **GA4** (`G-...`), **Google Ads**
+  (`AW-...` + rótulos das conversões "lead" e "clique no WhatsApp"; colar o `send_to` inteiro também vale),
+  **Hotjar** e **Microsoft Clarity**. Só IDs, validados por formato no backend (`config.normalizar_rastreamento`,
+  422 se inválido) — nunca script livre. Vão na config pública (`ConfigPublicaOut.rastreamento`).
+- `rastreamento.js`: a página pública (`LandingPageView`, **nunca a pré-visualização do editor**) carrega gtag.js /
+  Hotjar / Clarity e dispara `whatsapp_clique` e `generate_lead` (dataLayer + gtag) e a conversão do Ads com rótulo.
+  O clique é pego por um listener em fase de captura na raiz da página para **qualquer** link de WhatsApp
+  (botão flutuante, menu, botões dos templates): template novo não precisa fazer nada.
+- **Contador próprio de cliques no WhatsApp**: `POST /publico/landing-pages/{slug}/clique-whatsapp` (sendBeacon, 204
+  sempre) → coluna nova `landing_pages.cliques_whatsapp`; a lista mostra visitas · cliques · leads.
+- **Origem do lead**: `gclid`, `gbraid`, `wbraid` e `utm_*` da URL ficam no `sessionStorage` e vão com o lead →
+  8 colunas novas em `landing_page_leads` (`LandingPageLeadOut` devolve).
+- **Apps precisam, ANTES de subir para esta versão**: `ALTER TABLE landing_pages ADD COLUMN cliques_whatsapp INTEGER
+  NOT NULL DEFAULT 0` e `ALTER TABLE landing_page_leads ADD COLUMN <gclid|gbraid|wbraid|utm_source|utm_medium|utm_campaign|utm_term|utm_content> VARCHAR(255)`
+  na migração runtime do startup. Sem isso, as consultas às landing pages quebram (o modelo já lê as colunas).
+  Ariel: feito em `main.py`. 4 Olhos: fazer ao subir a versão.
 
 ### v0.19.0 (23/10/2026)
 - **Domínio próprio** (Configurações → Domínio próprio): endereço do subdomínio (normalizado: sem https://,

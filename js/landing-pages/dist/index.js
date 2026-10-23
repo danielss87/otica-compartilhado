@@ -257,6 +257,7 @@ __export(api_exports, {
   obterLandingPage: () => obterLandingPage,
   pausarLandingPage: () => pausarLandingPage,
   publicarLandingPage: () => publicarLandingPage,
+  registrarCliqueWhatsApp: () => registrarCliqueWhatsApp,
   registrarVisualizacao: () => registrarVisualizacao,
   salvarConfiguracoes: () => salvarConfiguracoes,
   testarAvaliacoesGoogle: () => testarAvaliacoesGoogle,
@@ -362,6 +363,15 @@ async function buscarPaginaInicialPublica() {
 async function registrarVisualizacao(slug) {
   try {
     await fetch(`${basePublica()}/${slug}/visualizacao`, { method: "POST" });
+  } catch {
+  }
+}
+function registrarCliqueWhatsApp(slug) {
+  const url = `${basePublica()}/${slug}/clique-whatsapp`;
+  try {
+    if (navigator.sendBeacon && navigator.sendBeacon(url)) return;
+    fetch(url, { method: "POST", keepalive: true }).catch(() => {
+    });
   } catch {
   }
 }
@@ -1681,7 +1691,7 @@ function GreatsRender({ conteudo }) {
 // js/landing-pages/src/LandingPagesLista.jsx
 import { useEffect as useEffect6, useState as useState6 } from "react";
 import { useNavigate } from "react-router-dom";
-import { Rocket, Plus as Plus2, X as X2, Copy, CopyPlus, Trash2 as Trash22, Eye as Eye2, Users, ExternalLink, Play, Pause, Check, Settings } from "lucide-react";
+import { Rocket, Plus as Plus2, X as X2, Copy, CopyPlus, Trash2 as Trash22, Eye as Eye2, Users, ExternalLink, Play, Pause, Check, Settings, MessageCircle as MessageCircle2 } from "lucide-react";
 
 // js/landing-pages/src/dominio.js
 import { useEffect as useEffect4, useState as useState4 } from "react";
@@ -1718,8 +1728,17 @@ var semProtocolo = (url) => url.replace(/^https?:\/\//, "");
 
 // js/landing-pages/src/ModalConfiguracoes.jsx
 import { useEffect as useEffect5, useRef as useRef3, useState as useState5 } from "react";
-import { X, Upload, Trash2, Globe } from "lucide-react";
+import { X, Upload, Trash2, Globe, Activity } from "lucide-react";
 import { Fragment as Fragment2, jsx as jsx5, jsxs as jsxs5 } from "react/jsx-runtime";
+var RASTREAMENTO_VAZIO = { ga4_id: "", ads_id: "", ads_rotulo_lead: "", ads_rotulo_whatsapp: "", hotjar_id: "", clarity_id: "" };
+var CAMPOS_RASTREAMENTO = [
+  ["ga4_id", "Google Analytics 4 (ID de medi\xE7\xE3o)", "G-AB12CD34EF", "Analytics \u2192 Administrador \u2192 Fluxos de dados \u2192 o fluxo do site."],
+  ["ads_id", "Google Ads (ID da tag)", "AW-123456789", "Google Ads \u2192 Metas \u2192 Convers\xF5es \u2192 a a\xE7\xE3o \u2192 Configurar tag."],
+  ["ads_rotulo_lead", 'Convers\xE3o "lead enviado" (r\xF3tulo)', "AbCdEf123", "O texto depois da barra em send_to: AW-123456789/AbCdEf123. Pode colar o send_to inteiro."],
+  ["ads_rotulo_whatsapp", 'Convers\xE3o "clique no WhatsApp" (r\xF3tulo)', "XyZ789", "Uma segunda a\xE7\xE3o de convers\xE3o no Google Ads, s\xF3 para o clique no WhatsApp."],
+  ["hotjar_id", "Hotjar (Site ID)", "3456789", "Hotjar \u2192 Sites & Organizations. Grava sess\xF5es e mapas de calor."],
+  ["clarity_id", "Microsoft Clarity (Project ID)", "abcd1234ef", "Clarity \u2192 Settings \u2192 Overview. Gratuito; grava sess\xF5es e mapas de calor."]
+];
 var inputCls = "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400";
 function Interruptor({ ligado, onChange, label }) {
   return /* @__PURE__ */ jsx5(
@@ -1774,6 +1793,10 @@ function ModalConfiguracoes({ onClose }) {
   }
   function setMenu(campo, valor) {
     setCfg((c) => ({ ...c, menu: { ...c.menu, [campo]: valor } }));
+    setSalvo(false);
+  }
+  function setRastreamento(campo, valor) {
+    setCfg((c) => ({ ...c, rastreamento: { ...RASTREAMENTO_VAZIO, ...c.rastreamento, [campo]: valor } }));
     setSalvo(false);
   }
   function setGoogle(campo, valor) {
@@ -1831,7 +1854,8 @@ function ModalConfiguracoes({ onClose }) {
         marca: cfg.marca,
         menu: cfg.menu,
         ...cfg.google ? { google: cfg.google } : {},
-        ...cfg.dominio ? { dominio: cfg.dominio } : {}
+        ...cfg.dominio ? { dominio: cfg.dominio } : {},
+        ...cfg.rastreamento ? { rastreamento: cfg.rastreamento } : {}
       });
       setCfg(atualizado);
       definirDominioProprio(atualizado.dominio?.endereco);
@@ -2162,6 +2186,36 @@ function ModalConfiguracoes({ onClose }) {
               /* @__PURE__ */ jsx5("p", { className: "text-xs font-semibold text-gray-700 mb-1", children: "Como ligar o dom\xEDnio" }),
               /* @__PURE__ */ jsx5("p", { className: "text-xs text-gray-600 whitespace-pre-line", children: getConfig().instrucoesDominio })
             ] })
+          ] }),
+          /* @__PURE__ */ jsxs5("section", { className: "space-y-3 pt-5 border-t border-gray-100", children: [
+            /* @__PURE__ */ jsxs5("div", { className: "flex items-center gap-2.5", children: [
+              /* @__PURE__ */ jsx5("span", { className: "shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 text-amber-700", children: /* @__PURE__ */ jsx5(Activity, { size: 16 }) }),
+              /* @__PURE__ */ jsxs5("div", { children: [
+                /* @__PURE__ */ jsx5("p", { className: "text-sm font-semibold text-gray-900", children: "Rastreamento" }),
+                /* @__PURE__ */ jsx5("p", { className: "text-xs text-gray-500", children: "Mede visitas, cliques no WhatsApp e leads no Google Analytics e no Google Ads, e grava as sess\xF5es (Hotjar ou Clarity). Preencha s\xF3 o ID de cada ferramenta; em branco, n\xE3o carrega." })
+              ] })
+            ] }),
+            CAMPOS_RASTREAMENTO.map(([chave, rotulo, exemplo, ajuda]) => /* @__PURE__ */ jsxs5("div", { children: [
+              /* @__PURE__ */ jsx5("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: rotulo }),
+              /* @__PURE__ */ jsx5(
+                "input",
+                {
+                  value: cfg.rastreamento?.[chave] || "",
+                  onChange: (e) => setRastreamento(chave, e.target.value),
+                  placeholder: exemplo,
+                  className: inputCls,
+                  spellCheck: false
+                }
+              ),
+              /* @__PURE__ */ jsx5("p", { className: "text-xs text-gray-400 mt-1", children: ajuda })
+            ] }, chave)),
+            /* @__PURE__ */ jsxs5("p", { className: "text-xs text-gray-400", children: [
+              "Os eventos enviados s\xE3o ",
+              /* @__PURE__ */ jsx5("span", { className: "font-mono", children: "whatsapp_clique" }),
+              " e ",
+              /* @__PURE__ */ jsx5("span", { className: "font-mono", children: "generate_lead" }),
+              ". A pr\xE9-visualiza\xE7\xE3o do editor n\xE3o conta."
+            ] })
           ] })
         ] }),
         erro && /* @__PURE__ */ jsx5("p", { className: "text-xs text-red-600", children: erro })
@@ -2305,6 +2359,11 @@ function LandingPagesLista() {
           /* @__PURE__ */ jsx6(Eye2, { size: 13 }),
           " ",
           lp.visualizacoes
+        ] }),
+        /* @__PURE__ */ jsxs6("span", { className: "flex items-center gap-1", title: "Cliques no WhatsApp", children: [
+          /* @__PURE__ */ jsx6(MessageCircle2, { size: 13 }),
+          " ",
+          lp.cliques_whatsapp ?? 0
         ] }),
         /* @__PURE__ */ jsxs6("span", { className: "flex items-center gap-1", children: [
           /* @__PURE__ */ jsx6(Users, { size: 13 }),
@@ -3243,6 +3302,89 @@ function CampoFaq({ campo, valor, onChange }) {
 // js/landing-pages/src/LandingPageView.jsx
 import { useEffect as useEffect8, useState as useState8 } from "react";
 import { useParams as useParams2 } from "react-router-dom";
+
+// js/landing-pages/src/rastreamento.js
+var iniciado = false;
+var cfgAtual = {};
+function injetarScript(src) {
+  const s = document.createElement("script");
+  s.async = true;
+  s.src = src;
+  document.head.appendChild(s);
+}
+function iniciarRastreamento(rastreamento) {
+  const r = rastreamento || {};
+  cfgAtual = r;
+  if (iniciado || typeof window === "undefined") return;
+  iniciado = true;
+  if (r.ga4_id || r.ads_id) {
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = window.gtag || function gtag() {
+      window.dataLayer.push(arguments);
+    };
+    injetarScript(`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(r.ga4_id || r.ads_id)}`);
+    window.gtag("js", /* @__PURE__ */ new Date());
+    if (r.ga4_id) window.gtag("config", r.ga4_id);
+    if (r.ads_id) window.gtag("config", r.ads_id);
+  }
+  if (r.hotjar_id) {
+    window.hj = window.hj || function hj() {
+      (window.hj.q = window.hj.q || []).push(arguments);
+    };
+    window._hjSettings = { hjid: Number(r.hotjar_id), hjsv: 6 };
+    injetarScript(`https://static.hotjar.com/c/hotjar-${encodeURIComponent(r.hotjar_id)}.js?sv=6`);
+  }
+  if (r.clarity_id) {
+    window.clarity = window.clarity || function clarity() {
+      (window.clarity.q = window.clarity.q || []).push(arguments);
+    };
+    injetarScript(`https://www.clarity.ms/tag/${encodeURIComponent(r.clarity_id)}`);
+  }
+}
+function registrarEvento(nome, params = {}, rotuloAds) {
+  if (typeof window === "undefined") return;
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({ event: nome, ...params });
+  if (!window.gtag) return;
+  window.gtag("event", nome, params);
+  const rotulo = cfgAtual[rotuloAds];
+  if (rotulo && cfgAtual.ads_id) {
+    window.gtag("event", "conversion", { send_to: `${cfgAtual.ads_id}/${rotulo}` });
+  }
+}
+var PARAMS_ORIGEM = ["gclid", "gbraid", "wbraid", "fbclid", "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content"];
+var CHAVE_SESSAO = "lp_origem";
+function daUrl() {
+  const url = new URLSearchParams(window.location.search);
+  const r = {};
+  PARAMS_ORIGEM.forEach((p) => {
+    const v = url.get(p);
+    if (v) r[p] = v.slice(0, 255);
+  });
+  return r;
+}
+function guardarOrigem() {
+  const r = daUrl();
+  if (!Object.keys(r).length) return;
+  try {
+    sessionStorage.setItem(CHAVE_SESSAO, JSON.stringify(r));
+  } catch {
+  }
+}
+function origemDoVisitante() {
+  let sessao = {};
+  try {
+    sessao = JSON.parse(sessionStorage.getItem(CHAVE_SESSAO) || "{}");
+  } catch {
+  }
+  const r = daUrl();
+  return Object.keys(r).length ? r : sessao;
+}
+function ehLinkWhatsApp(href) {
+  return /^(https?:\/\/(wa\.me|api\.whatsapp\.com|web\.whatsapp\.com)\/|whatsapp:)/i.test(href || "");
+}
+
+// js/landing-pages/src/LandingPageView.jsx
 import { jsx as jsx8 } from "react/jsx-runtime";
 function useFavicon(url) {
   useEffect8(() => {
@@ -3265,6 +3407,9 @@ function LandingPageView({ inicial = false }) {
   const [erro, setErro] = useState8(false);
   const [carregando2, setCarregando] = useState8(true);
   useEffect8(() => {
+    guardarOrigem();
+  }, []);
+  useEffect8(() => {
     const busca = inicial ? buscarPaginaInicialPublica() : buscarLandingPagePublica(slugDaRota);
     busca.then((data) => {
       setLp(data);
@@ -3279,13 +3424,20 @@ function LandingPageView({ inicial = false }) {
         meta.content = data.meta_descricao;
       }
       registrarVisualizacao(data.slug || slugDaRota);
+      iniciarRastreamento(data.configuracoes?.rastreamento);
     }).catch(() => setErro(true)).finally(() => setCarregando(false));
   }, [inicial, slugDaRota]);
   const slug = lp?.slug || slugDaRota;
   useFavicon(lp?.configuracoes?.marca?.favicon_url);
   async function handleLead(payload) {
-    const fbclid = new URLSearchParams(window.location.search).get("fbclid") || void 0;
-    await enviarLeadLandingPage(slug, { ...payload, fbclid });
+    await enviarLeadLandingPage(slug, { ...payload, ...origemDoVisitante() });
+    registrarEvento("generate_lead", { landing_page: slug }, "ads_rotulo_lead");
+  }
+  function handleClique(e) {
+    const a = e.target.closest?.("a[href]");
+    if (!a || !ehLinkWhatsApp(a.getAttribute("href"))) return;
+    registrarCliqueWhatsApp(slug);
+    registrarEvento("whatsapp_clique", { landing_page: slug }, "ads_rotulo_whatsapp");
   }
   if (carregando2) {
     return /* @__PURE__ */ jsx8("div", { className: "min-h-screen flex items-center justify-center text-sm text-gray-400", children: "Carregando..." });
@@ -3297,7 +3449,7 @@ function LandingPageView({ inicial = false }) {
   if (!template) {
     return /* @__PURE__ */ jsx8("div", { className: "min-h-screen flex items-center justify-center text-center px-6", children: /* @__PURE__ */ jsx8("p", { className: "text-sm text-gray-500", children: "Essa p\xE1gina n\xE3o est\xE1 mais dispon\xEDvel." }) });
   }
-  return /* @__PURE__ */ jsx8("div", { className: "min-h-screen bg-white", children: /* @__PURE__ */ jsx8(
+  return /* @__PURE__ */ jsx8("div", { className: "min-h-screen bg-white", onClickCapture: handleClique, children: /* @__PURE__ */ jsx8(
     MolduraLandingPage,
     {
       configuracoes: lp.configuracoes,

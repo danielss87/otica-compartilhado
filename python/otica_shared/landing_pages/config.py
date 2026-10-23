@@ -35,6 +35,13 @@ PADRAO = {
     # do domínio abre `pagina_inicial` (slug; vazio = "página não disponível"). O DNS e o
     # cadastro do domínio na hospedagem são feitos fora daqui (ver CLAUDE.md de cada app).
     "dominio": {"endereco": "", "pagina_inicial": ""},
+    # Rastreamento (v0.20.0): só IDs, validados por formato (`normalizar_rastreamento`) — nunca
+    # script livre. Vazio = não carrega. A página pública monta os scripts (rastreamento.js).
+    # ads_rotulo_*: rótulo da ação de conversão do Google Ads ("AW-123/rotulo" → "rotulo").
+    "rastreamento": {
+        "ga4_id": "", "ads_id": "", "ads_rotulo_lead": "", "ads_rotulo_whatsapp": "",
+        "hotjar_id": "", "clarity_id": "",
+    },
 }
 
 
@@ -79,6 +86,41 @@ def dominio_valido(d: str) -> bool:
     return bool(re.fullmatch(r"(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}", d))
 
 
+# Formato aceito de cada ID de rastreamento (o valor vai parar num <script> da página pública).
+FORMATOS_RASTREAMENTO = {
+    "ga4_id": (r"G-[A-Z0-9]{4,20}", "ID do Google Analytics inválido (ex: G-AB12CD34EF)."),
+    "ads_id": (r"AW-\d{6,15}", "ID do Google Ads inválido (ex: AW-123456789)."),
+    "ads_rotulo_lead": (r"[A-Za-z0-9_-]{4,64}", "Rótulo de conversão (lead) inválido."),
+    "ads_rotulo_whatsapp": (r"[A-Za-z0-9_-]{4,64}", "Rótulo de conversão (WhatsApp) inválido."),
+    "hotjar_id": (r"\d{5,12}", "ID do Hotjar inválido (só números, ex: 3456789)."),
+    "clarity_id": (r"[a-z0-9]{6,20}", "ID do Microsoft Clarity inválido (ex: abcd1234ef)."),
+}
+
+
+def normalizar_rastreamento(r: dict) -> dict:
+    """Limpa e valida os IDs; levanta ValueError com a mensagem para o usuário.
+
+    Aceita o que se costuma colar: "AW-123/rotulo" no campo de rótulo vira "rotulo" (e
+    preenche o ID do Ads se estiver vazio), maiúsculas no GA4/Ads, minúsculas no Clarity.
+    """
+    r = {k: str(r.get(k) or "").strip() for k in PADRAO["rastreamento"]}
+    for chave in ("ads_rotulo_lead", "ads_rotulo_whatsapp"):
+        if "/" in r[chave]:
+            prefixo, r[chave] = r[chave].split("/", 1)
+            if not r["ads_id"]:
+                r["ads_id"] = prefixo.strip()
+            r[chave] = r[chave].strip()
+    r["ga4_id"] = r["ga4_id"].upper()
+    r["ads_id"] = r["ads_id"].upper()
+    r["clarity_id"] = r["clarity_id"].lower()
+    for chave, (padrao, msg) in FORMATOS_RASTREAMENTO.items():
+        if r[chave] and not re.fullmatch(padrao, r[chave]):
+            raise ValueError(msg)
+    if (r["ads_rotulo_lead"] or r["ads_rotulo_whatsapp"]) and not r["ads_id"]:
+        raise ValueError("Para usar os rótulos de conversão, preencha o ID do Google Ads (AW-...).")
+    return r
+
+
 def link_whatsapp(numero: str, mensagem: str) -> str:
     # quote (espaço → %20): "+" o WhatsApp pode mostrar literal. Igual a `linkWhatsApp` no Moldura.jsx.
     return f"https://wa.me/{numero}" + (f"?text={quote(mensagem, safe='')}" if mensagem else "")
@@ -116,4 +158,6 @@ def publica(cfg: dict) -> dict:
             "fixo": bool(m["fixo"]) if menu_ativo else False,
             "cta_tilt": bool(m["cta_tilt"]) if menu_ativo else False,
         },
+        # IDs públicos por natureza (aparecem no HTML de qualquer site que usa essas ferramentas).
+        "rastreamento": dict(cfg["rastreamento"]),
     }

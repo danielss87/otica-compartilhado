@@ -15,7 +15,7 @@ import unicodedata
 from datetime import datetime, timezone
 from typing import Callable, Optional, Tuple
 
-from fastapi import APIRouter, Depends, File, HTTPException, Request, UploadFile
+from fastapi import APIRouter, Depends, File, HTTPException, Request, Response, UploadFile
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
@@ -49,6 +49,10 @@ STATUS_VALIDOS = {"rascunho", "publicada", "pausada"}
 UploadImagem = Callable[[bytes, str, Request], str]
 # (db, usuario_id) -> (nome, foto_url)
 InfoCriador = Callable[[Session, int], Tuple[Optional[str], Optional[str]]]
+
+
+# Origem do lead gravada junto (v0.20.0): anúncio do Google (gclid/gbraid/wbraid) e UTMs.
+CAMPOS_ORIGEM_LEAD = ("gclid", "gbraid", "wbraid", "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content")
 
 
 def _slug(nome: str) -> str:
@@ -149,6 +153,7 @@ def criar_routers(
             "criado_por_nome": criado_por_nome,
             "criado_por_foto_url": criado_por_foto_url,
             "total_leads": _contar_leads(db, lp.id),
+            "cliques_whatsapp": lp.cliques_whatsapp or 0,
             "criado_em": lp.criado_em,
             "atualizado_em": lp.atualizado_em,
             "publicada_em": lp.publicada_em,
@@ -204,6 +209,11 @@ def criar_routers(
             d["pagina_inicial"] = (d.get("pagina_inicial") or "").strip()
             if d["pagina_inicial"] and not db.query(LandingPage).filter(LandingPage.slug == d["pagina_inicial"]).first():
                 raise HTTPException(422, "A página inicial escolhida não existe mais.")
+        if "rastreamento" in novo:
+            try:
+                novo["rastreamento"] = cfg_lp.normalizar_rastreamento(novo["rastreamento"])
+            except ValueError as e:
+                raise HTTPException(422, str(e))
         for secao, valores in novo.items():
             atual[secao].update(valores)
         if "menu" in novo:
@@ -408,6 +418,16 @@ def criar_routers(
             db.commit()
         return {"ok": True}
 
+    # Clique em link de WhatsApp (v0.20.0). Chamado por sendBeacon sem corpo (sem preflight de
+    # CORS); nunca devolve erro ao visitante.
+    @router_publico.post("/{slug}/clique-whatsapp", status_code=204)
+    def registrar_clique_whatsapp(slug: str, db: Session = Depends(get_db)):
+        lp = db.query(LandingPage).filter(LandingPage.slug == slug, LandingPage.status == "publicada").first()
+        if lp:
+            lp.cliques_whatsapp = (lp.cliques_whatsapp or 0) + 1
+            db.commit()
+        return Response(status_code=204)
+
     @router_publico.post("/{slug}/lead", status_code=201)
     def criar_lead(slug: str, payload: LandingPageLeadCreate, db: Session = Depends(get_db)):
         lp = db.query(LandingPage).filter(LandingPage.slug == slug, LandingPage.status == "publicada").first()
@@ -421,6 +441,7 @@ def criar_routers(
             telefone=payload.telefone.strip(),
             mensagem=payload.mensagem,
             fbclid=(payload.fbclid or "").strip() or None,
+            **{c: (getattr(payload, c) or "").strip()[:255] or None for c in CAMPOS_ORIGEM_LEAD},
         )
         db.add(lead)
         db.commit()

@@ -133,6 +133,18 @@ export async function registrarVisualizacao(slug) {
   }
 }
 
+// Clique em link de WhatsApp (v0.20.0). sendBeacon: sai mesmo com a página indo para o WhatsApp,
+// e sem corpo não dispara preflight de CORS.
+export function registrarCliqueWhatsApp(slug) {
+  const url = `${basePublica()}/${slug}/clique-whatsapp`
+  try {
+    if (navigator.sendBeacon && navigator.sendBeacon(url)) return
+    fetch(url, { method: 'POST', keepalive: true }).catch(() => {})
+  } catch {
+    // best-effort
+  }
+}
+
 // Lead não pode se perder: repete enquanto o servidor estiver fora do ar (o botão fica em "enviando").
 export async function enviarLeadLandingPage(slug, payload) {
   return comRetentativa(async () => handlePublico(await fetch(`${basePublica()}/${slug}/lead`, {

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { LANDING_PAGE_TEMPLATES, coresDaPagina, secaoContatoDaPagina } from './templates'
-import { buscarLandingPagePublica, buscarPaginaInicialPublica, registrarVisualizacao, enviarLeadLandingPage } from './api'
+import { buscarLandingPagePublica, buscarPaginaInicialPublica, registrarVisualizacao, enviarLeadLandingPage, registrarCliqueWhatsApp } from './api'
+import { iniciarRastreamento, registrarEvento, guardarOrigem, origemDoVisitante, ehLinkWhatsApp } from './rastreamento'
 import { getConfig } from './config'
 import MolduraLandingPage from './Moldura'
 
@@ -31,6 +32,10 @@ export default function LandingPageView({ inicial = false }) {
   const [carregando, setCarregando] = useState(true)
 
   useEffect(() => {
+    guardarOrigem()
+  }, [])
+
+  useEffect(() => {
     const busca = inicial ? buscarPaginaInicialPublica() : buscarLandingPagePublica(slugDaRota)
     busca
       .then(data => {
@@ -46,6 +51,7 @@ export default function LandingPageView({ inicial = false }) {
           meta.content = data.meta_descricao
         }
         registrarVisualizacao(data.slug || slugDaRota)
+        iniciarRastreamento(data.configuracoes?.rastreamento)
       })
       .catch(() => setErro(true))
       .finally(() => setCarregando(false))
@@ -56,8 +62,17 @@ export default function LandingPageView({ inicial = false }) {
   useFavicon(lp?.configuracoes?.marca?.favicon_url)
 
   async function handleLead(payload) {
-    const fbclid = new URLSearchParams(window.location.search).get('fbclid') || undefined
-    await enviarLeadLandingPage(slug, { ...payload, fbclid })
+    await enviarLeadLandingPage(slug, { ...payload, ...origemDoVisitante() })
+    registrarEvento('generate_lead', { landing_page: slug }, 'ads_rotulo_lead')
+  }
+
+  // Clique em qualquer link de WhatsApp da página (botão flutuante, menu, botões dos templates).
+  // Fase de captura: conta antes de o navegador sair para o WhatsApp.
+  function handleClique(e) {
+    const a = e.target.closest?.('a[href]')
+    if (!a || !ehLinkWhatsApp(a.getAttribute('href'))) return
+    registrarCliqueWhatsApp(slug)
+    registrarEvento('whatsapp_clique', { landing_page: slug }, 'ads_rotulo_whatsapp')
   }
 
   if (carregando) {
@@ -82,7 +97,7 @@ export default function LandingPageView({ inicial = false }) {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white" onClickCapture={handleClique}>
       <MolduraLandingPage
         configuracoes={lp.configuracoes}
         secaoContato={secaoContatoDaPagina(lp.template, lp.conteudo)}

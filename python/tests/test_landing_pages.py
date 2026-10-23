@@ -213,6 +213,7 @@ def test_configuracoes_padrao_desligadas(client):
         "whatsapp": {"ativo": False, "numero": "", "mensagem": "", "notificacao": False},
         "marca": {"logo_url": None, "favicon_url": None},
         "menu": {"ativo": False, "cta_texto": "", "cta_destino": "whatsapp", "cta_url": "", "cta_cor": "padrao", "fixo": False, "cta_tilt": False},
+        "rastreamento": {"ga4_id": "", "ads_id": "", "ads_rotulo_lead": "", "ads_rotulo_whatsapp": "", "hotjar_id": "", "clarity_id": ""},
     }
     assert cfg["whatsapp"]["notificacao"] is True and cfg["menu"]["ativo"] is False
 
@@ -444,3 +445,59 @@ def test_dominio_proprio_pagina_inicial(client):
     assert client.get("/api/publico/landing-pages/_inicio").json()["slug"] == "nova"
     # A config pública não expõe o domínio
     assert "dominio" not in client.get("/api/publico/landing-pages/nova").json()["configuracoes"]
+
+
+# ─── Rastreamento (v0.20.0) ─────────────────────────────────────────────────
+
+def test_rastreamento_normaliza_e_vai_para_pagina_publica(client):
+    r = client.put("/api/landing-pages/configuracoes", headers=AUTH, json={"rastreamento": {
+        "ga4_id": " g-ab12cd34 ", "ads_id": "", "ads_rotulo_lead": "AW-123456789/AbC_lead-1",
+        "ads_rotulo_whatsapp": "wppClique", "hotjar_id": "3456789", "clarity_id": "ABCD1234EF",
+    }})
+    assert r.status_code == 200, r.text
+    rt = r.json()["rastreamento"]
+    assert rt == {"ga4_id": "G-AB12CD34", "ads_id": "AW-123456789", "ads_rotulo_lead": "AbC_lead-1",
+                  "ads_rotulo_whatsapp": "wppClique", "hotjar_id": "3456789", "clarity_id": "abcd1234ef"}
+    lp = _publicar(client)
+    pub = client.get(f"/api/publico/landing-pages/{lp['slug']}").json()["configuracoes"]
+    assert pub["rastreamento"] == rt
+
+
+@pytest.mark.parametrize("campo,valor", [
+    ("ga4_id", "UA-12345-1"),
+    ("ads_id", "AW-abc"),
+    ("hotjar_id", "12a45"),
+    ("clarity_id", "x');alert(1)//"),
+    ("ga4_id", "G-ABC</script>"),
+])
+def test_rastreamento_recusa_formato_invalido(client, campo, valor):
+    r = client.put("/api/landing-pages/configuracoes", headers=AUTH, json={"rastreamento": {campo: valor}})
+    assert r.status_code == 422
+
+
+def test_rotulo_sem_id_do_ads_recusa(client):
+    r = client.put("/api/landing-pages/configuracoes", headers=AUTH, json={"rastreamento": {"ads_rotulo_lead": "abcd1234"}})
+    assert r.status_code == 422
+
+
+def test_clique_whatsapp_conta_so_em_publicada(client):
+    lp = _criar(client)
+    assert client.post(f"/api/publico/landing-pages/{lp['slug']}/clique-whatsapp").status_code == 204
+    assert client.get(f"/api/landing-pages/{lp['id']}", headers=AUTH).json()["cliques_whatsapp"] == 0
+    client.post(f"/api/landing-pages/{lp['id']}/publicar", headers=AUTH)
+    client.post(f"/api/publico/landing-pages/{lp['slug']}/clique-whatsapp")
+    client.post(f"/api/publico/landing-pages/{lp['slug']}/clique-whatsapp")
+    assert client.get(f"/api/landing-pages/{lp['id']}", headers=AUTH).json()["cliques_whatsapp"] == 2
+    assert client.post("/api/publico/landing-pages/nao-existe/clique-whatsapp").status_code == 204
+
+
+def test_lead_grava_gclid_e_utm(client):
+    lp = _publicar(client)
+    r = client.post(f"/api/publico/landing-pages/{lp['slug']}/lead", json={
+        "nome": "Ana", "telefone": "11999998888", "gclid": " Cj0KCQ ", "utm_source": "google",
+        "utm_medium": "cpc", "utm_campaign": "123", "utm_term": "oculos de grau", "utm_content": "x" * 400,
+    })
+    assert r.status_code == 201
+    lead = client.get(f"/api/landing-pages/{lp['id']}/leads", headers=AUTH).json()[0]
+    assert lead["gclid"] == "Cj0KCQ" and lead["utm_campaign"] == "123" and lead["utm_term"] == "oculos de grau"
+    assert lead["gbraid"] is None and len(lead["utm_content"]) == 255

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Rocket, Plus, X, Copy, CopyPlus, Trash2, Eye, Users, ExternalLink, Play, Pause, Check, Settings } from 'lucide-react'
+import { Rocket, Plus, X, Copy, CopyPlus, Trash2, Eye, Users, ExternalLink, Play, Pause, Check, Settings, MessageCircle } from 'lucide-react'
 import { TEMPLATE_LIST, TemplateCardPreview } from './templates'
 import { getConfig } from './config'
 import { useUrlPublica, semProtocolo } from './dominio'
@@ -137,6 +137,7 @@ export default function LandingPagesLista() {
 
                 <div className="flex items-center gap-4 text-xs text-gray-500">
                   <span className="flex items-center gap-1"><Eye size={13} /> {lp.visualizacoes}</span>
+                  <span className="flex items-center gap-1" title="Cliques no WhatsApp"><MessageCircle size={13} /> {lp.cliques_whatsapp ?? 0}</span>
                   <span className="flex items-center gap-1"><Users size={13} /> {lp.total_leads}</span>
                   {lp.criado_por_nome && (
                     <span className="flex items-center gap-1.5 ml-auto">

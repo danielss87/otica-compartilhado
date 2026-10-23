@@ -1,12 +1,24 @@
 // Configurações que valem para TODAS as landing pages (botão "Configurações"
 // da listagem). Formato espelhado de python/.../landing_pages/config.py.
 import { useEffect, useRef, useState } from 'react'
-import { X, Upload, Trash2, Globe } from 'lucide-react'
+import { X, Upload, Trash2, Globe, Activity } from 'lucide-react'
 import { obterConfiguracoes, salvarConfiguracoes, uploadImagemLandingPage, testarAvaliacoesGoogle, listarLandingPages } from './api'
 import { getConfig } from './config'
 import { definirDominioProprio } from './dominio'
 import { IconeWhatsApp } from './Moldura'
 import { LogoGoogle, formatarNota } from './avaliacoesGoogle'
+
+const RASTREAMENTO_VAZIO = { ga4_id: '', ads_id: '', ads_rotulo_lead: '', ads_rotulo_whatsapp: '', hotjar_id: '', clarity_id: '' }
+
+// Campos de Configurações → Rastreamento: [chave, rótulo, exemplo, onde achar]
+const CAMPOS_RASTREAMENTO = [
+  ['ga4_id', 'Google Analytics 4 (ID de medição)', 'G-AB12CD34EF', 'Analytics → Administrador → Fluxos de dados → o fluxo do site.'],
+  ['ads_id', 'Google Ads (ID da tag)', 'AW-123456789', 'Google Ads → Metas → Conversões → a ação → Configurar tag.'],
+  ['ads_rotulo_lead', 'Conversão "lead enviado" (rótulo)', 'AbCdEf123', 'O texto depois da barra em send_to: AW-123456789/AbCdEf123. Pode colar o send_to inteiro.'],
+  ['ads_rotulo_whatsapp', 'Conversão "clique no WhatsApp" (rótulo)', 'XyZ789', 'Uma segunda ação de conversão no Google Ads, só para o clique no WhatsApp.'],
+  ['hotjar_id', 'Hotjar (Site ID)', '3456789', 'Hotjar → Sites & Organizations. Grava sessões e mapas de calor.'],
+  ['clarity_id', 'Microsoft Clarity (Project ID)', 'abcd1234ef', 'Clarity → Settings → Overview. Gratuito; grava sessões e mapas de calor.'],
+]
 
 const inputCls = 'w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400'
 
@@ -73,6 +85,11 @@ export default function ModalConfiguracoes({ onClose }) {
     setSalvo(false)
   }
 
+  function setRastreamento(campo, valor) {
+    setCfg(c => ({ ...c, rastreamento: { ...RASTREAMENTO_VAZIO, ...c.rastreamento, [campo]: valor } }))
+    setSalvo(false)
+  }
+
   function setGoogle(campo, valor) {
     setCfg(c => ({ ...c, google: { busca: '', nota_minima: 4, ...c.google, [campo]: valor } }))
     setSalvo(false)
@@ -132,6 +149,7 @@ export default function ModalConfiguracoes({ onClose }) {
         whatsapp: cfg.whatsapp, marca: cfg.marca, menu: cfg.menu,
         ...(cfg.google ? { google: cfg.google } : {}),
         ...(cfg.dominio ? { dominio: cfg.dominio } : {}),
+        ...(cfg.rastreamento ? { rastreamento: cfg.rastreamento } : {}),
       })
       setCfg(atualizado)
       definirDominioProprio(atualizado.dominio?.endereco)
@@ -487,6 +505,35 @@ export default function ModalConfiguracoes({ onClose }) {
                     <p className="text-xs text-gray-600 whitespace-pre-line">{getConfig().instrucoesDominio}</p>
                   </div>
                 )}
+              </section>
+              <section className="space-y-3 pt-5 border-t border-gray-100">
+                <div className="flex items-center gap-2.5">
+                  <span className="shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 text-amber-700"><Activity size={16} /></span>
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900">Rastreamento</p>
+                    <p className="text-xs text-gray-500">
+                      Mede visitas, cliques no WhatsApp e leads no Google Analytics e no Google Ads, e grava as sessões
+                      (Hotjar ou Clarity). Preencha só o ID de cada ferramenta; em branco, não carrega.
+                    </p>
+                  </div>
+                </div>
+                {CAMPOS_RASTREAMENTO.map(([chave, rotulo, exemplo, ajuda]) => (
+                  <div key={chave}>
+                    <label className="text-xs font-medium text-gray-500 mb-1 block">{rotulo}</label>
+                    <input
+                      value={cfg.rastreamento?.[chave] || ''}
+                      onChange={e => setRastreamento(chave, e.target.value)}
+                      placeholder={exemplo}
+                      className={inputCls}
+                      spellCheck={false}
+                    />
+                    <p className="text-xs text-gray-400 mt-1">{ajuda}</p>
+                  </div>
+                ))}
+                <p className="text-xs text-gray-400">
+                  Os eventos enviados são <span className="font-mono">whatsapp_clique</span> e <span className="font-mono">generate_lead</span>.
+                  A pré-visualização do editor não conta.
+                </p>
               </section>
             </>
           )}
