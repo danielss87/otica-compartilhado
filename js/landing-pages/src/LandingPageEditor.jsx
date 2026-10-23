@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Save, Play, Pause, Copy, Check, Upload, X, Plus, Trash2, Smartphone, Tablet, Monitor } from 'lucide-react'
 import { LANDING_PAGE_TEMPLATES, coresDaPagina, secaoContatoDaPagina } from './templates'
 import { getConfig } from './config'
+import { useUrlPublica, semProtocolo } from './dominio'
 import MolduraLandingPage from './Moldura'
 import {
   obterLandingPage, atualizarLandingPage, publicarLandingPage, pausarLandingPage,
@@ -12,7 +13,8 @@ import {
 export default function LandingPageEditor() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { rotaPainel, rotaPublica } = getConfig()
+  const { rotaPainel } = getConfig()
+  const urlDaPagina = useUrlPublica()
   const [lp, setLp] = useState(null)
   const [nome, setNome] = useState('')
   const [conteudo, setConteudo] = useState({})
@@ -69,7 +71,7 @@ export default function LandingPageEditor() {
   }
 
   function copiarLink() {
-    navigator.clipboard?.writeText(`${window.location.origin}${rotaPublica}/${lp.slug}`)
+    navigator.clipboard?.writeText(urlDaPagina(lp.slug))
     setCopiado(true)
     setTimeout(() => setCopiado(false), 1500)
   }
@@ -114,7 +116,7 @@ export default function LandingPageEditor() {
 
       <div className="flex-1 max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-0 lg:gap-6 p-4 sm:p-6">
         <div className="space-y-4">
-          <CamposPagina lp={lp} nome={nome} onNomeChange={handleNomeChange} onSalvo={setLp} rotaPublica={rotaPublica} />
+          <CamposPagina lp={lp} nome={nome} onNomeChange={handleNomeChange} onSalvo={setLp} urlDaPagina={urlDaPagina} />
 
           {template.secoes?.length > 0 && (
             <div>
@@ -232,7 +234,7 @@ function normalizarSlug(texto, final = false) {
   return s
 }
 
-function CamposPagina({ lp, nome, onNomeChange, onSalvo, rotaPublica }) {
+function CamposPagina({ lp, nome, onNomeChange, onSalvo, urlDaPagina }) {
   const [slug, setSlug] = useState(lp.slug)
   const [salvandoSlug, setSalvandoSlug] = useState(false)
   const [erroSlug, setErroSlug] = useState('')
@@ -269,7 +271,7 @@ function CamposPagina({ lp, nome, onNomeChange, onSalvo, rotaPublica }) {
         <label className="text-xs font-medium text-gray-500 mb-1 block">Endereço da página</label>
         <div className="flex flex-col sm:flex-row gap-2">
           <div className="flex flex-1 min-w-0 items-center rounded-lg border border-gray-200 focus-within:ring-2 focus-within:ring-violet-400">
-            <span className="pl-3 text-sm text-gray-400 whitespace-nowrap">{rotaPublica}/</span>
+            <span className="pl-3 text-sm text-gray-400 whitespace-nowrap truncate max-w-[60%]">{semProtocolo(urlDaPagina(''))}</span>
             <input
               value={slug}
               onChange={e => { setSlug(normalizarSlug(e.target.value)); setErroSlug('') }}
@@ -294,7 +296,7 @@ function CamposPagina({ lp, nome, onNomeChange, onSalvo, rotaPublica }) {
           </p>
         )}
         <p className="text-xs text-gray-400 mt-1 break-all">
-          {window.location.origin}{rotaPublica}/{slugFinal || lp.slug}
+          {urlDaPagina(slugFinal || lp.slug)}
         </p>
       </div>
       <MetaCampos lp={lp} nome={nome} onSalvo={onSalvo} />

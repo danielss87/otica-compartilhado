@@ -21,7 +21,7 @@ package.json                     # npm: otica-compartilhado (raiz do repo)
 
 ## Features
 
-### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.18.0, out/2026
+### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.19.0, out/2026
 Origem: 4 Olhos (ago/2026). Páginas de captura por template pronto com edição guiada (4 templates:
 `simples`, `promocao`, `agendar_consulta`, `greats`), página pública `/lp/:slug`, contagem de
 visualizações e captura de lead (nome + telefone + fbclid). Quinto template, `leader` (v0.10.0), em
@@ -66,6 +66,12 @@ preferir este modelo. Os templates antigos usam `sm:` (viewport) e não responde
   + `useAvaliacoesGoogle(ligado)` no `Render` + visual próprio (peças `LogoGoogle`, `FotoAutor`,
   `formatarNota`). Sem avaliações, o hook devolve `null` e o template mostra o conteúdo manual. Hoje: Leader.
   Ao mostrar avaliações do Google, manter o nome do autor e a marca do Google (exigência do Google).
+- **Domínio próprio** (v0.19.0, `config.dominio` + `dominio.js`): `endereco` (ex: `lp.loja.com.br`) e
+  `pagina_inicial` (slug na raiz). O pacote só guarda a config, troca os links do painel
+  (`useUrlPublica`) e serve a raiz em `GET /publico/landing-pages/_inicio` (`<LandingPageView inicial />`).
+  DNS, cadastro do domínio na hospedagem, roteamento por hostname e proxy da API ficam em **cada app**
+  (passo a passo para o usuário via `configurarLandingPages({ instrucoesDominio })`). A config pública não
+  expõe o domínio. Renomear o slug da página inicial atualiza a config junto.
 - Upload de logo/imagem: o Ariel recusa SVG (risco de script num SVG servido pelo próprio backend).
   Não sugerir SVG na interface.
 
@@ -109,6 +115,18 @@ para todas as opções.
 8. Repo **público**: nunca commitar segredo, credencial, URL interna, dado de cliente ou telefone real.
 
 ## Changelog
+
+### v0.19.0 (23/10/2026)
+- **Domínio próprio** (Configurações → Domínio próprio): endereço do subdomínio (normalizado: sem https://,
+  caminho ou porta; validado) e a **página na raiz** do domínio. Com endereço, a lista e o editor mostram e
+  copiam `https://<endereco>/<slug>`. Botão "Testar" confere se o domínio já responde.
+- Rota pública nova `GET /publico/landing-pages/_inicio` (página inicial; 404 sem página ou não publicada).
+  `LandingPagePublicaOut` ganhou `slug`. `LandingPageView` aceita `inicial`.
+- `configurarLandingPages({ instrucoesDominio })`: texto do passo a passo de DNS, mostrado no modal.
+- Exporta `useUrlPublica` e `urlPublica`.
+- **Apps precisam**, para o domínio funcionar: apontar o DNS para o front, rotear por hostname
+  (`/` → `<LandingPageView inicial />`, `/:slug` → `<LandingPageView />`) e fazer a API pública chegar
+  pelo próprio domínio (proxy) ou liberar CORS. Sem isso, nada muda: tudo vazio por padrão.
 
 ### v0.18.0 (22/10/2026)
 - **Página pública não "sai do ar" na troca de versão do backend.** Antes, durante o deploy (~20–60 s de 502 no

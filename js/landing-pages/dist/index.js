@@ -21,7 +21,10 @@ var padrao = {
   // Avatar de quem criou a página ({ nome, fotoUrl, size }). Sem isso, iniciais.
   Avatar: null,
   // Título da aba na página pública quando a LP não tem meta_titulo nem nome.
-  tituloPadrao: ""
+  tituloPadrao: "",
+  // Domínio próprio: passo a passo de DNS/hospedagem mostrado em Configurações → Domínio
+  // próprio (texto; quebras de linha são respeitadas). Depende de onde cada app hospeda o front.
+  instrucoesDominio: ""
 };
 var config = { ...padrao };
 function configurarLandingPages(opcoes = {}) {
@@ -242,6 +245,7 @@ __export(api_exports, {
   atualizarLandingPage: () => atualizarLandingPage,
   buscarAvaliacoesGoogle: () => buscarAvaliacoesGoogle,
   buscarLandingPagePublica: () => buscarLandingPagePublica,
+  buscarPaginaInicialPublica: () => buscarPaginaInicialPublica,
   criarLandingPage: () => criarLandingPage,
   deletarLandingPage: () => deletarLandingPage,
   duplicarLandingPage: () => duplicarLandingPage,
@@ -351,6 +355,9 @@ async function comRetentativa(tentar, limiteMs) {
 }
 async function buscarLandingPagePublica(slug) {
   return comRetentativa(async () => handlePublico(await fetch(`${basePublica()}/${slug}`)), 9e4);
+}
+async function buscarPaginaInicialPublica() {
+  return buscarLandingPagePublica("_inicio");
 }
 async function registrarVisualizacao(slug) {
   try {
@@ -1672,13 +1679,46 @@ function GreatsRender({ conteudo }) {
 }
 
 // js/landing-pages/src/LandingPagesLista.jsx
-import { useEffect as useEffect5, useState as useState5 } from "react";
+import { useEffect as useEffect6, useState as useState6 } from "react";
 import { useNavigate } from "react-router-dom";
 import { Rocket, Plus as Plus2, X as X2, Copy, CopyPlus, Trash2 as Trash22, Eye as Eye2, Users, ExternalLink, Play, Pause, Check, Settings } from "lucide-react";
 
+// js/landing-pages/src/dominio.js
+import { useEffect as useEffect4, useState as useState4 } from "react";
+var dominio = null;
+var carregando = null;
+var ouvintes = /* @__PURE__ */ new Set();
+function definirDominioProprio(endereco) {
+  dominio = endereco || "";
+  ouvintes.forEach((f) => f(dominio));
+}
+function carregar2() {
+  if (!carregando) {
+    carregando = obterConfiguracoes().then((c) => definirDominioProprio(c?.dominio?.endereco)).catch(() => {
+      carregando = null;
+    });
+  }
+}
+function urlPublica(slug, endereco) {
+  return endereco ? `https://${endereco}/${slug}` : `${window.location.origin}${getConfig().rotaPublica}/${slug}`;
+}
+function useUrlPublica() {
+  const [endereco, setEndereco] = useState4(dominio);
+  useEffect4(() => {
+    ouvintes.add(setEndereco);
+    if (dominio === null) carregar2();
+    else setEndereco(dominio);
+    return () => {
+      ouvintes.delete(setEndereco);
+    };
+  }, []);
+  return (slug) => urlPublica(slug, endereco);
+}
+var semProtocolo = (url) => url.replace(/^https?:\/\//, "");
+
 // js/landing-pages/src/ModalConfiguracoes.jsx
-import { useEffect as useEffect4, useRef as useRef3, useState as useState4 } from "react";
-import { X, Upload, Trash2 } from "lucide-react";
+import { useEffect as useEffect5, useRef as useRef3, useState as useState5 } from "react";
+import { X, Upload, Trash2, Globe } from "lucide-react";
 import { Fragment as Fragment2, jsx as jsx5, jsxs as jsxs5 } from "react/jsx-runtime";
 var inputCls = "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400";
 function Interruptor({ ligado, onChange, label }) {
@@ -1696,19 +1736,38 @@ function Interruptor({ ligado, onChange, label }) {
   );
 }
 function ModalConfiguracoes({ onClose }) {
-  const [cfg, setCfg] = useState4(null);
-  const [erroCarregar, setErroCarregar] = useState4("");
-  const [salvando, setSalvando] = useState4(false);
-  const [enviandoLogo, setEnviandoLogo] = useState4(false);
-  const [enviandoFavicon, setEnviandoFavicon] = useState4(false);
-  const [erro, setErro] = useState4("");
-  const [salvo, setSalvo] = useState4(false);
+  const [cfg, setCfg] = useState5(null);
+  const [erroCarregar, setErroCarregar] = useState5("");
+  const [salvando, setSalvando] = useState5(false);
+  const [enviandoLogo, setEnviandoLogo] = useState5(false);
+  const [enviandoFavicon, setEnviandoFavicon] = useState5(false);
+  const [erro, setErro] = useState5("");
+  const [salvo, setSalvo] = useState5(false);
   const inputLogo = useRef3(null);
   const inputFavicon = useRef3(null);
-  const [testeGoogle, setTesteGoogle] = useState4(null);
-  useEffect4(() => {
+  const [testeGoogle, setTesteGoogle] = useState5(null);
+  const [paginas, setPaginas] = useState5([]);
+  const [testeDominio, setTesteDominio] = useState5(null);
+  useEffect5(() => {
     obterConfiguracoes().then(setCfg).catch((e) => setErroCarregar(e.message));
+    listarLandingPages().then(setPaginas).catch(() => {
+    });
   }, []);
+  function setDominio(campo, valor) {
+    setCfg((c) => ({ ...c, dominio: { endereco: "", pagina_inicial: "", ...c.dominio, [campo]: valor } }));
+    setSalvo(false);
+    if (campo === "endereco") setTesteDominio(null);
+  }
+  async function handleTestarDominio() {
+    const endereco = (cfg.dominio?.endereco || "").trim().replace(/^https?:\/\//, "").split("/")[0];
+    setTesteDominio({ carregando: true });
+    try {
+      await fetch(`https://${endereco}/`, { mode: "no-cors", cache: "no-store" });
+      setTesteDominio({ ok: true });
+    } catch {
+      setTesteDominio({ erro: true });
+    }
+  }
   function setWhatsapp(campo, valor) {
     setCfg((c) => ({ ...c, whatsapp: { ...c.whatsapp, [campo]: valor } }));
     setSalvo(false);
@@ -1767,8 +1826,15 @@ function ModalConfiguracoes({ onClose }) {
     setSalvando(true);
     setErro("");
     try {
-      const atualizado = await salvarConfiguracoes({ whatsapp: cfg.whatsapp, marca: cfg.marca, menu: cfg.menu, ...cfg.google ? { google: cfg.google } : {} });
+      const atualizado = await salvarConfiguracoes({
+        whatsapp: cfg.whatsapp,
+        marca: cfg.marca,
+        menu: cfg.menu,
+        ...cfg.google ? { google: cfg.google } : {},
+        ...cfg.dominio ? { dominio: cfg.dominio } : {}
+      });
       setCfg(atualizado);
+      definirDominioProprio(atualizado.dominio?.endereco);
       setSalvo(true);
     } catch (e) {
       setErro(e.message);
@@ -2037,6 +2103,65 @@ function ModalConfiguracoes({ onClose }) {
               )) }),
               /* @__PURE__ */ jsx5("p", { className: "text-xs text-gray-400 mt-1", children: "As avalia\xE7\xF5es s\xE3o atualizadas sozinhas algumas vezes por dia." })
             ] })
+          ] }),
+          /* @__PURE__ */ jsxs5("section", { className: "space-y-3 pt-5 border-t border-gray-100", children: [
+            /* @__PURE__ */ jsxs5("div", { className: "flex items-center gap-2.5", children: [
+              /* @__PURE__ */ jsx5("span", { className: "flex items-center justify-center w-8 h-8 rounded-full bg-sky-100 text-sky-700", children: /* @__PURE__ */ jsx5(Globe, { size: 16 }) }),
+              /* @__PURE__ */ jsxs5("div", { children: [
+                /* @__PURE__ */ jsx5("p", { className: "text-sm font-semibold text-gray-900", children: "Dom\xEDnio pr\xF3prio" }),
+                /* @__PURE__ */ jsx5("p", { className: "text-xs text-gray-500", children: "Publica as p\xE1ginas num subdom\xEDnio do seu site (ex: lp.suaotica.com.br/promocao) em vez do endere\xE7o do sistema." })
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxs5("div", { children: [
+              /* @__PURE__ */ jsx5("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: "Endere\xE7o" }),
+              /* @__PURE__ */ jsxs5("div", { className: "flex gap-2", children: [
+                /* @__PURE__ */ jsx5(
+                  "input",
+                  {
+                    value: cfg.dominio?.endereco || "",
+                    onChange: (e) => setDominio("endereco", e.target.value),
+                    placeholder: "lp.suaotica.com.br",
+                    className: inputCls
+                  }
+                ),
+                /* @__PURE__ */ jsx5(
+                  "button",
+                  {
+                    type: "button",
+                    onClick: handleTestarDominio,
+                    disabled: !(cfg.dominio?.endereco || "").trim() || testeDominio?.carregando,
+                    className: "shrink-0 px-3 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50",
+                    children: testeDominio?.carregando ? "Testando..." : "Testar"
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ jsx5("p", { className: "text-xs text-gray-400 mt-1", children: "S\xF3 o endere\xE7o, sem https://. Em branco, os links continuam no endere\xE7o do sistema." }),
+              testeDominio?.ok && /* @__PURE__ */ jsx5("p", { className: "text-xs text-emerald-700 mt-1", children: "O dom\xEDnio est\xE1 respondendo." }),
+              testeDominio?.erro && /* @__PURE__ */ jsx5("p", { className: "text-xs text-amber-700 mt-1", children: "O dom\xEDnio ainda n\xE3o responde. Depois de configurar o DNS, pode levar de alguns minutos a algumas horas." })
+            ] }),
+            /* @__PURE__ */ jsxs5("div", { children: [
+              /* @__PURE__ */ jsx5("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: "P\xE1gina na raiz do dom\xEDnio" }),
+              /* @__PURE__ */ jsxs5(
+                "select",
+                {
+                  value: cfg.dominio?.pagina_inicial || "",
+                  onChange: (e) => setDominio("pagina_inicial", e.target.value),
+                  className: inputCls,
+                  children: [
+                    /* @__PURE__ */ jsx5("option", { value: "", children: "Nenhuma" }),
+                    paginas.map((p) => /* @__PURE__ */ jsxs5("option", { value: p.slug, children: [
+                      p.nome,
+                      p.status !== "publicada" ? " (n\xE3o publicada)" : ""
+                    ] }, p.id))
+                  ]
+                }
+              ),
+              /* @__PURE__ */ jsx5("p", { className: "text-xs text-gray-400 mt-1", children: "O que abre quando algu\xE9m acessa s\xF3 o dom\xEDnio, sem o nome da p\xE1gina." })
+            ] }),
+            getConfig().instrucoesDominio && /* @__PURE__ */ jsxs5("div", { className: "rounded-lg bg-gray-50 border border-gray-100 p-3", children: [
+              /* @__PURE__ */ jsx5("p", { className: "text-xs font-semibold text-gray-700 mb-1", children: "Como ligar o dom\xEDnio" }),
+              /* @__PURE__ */ jsx5("p", { className: "text-xs text-gray-600 whitespace-pre-line", children: getConfig().instrucoesDominio })
+            ] })
           ] })
         ] }),
         erro && /* @__PURE__ */ jsx5("p", { className: "text-xs text-red-600", children: erro })
@@ -2073,26 +2198,27 @@ function AvatarIniciais({ nome }) {
 }
 function LandingPagesLista() {
   const navigate = useNavigate();
-  const { rotaPainel, rotaPublica } = getConfig();
+  const { rotaPainel } = getConfig();
+  const urlDaPagina = useUrlPublica();
   const Avatar = getConfig().Avatar || AvatarIniciais;
-  const [itens, setItens] = useState5([]);
-  const [carregando, setCarregando] = useState5(true);
-  const [modalCriar, setModalCriar] = useState5(false);
-  const [modalConfig, setModalConfig] = useState5(false);
-  const [copiado, setCopiado] = useState5(null);
-  function carregar2() {
+  const [itens, setItens] = useState6([]);
+  const [carregando2, setCarregando] = useState6(true);
+  const [modalCriar, setModalCriar] = useState6(false);
+  const [modalConfig, setModalConfig] = useState6(false);
+  const [copiado, setCopiado] = useState6(null);
+  function carregar3() {
     setCarregando(true);
     listarLandingPages().then(setItens).catch(() => {
     }).finally(() => setCarregando(false));
   }
-  useEffect5(() => {
-    carregar2();
+  useEffect6(() => {
+    carregar3();
   }, []);
   async function handlePublicarPausar(lp) {
     try {
       if (lp.status === "publicada") await pausarLandingPage(lp.id);
       else await publicarLandingPage(lp.id);
-      carregar2();
+      carregar3();
     } catch (e) {
       alert(e.message);
     }
@@ -2100,7 +2226,7 @@ function LandingPagesLista() {
   async function handleDuplicar(lp) {
     try {
       const nova = await duplicarLandingPage(lp.id);
-      carregar2();
+      carregar3();
       navigate(`${rotaPainel}/${nova.id}`);
     } catch (e) {
       alert(e.message);
@@ -2110,14 +2236,13 @@ function LandingPagesLista() {
     if (!window.confirm(`Excluir "${lp.nome}"? Essa a\xE7\xE3o n\xE3o pode ser desfeita.`)) return;
     try {
       await deletarLandingPage(lp.id);
-      carregar2();
+      carregar3();
     } catch (e) {
       alert(e.message);
     }
   }
   function copiarLink(slug) {
-    const url = `${window.location.origin}${rotaPublica}/${slug}`;
-    navigator.clipboard?.writeText(url);
+    navigator.clipboard?.writeText(urlDaPagina(slug));
     setCopiado(slug);
     setTimeout(() => setCopiado(null), 1500);
   }
@@ -2156,7 +2281,7 @@ function LandingPagesLista() {
         )
       ] })
     ] }) }),
-    /* @__PURE__ */ jsx6("div", { className: "max-w-5xl mx-auto p-4 sm:p-6", children: carregando ? /* @__PURE__ */ jsx6("p", { className: "text-sm text-gray-400 text-center py-10", children: "Carregando..." }) : itens.length === 0 ? /* @__PURE__ */ jsxs6("div", { className: "text-center py-16", children: [
+    /* @__PURE__ */ jsx6("div", { className: "max-w-5xl mx-auto p-4 sm:p-6", children: carregando2 ? /* @__PURE__ */ jsx6("p", { className: "text-sm text-gray-400 text-center py-10", children: "Carregando..." }) : itens.length === 0 ? /* @__PURE__ */ jsxs6("div", { className: "text-center py-16", children: [
       /* @__PURE__ */ jsx6(Rocket, { size: 32, className: "mx-auto text-gray-300 mb-3" }),
       /* @__PURE__ */ jsx6("p", { className: "text-sm text-gray-500", children: "Nenhuma landing page ainda." }),
       /* @__PURE__ */ jsx6("button", { onClick: () => setModalCriar(true), className: "mt-3 text-sm font-medium text-violet-600 hover:text-violet-700", children: "Criar a primeira" })
@@ -2169,11 +2294,7 @@ function LandingPagesLista() {
             className: "text-left min-w-0",
             children: [
               /* @__PURE__ */ jsx6("p", { className: "text-sm font-semibold text-gray-900 truncate hover:text-violet-600", children: lp.nome }),
-              /* @__PURE__ */ jsxs6("p", { className: "text-xs text-gray-400 truncate", children: [
-                rotaPublica,
-                "/",
-                lp.slug
-              ] })
+              /* @__PURE__ */ jsx6("p", { className: "text-xs text-gray-400 truncate", children: semProtocolo(urlDaPagina(lp.slug)) })
             ]
           }
         ),
@@ -2204,7 +2325,7 @@ function LandingPagesLista() {
         ),
         lp.status === "publicada" && /* @__PURE__ */ jsxs6(Fragment3, { children: [
           /* @__PURE__ */ jsx6("button", { onClick: () => copiarLink(lp.slug), title: "Copiar link", className: "p-1.5 rounded-lg hover:bg-gray-100 text-gray-500", children: copiado === lp.slug ? /* @__PURE__ */ jsx6(Check, { size: 14, className: "text-emerald-600" }) : /* @__PURE__ */ jsx6(Copy, { size: 14 }) }),
-          /* @__PURE__ */ jsx6("a", { href: `${rotaPublica}/${lp.slug}`, target: "_blank", rel: "noopener noreferrer", title: "Abrir p\xE1gina", className: "p-1.5 rounded-lg hover:bg-gray-100 text-gray-500", children: /* @__PURE__ */ jsx6(ExternalLink, { size: 14 }) })
+          /* @__PURE__ */ jsx6("a", { href: urlDaPagina(lp.slug), target: "_blank", rel: "noopener noreferrer", title: "Abrir p\xE1gina", className: "p-1.5 rounded-lg hover:bg-gray-100 text-gray-500", children: /* @__PURE__ */ jsx6(ExternalLink, { size: 14 }) })
         ] }),
         /* @__PURE__ */ jsx6("button", { onClick: () => handleDuplicar(lp), title: "Duplicar", className: "p-1.5 rounded-lg hover:bg-gray-100 text-gray-500", children: /* @__PURE__ */ jsx6(CopyPlus, { size: 14 }) }),
         /* @__PURE__ */ jsx6("button", { onClick: () => handleExcluir(lp), title: "Excluir", className: "p-1.5 rounded-lg hover:bg-red-50 text-red-500 ml-auto", children: /* @__PURE__ */ jsx6(Trash22, { size: 14 }) })
@@ -2221,10 +2342,10 @@ function LandingPagesLista() {
   ] });
 }
 function ModalEscolherTemplate({ onClose, onCriado }) {
-  const [nome, setNome] = useState5("");
-  const [templateId, setTemplateId] = useState5(null);
-  const [salvando, setSalvando] = useState5(false);
-  const [erro, setErro] = useState5("");
+  const [nome, setNome] = useState6("");
+  const [templateId, setTemplateId] = useState6(null);
+  const [salvando, setSalvando] = useState6(false);
+  const [erro, setErro] = useState6("");
   async function handleCriar() {
     if (!nome.trim() || !templateId) return;
     setSalvando(true);
@@ -2294,28 +2415,29 @@ function ModalEscolherTemplate({ onClose, onCriado }) {
 }
 
 // js/landing-pages/src/LandingPageEditor.jsx
-import { useEffect as useEffect6, useState as useState6, useRef as useRef4, useCallback } from "react";
+import { useEffect as useEffect7, useState as useState7, useRef as useRef4, useCallback } from "react";
 import { useParams, useNavigate as useNavigate2 } from "react-router-dom";
 import { ArrowLeft, Save, Play as Play2, Pause as Pause2, Copy as Copy2, Check as Check2, Upload as Upload2, X as X3, Plus as Plus3, Trash2 as Trash23, Smartphone, Tablet, Monitor } from "lucide-react";
 import { Fragment as Fragment4, jsx as jsx7, jsxs as jsxs7 } from "react/jsx-runtime";
 function LandingPageEditor() {
   const { id } = useParams();
   const navigate = useNavigate2();
-  const { rotaPainel, rotaPublica } = getConfig();
-  const [lp, setLp] = useState6(null);
-  const [nome, setNome] = useState6("");
-  const [conteudo, setConteudo] = useState6({});
-  const [carregando, setCarregando] = useState6(true);
-  const [salvando, setSalvando] = useState6(false);
-  const [copiado, setCopiado] = useState6(false);
+  const { rotaPainel } = getConfig();
+  const urlDaPagina = useUrlPublica();
+  const [lp, setLp] = useState7(null);
+  const [nome, setNome] = useState7("");
+  const [conteudo, setConteudo] = useState7({});
+  const [carregando2, setCarregando] = useState7(true);
+  const [salvando, setSalvando] = useState7(false);
+  const [copiado, setCopiado] = useState7(false);
   const saveTimeout = useRef4(null);
-  const [configuracoes, setConfiguracoes] = useState6(null);
-  const [dispositivo, setDispositivo] = useState6("celular");
-  useEffect6(() => {
+  const [configuracoes, setConfiguracoes] = useState7(null);
+  const [dispositivo, setDispositivo] = useState7("celular");
+  useEffect7(() => {
     obterConfiguracoes().then(setConfiguracoes).catch(() => {
     });
   }, []);
-  useEffect6(() => {
+  useEffect7(() => {
     obterLandingPage(id).then((data) => {
       setLp(data);
       setNome(data.nome);
@@ -2350,11 +2472,11 @@ function LandingPageEditor() {
     }
   }
   function copiarLink() {
-    navigator.clipboard?.writeText(`${window.location.origin}${rotaPublica}/${lp.slug}`);
+    navigator.clipboard?.writeText(urlDaPagina(lp.slug));
     setCopiado(true);
     setTimeout(() => setCopiado(false), 1500);
   }
-  if (carregando) return /* @__PURE__ */ jsx7("div", { className: "p-10 text-center text-sm text-gray-400", children: "Carregando..." });
+  if (carregando2) return /* @__PURE__ */ jsx7("div", { className: "p-10 text-center text-sm text-gray-400", children: "Carregando..." });
   if (!lp) return /* @__PURE__ */ jsx7("div", { className: "p-10 text-center text-sm text-gray-400", children: "Landing page n\xE3o encontrada." });
   const template = LANDING_PAGE_TEMPLATES[lp.template];
   return /* @__PURE__ */ jsxs7("div", { className: "min-h-full bg-gray-50 flex flex-col", children: [
@@ -2391,7 +2513,7 @@ function LandingPageEditor() {
     ] }) }),
     /* @__PURE__ */ jsxs7("div", { className: "flex-1 max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-0 lg:gap-6 p-4 sm:p-6", children: [
       /* @__PURE__ */ jsxs7("div", { className: "space-y-4", children: [
-        /* @__PURE__ */ jsx7(CamposPagina, { lp, nome, onNomeChange: handleNomeChange, onSalvo: setLp, rotaPublica }),
+        /* @__PURE__ */ jsx7(CamposPagina, { lp, nome, onNomeChange: handleNomeChange, onSalvo: setLp, urlDaPagina }),
         template.secoes?.length > 0 && /* @__PURE__ */ jsxs7("div", { children: [
           /* @__PURE__ */ jsx7("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: "Se\xE7\xE3o de contato" }),
           /* @__PURE__ */ jsx7(
@@ -2458,8 +2580,8 @@ function SeletorDispositivo({ valor, onChange }) {
 }
 function MolduraDispositivo({ largura, children }) {
   const ref = useRef4(null);
-  const [disponivel, setDisponivel] = useState6(0);
-  useEffect6(() => {
+  const [disponivel, setDisponivel] = useState7(0);
+  useEffect7(() => {
     const el = ref.current;
     if (!el || !largura) return;
     const medir = () => setDisponivel(el.clientWidth);
@@ -2477,10 +2599,10 @@ function normalizarSlug(texto, final = false) {
   if (final) s = s.replace(/^-+|-+$/g, "").slice(0, 80);
   return s;
 }
-function CamposPagina({ lp, nome, onNomeChange, onSalvo, rotaPublica }) {
-  const [slug, setSlug] = useState6(lp.slug);
-  const [salvandoSlug, setSalvandoSlug] = useState6(false);
-  const [erroSlug, setErroSlug] = useState6("");
+function CamposPagina({ lp, nome, onNomeChange, onSalvo, urlDaPagina }) {
+  const [slug, setSlug] = useState7(lp.slug);
+  const [salvandoSlug, setSalvandoSlug] = useState7(false);
+  const [erroSlug, setErroSlug] = useState7("");
   const slugFinal = normalizarSlug(slug, true);
   const mudou = slugFinal && slugFinal !== lp.slug;
   async function salvarSlug() {
@@ -2514,10 +2636,7 @@ function CamposPagina({ lp, nome, onNomeChange, onSalvo, rotaPublica }) {
       /* @__PURE__ */ jsx7("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: "Endere\xE7o da p\xE1gina" }),
       /* @__PURE__ */ jsxs7("div", { className: "flex flex-col sm:flex-row gap-2", children: [
         /* @__PURE__ */ jsxs7("div", { className: "flex flex-1 min-w-0 items-center rounded-lg border border-gray-200 focus-within:ring-2 focus-within:ring-violet-400", children: [
-          /* @__PURE__ */ jsxs7("span", { className: "pl-3 text-sm text-gray-400 whitespace-nowrap", children: [
-            rotaPublica,
-            "/"
-          ] }),
+          /* @__PURE__ */ jsx7("span", { className: "pl-3 text-sm text-gray-400 whitespace-nowrap truncate max-w-[60%]", children: semProtocolo(urlDaPagina("")) }),
           /* @__PURE__ */ jsx7(
             "input",
             {
@@ -2547,19 +2666,14 @@ function CamposPagina({ lp, nome, onNomeChange, onSalvo, rotaPublica }) {
       ] }),
       erroSlug && /* @__PURE__ */ jsx7("p", { className: "text-xs text-red-600 mt-1", children: erroSlug }),
       !erroSlug && mudou && lp.status === "publicada" && /* @__PURE__ */ jsx7("p", { className: "text-xs text-amber-700 mt-1", children: "A p\xE1gina est\xE1 publicada: links j\xE1 divulgados com o endere\xE7o antigo v\xE3o parar de funcionar." }),
-      /* @__PURE__ */ jsxs7("p", { className: "text-xs text-gray-400 mt-1 break-all", children: [
-        window.location.origin,
-        rotaPublica,
-        "/",
-        slugFinal || lp.slug
-      ] })
+      /* @__PURE__ */ jsx7("p", { className: "text-xs text-gray-400 mt-1 break-all", children: urlDaPagina(slugFinal || lp.slug) })
     ] }),
     /* @__PURE__ */ jsx7(MetaCampos, { lp, nome, onSalvo })
   ] });
 }
 function MetaCampos({ lp, nome, onSalvo }) {
-  const [metaTitulo, setMetaTitulo] = useState6(lp.meta_titulo || "");
-  const [metaDescricao, setMetaDescricao] = useState6(lp.meta_descricao || "");
+  const [metaTitulo, setMetaTitulo] = useState7(lp.meta_titulo || "");
+  const [metaDescricao, setMetaDescricao] = useState7(lp.meta_descricao || "");
   const timeout = useRef4(null);
   function agendar(novoTitulo, novaDescricao) {
     if (timeout.current) clearTimeout(timeout.current);
@@ -2797,7 +2911,7 @@ function listaOuPadrao(valor, campo) {
 }
 function CampoListaFeatures({ campo, valor, onChange }) {
   const itens = listaOuPadrao(valor, campo);
-  const [enviando, setEnviando] = useState6(null);
+  const [enviando, setEnviando] = useState7(null);
   const inputIcone = useRef4(null);
   const alvoIcone = useRef4(null);
   async function handleIcone(file) {
@@ -2906,7 +3020,7 @@ function IconeSelo({ item, IconePadrao, enviando, onTrocar, onRemover }) {
 }
 function CampoListaDepoimentos({ campo, valor, onChange }) {
   const itens = listaOuPadrao(valor, campo);
-  const [enviando, setEnviando] = useState6(null);
+  const [enviando, setEnviando] = useState7(null);
   const inputFoto = useRef4(null);
   const alvoFoto = useRef4(null);
   async function handleFoto(file) {
@@ -2991,7 +3105,7 @@ function CampoListaDepoimentos({ campo, valor, onChange }) {
   ] });
 }
 function CampoImagem({ campo, valor, onChange }) {
-  const [enviando, setEnviando] = useState6(false);
+  const [enviando, setEnviando] = useState7(false);
   const inputRef = useRef4(null);
   async function handleFile(file) {
     if (!file) return;
@@ -3127,11 +3241,11 @@ function CampoFaq({ campo, valor, onChange }) {
 }
 
 // js/landing-pages/src/LandingPageView.jsx
-import { useEffect as useEffect7, useState as useState7 } from "react";
+import { useEffect as useEffect8, useState as useState8 } from "react";
 import { useParams as useParams2 } from "react-router-dom";
 import { jsx as jsx8 } from "react/jsx-runtime";
 function useFavicon(url) {
-  useEffect7(() => {
+  useEffect8(() => {
     if (!url) return;
     const originais = [...document.querySelectorAll('link[rel~="icon"]')];
     originais.forEach((el) => el.remove());
@@ -3145,13 +3259,14 @@ function useFavicon(url) {
     };
   }, [url]);
 }
-function LandingPageView() {
-  const { slug } = useParams2();
-  const [lp, setLp] = useState7(null);
-  const [erro, setErro] = useState7(false);
-  const [carregando, setCarregando] = useState7(true);
-  useEffect7(() => {
-    buscarLandingPagePublica(slug).then((data) => {
+function LandingPageView({ inicial = false }) {
+  const { slug: slugDaRota } = useParams2();
+  const [lp, setLp] = useState8(null);
+  const [erro, setErro] = useState8(false);
+  const [carregando2, setCarregando] = useState8(true);
+  useEffect8(() => {
+    const busca = inicial ? buscarPaginaInicialPublica() : buscarLandingPagePublica(slugDaRota);
+    busca.then((data) => {
       setLp(data);
       document.title = data.meta_titulo || data.nome || getConfig().tituloPadrao;
       if (data.meta_descricao) {
@@ -3163,15 +3278,16 @@ function LandingPageView() {
         }
         meta.content = data.meta_descricao;
       }
-      registrarVisualizacao(slug);
+      registrarVisualizacao(data.slug || slugDaRota);
     }).catch(() => setErro(true)).finally(() => setCarregando(false));
-  }, [slug]);
+  }, [inicial, slugDaRota]);
+  const slug = lp?.slug || slugDaRota;
   useFavicon(lp?.configuracoes?.marca?.favicon_url);
   async function handleLead(payload) {
     const fbclid = new URLSearchParams(window.location.search).get("fbclid") || void 0;
     await enviarLeadLandingPage(slug, { ...payload, fbclid });
   }
-  if (carregando) {
+  if (carregando2) {
     return /* @__PURE__ */ jsx8("div", { className: "min-h-screen flex items-center justify-center text-sm text-gray-400", children: "Carregando..." });
   }
   if (erro || !lp) {
@@ -3200,5 +3316,7 @@ export {
   TEMPLATE_LIST,
   TemplateCardPreview,
   configurarLandingPages,
-  api_exports as landingPagesApi
+  api_exports as landingPagesApi,
+  urlPublica,
+  useUrlPublica
 };

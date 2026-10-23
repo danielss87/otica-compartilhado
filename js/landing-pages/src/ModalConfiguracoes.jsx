@@ -1,8 +1,10 @@
 // Configurações que valem para TODAS as landing pages (botão "Configurações"
 // da listagem). Formato espelhado de python/.../landing_pages/config.py.
 import { useEffect, useRef, useState } from 'react'
-import { X, Upload, Trash2 } from 'lucide-react'
-import { obterConfiguracoes, salvarConfiguracoes, uploadImagemLandingPage, testarAvaliacoesGoogle } from './api'
+import { X, Upload, Trash2, Globe } from 'lucide-react'
+import { obterConfiguracoes, salvarConfiguracoes, uploadImagemLandingPage, testarAvaliacoesGoogle, listarLandingPages } from './api'
+import { getConfig } from './config'
+import { definirDominioProprio } from './dominio'
 import { IconeWhatsApp } from './Moldura'
 import { LogoGoogle, formatarNota } from './avaliacoesGoogle'
 
@@ -34,10 +36,32 @@ export default function ModalConfiguracoes({ onClose }) {
   const inputLogo = useRef(null)
   const inputFavicon = useRef(null)
   const [testeGoogle, setTesteGoogle] = useState(null) // { carregando } | { ok: dados } | { erro }
+  const [paginas, setPaginas] = useState([])
+  const [testeDominio, setTesteDominio] = useState(null) // { carregando } | { ok } | { erro }
 
   useEffect(() => {
     obterConfiguracoes().then(setCfg).catch(e => setErroCarregar(e.message))
+    listarLandingPages().then(setPaginas).catch(() => {})
   }, [])
+
+  function setDominio(campo, valor) {
+    setCfg(c => ({ ...c, dominio: { endereco: '', pagina_inicial: '', ...c.dominio, [campo]: valor } }))
+    setSalvo(false)
+    if (campo === 'endereco') setTesteDominio(null)
+  }
+
+  // Só confere se o domínio já abre (DNS + certificado). `no-cors`: a resposta não é lida,
+  // basta não dar erro de rede.
+  async function handleTestarDominio() {
+    const endereco = (cfg.dominio?.endereco || '').trim().replace(/^https?:\/\//, '').split('/')[0]
+    setTesteDominio({ carregando: true })
+    try {
+      await fetch(`https://${endereco}/`, { mode: 'no-cors', cache: 'no-store' })
+      setTesteDominio({ ok: true })
+    } catch {
+      setTesteDominio({ erro: true })
+    }
+  }
 
   function setWhatsapp(campo, valor) {
     setCfg(c => ({ ...c, whatsapp: { ...c.whatsapp, [campo]: valor } }))
@@ -104,8 +128,13 @@ export default function ModalConfiguracoes({ onClose }) {
     setSalvando(true)
     setErro('')
     try {
-      const atualizado = await salvarConfiguracoes({ whatsapp: cfg.whatsapp, marca: cfg.marca, menu: cfg.menu, ...(cfg.google ? { google: cfg.google } : {}) })
+      const atualizado = await salvarConfiguracoes({
+        whatsapp: cfg.whatsapp, marca: cfg.marca, menu: cfg.menu,
+        ...(cfg.google ? { google: cfg.google } : {}),
+        ...(cfg.dominio ? { dominio: cfg.dominio } : {}),
+      })
       setCfg(atualizado)
+      definirDominioProprio(atualizado.dominio?.endereco)
       setSalvo(true)
     } catch (e) {
       setErro(e.message)
@@ -399,6 +428,65 @@ export default function ModalConfiguracoes({ onClose }) {
                   </div>
                   <p className="text-xs text-gray-400 mt-1">As avaliações são atualizadas sozinhas algumas vezes por dia.</p>
                 </div>
+              </section>
+              <section className="space-y-3 pt-5 border-t border-gray-100">
+                <div className="flex items-center gap-2.5">
+                  <span className="flex items-center justify-center w-8 h-8 rounded-full bg-sky-100 text-sky-700"><Globe size={16} /></span>
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900">Domínio próprio</p>
+                    <p className="text-xs text-gray-500">
+                      Publica as páginas num subdomínio do seu site (ex: lp.suaotica.com.br/promocao) em vez do endereço do sistema.
+                    </p>
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-gray-500 mb-1 block">Endereço</label>
+                  <div className="flex gap-2">
+                    <input
+                      value={cfg.dominio?.endereco || ''}
+                      onChange={e => setDominio('endereco', e.target.value)}
+                      placeholder="lp.suaotica.com.br"
+                      className={inputCls}
+                    />
+                    <button
+                      type="button"
+                      onClick={handleTestarDominio}
+                      disabled={!(cfg.dominio?.endereco || '').trim() || testeDominio?.carregando}
+                      className="shrink-0 px-3 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                    >
+                      {testeDominio?.carregando ? 'Testando...' : 'Testar'}
+                    </button>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1">Só o endereço, sem https://. Em branco, os links continuam no endereço do sistema.</p>
+                  {testeDominio?.ok && <p className="text-xs text-emerald-700 mt-1">O domínio está respondendo.</p>}
+                  {testeDominio?.erro && (
+                    <p className="text-xs text-amber-700 mt-1">
+                      O domínio ainda não responde. Depois de configurar o DNS, pode levar de alguns minutos a algumas horas.
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-gray-500 mb-1 block">Página na raiz do domínio</label>
+                  <select
+                    value={cfg.dominio?.pagina_inicial || ''}
+                    onChange={e => setDominio('pagina_inicial', e.target.value)}
+                    className={inputCls}
+                  >
+                    <option value="">Nenhuma</option>
+                    {paginas.map(p => (
+                      <option key={p.id} value={p.slug}>
+                        {p.nome}{p.status !== 'publicada' ? ' (não publicada)' : ''}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-xs text-gray-400 mt-1">O que abre quando alguém acessa só o domínio, sem o nome da página.</p>
+                </div>
+                {getConfig().instrucoesDominio && (
+                  <div className="rounded-lg bg-gray-50 border border-gray-100 p-3">
+                    <p className="text-xs font-semibold text-gray-700 mb-1">Como ligar o domínio</p>
+                    <p className="text-xs text-gray-600 whitespace-pre-line">{getConfig().instrucoesDominio}</p>
+                  </div>
+                )}
               </section>
             </>
           )}

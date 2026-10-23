@@ -64,6 +64,11 @@ class ConfigGoogle(BaseModel):
     nota_minima: int = 4
 
 
+class ConfigDominio(BaseModel):
+    endereco: str = ""  # ex: "lp.minhaotica.com.br" (sem https://); vazio = sem domínio próprio
+    pagina_inicial: str = ""  # slug aberto na raiz do domínio
+
+
 class ConfigPublicaOut(BaseModel):
     """Parte das configurações que a página pública recebe (ver `config.publica`)."""
     whatsapp: ConfigWhatsapp
@@ -74,6 +79,7 @@ class ConfigPublicaOut(BaseModel):
 class LandingPagesConfigOut(ConfigPublicaOut):
     """Configurações que valem para todas as landing pages."""
     google: ConfigGoogle = ConfigGoogle()
+    dominio: ConfigDominio = ConfigDominio()
 
 
 class LandingPagesConfigUpdate(BaseModel):
@@ -81,11 +87,13 @@ class LandingPagesConfigUpdate(BaseModel):
     marca: Optional[ConfigMarca] = None
     menu: Optional[ConfigMenu] = None
     google: Optional[ConfigGoogle] = None
+    dominio: Optional[ConfigDominio] = None
 
 
 class LandingPagePublicaOut(BaseModel):
     """Campos servidos pela rota pública — nunca vaza criado_por_id/status interno."""
     nome: str
+    slug: Optional[str] = None  # a raiz do domínio próprio precisa saber qual página abriu
     template: str
     conteudo: Optional[Dict[str, Any]] = None
     meta_titulo: Optional[str] = None

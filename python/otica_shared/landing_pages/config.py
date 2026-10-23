@@ -30,6 +30,11 @@ PADRAO = {
     # Google Maps (vazio = desligado). Só entram na página avaliações com nota >= nota_minima.
     # Cada página liga ou não no editor (ex: Leader → "Prova social: avaliações do Google").
     "google": {"busca": "", "nota_minima": 4},
+    # Domínio próprio (v0.19.0): subdomínio da loja (ex: "lp.minhaotica.com.br") apontado
+    # para o frontend. Os links do painel passam a usar `https://<endereco>/<slug>` e a raiz
+    # do domínio abre `pagina_inicial` (slug; vazio = "página não disponível"). O DNS e o
+    # cadastro do domínio na hospedagem são feitos fora daqui (ver CLAUDE.md de cada app).
+    "dominio": {"endereco": "", "pagina_inicial": ""},
 }
 
 
@@ -61,6 +66,17 @@ def normalizar_url(url: str) -> str:
     if url and not re.match(r"^https?://", url, re.I):
         url = "https://" + url
     return url
+
+
+def normalizar_dominio(valor: str) -> str:
+    """"https://LP.Loja.com.br/x" → "lp.loja.com.br". Vazio continua vazio."""
+    d = (valor or "").strip().lower()
+    d = re.sub(r"^[a-z]+://", "", d).split("/")[0].split("?")[0].split("#")[0]
+    return d.split(":")[0].strip(".")
+
+
+def dominio_valido(d: str) -> bool:
+    return bool(re.fullmatch(r"(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}", d))
 
 
 def link_whatsapp(numero: str, mensagem: str) -> str:

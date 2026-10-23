@@ -417,3 +417,30 @@ def test_google_erro_serve_ultimo_resultado(monkeypatch):
     cache._itens["x"]["em"] -= google_avaliacoes.TTL_CACHE + 1  # cache vencido
     assert cache.obter("x", "k")["nome"] == "Ótica Exemplo"  # serve o velho
     assert cache.obter("nunca-deu-certo", "k") is None
+
+
+def test_dominio_proprio_padrao_vazio_e_normaliza(client):
+    cfg = client.get("/api/landing-pages/configuracoes", headers=AUTH).json()
+    assert cfg["dominio"] == {"endereco": "", "pagina_inicial": ""}
+    r = client.put("/api/landing-pages/configuracoes", headers=AUTH, json={"dominio": {"endereco": "https://LP.Loja.com.br/promo"}})
+    assert r.status_code == 200 and r.json()["dominio"]["endereco"] == "lp.loja.com.br"
+    r = client.put("/api/landing-pages/configuracoes", headers=AUTH, json={"dominio": {"endereco": "não é domínio"}})
+    assert r.status_code == 422
+
+
+def test_dominio_proprio_pagina_inicial(client):
+    assert client.get("/api/publico/landing-pages/_inicio").status_code == 404
+    lp = _criar(client)
+    r = client.put("/api/landing-pages/configuracoes", headers=AUTH, json={"dominio": {"endereco": "lp.loja.com.br", "pagina_inicial": "nao-existe"}})
+    assert r.status_code == 422
+    client.put("/api/landing-pages/configuracoes", headers=AUTH, json={"dominio": {"endereco": "lp.loja.com.br", "pagina_inicial": lp["slug"]}})
+    assert client.get("/api/publico/landing-pages/_inicio").status_code == 404  # rascunho
+    client.post(f"/api/landing-pages/{lp['id']}/publicar", headers=AUTH)
+    r = client.get("/api/publico/landing-pages/_inicio")
+    assert r.status_code == 200 and r.json()["slug"] == lp["slug"]
+    # Trocar o endereço da página inicial leva a config junto
+    client.put(f"/api/landing-pages/{lp['id']}", headers=AUTH, json={"slug": "nova"})
+    assert client.get("/api/landing-pages/configuracoes", headers=AUTH).json()["dominio"]["pagina_inicial"] == "nova"
+    assert client.get("/api/publico/landing-pages/_inicio").json()["slug"] == "nova"
+    # A config pública não expõe o domínio
+    assert "dominio" not in client.get("/api/publico/landing-pages/nova").json()["configuracoes"]

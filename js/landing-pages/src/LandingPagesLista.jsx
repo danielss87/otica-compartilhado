@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Rocket, Plus, X, Copy, CopyPlus, Trash2, Eye, Users, ExternalLink, Play, Pause, Check, Settings } from 'lucide-react'
 import { TEMPLATE_LIST, TemplateCardPreview } from './templates'
 import { getConfig } from './config'
+import { useUrlPublica, semProtocolo } from './dominio'
 import ModalConfiguracoes from './ModalConfiguracoes'
 import {
   listarLandingPages, criarLandingPage, publicarLandingPage, pausarLandingPage,
@@ -27,7 +28,8 @@ function AvatarIniciais({ nome }) {
 
 export default function LandingPagesLista() {
   const navigate = useNavigate()
-  const { rotaPainel, rotaPublica } = getConfig()
+  const { rotaPainel } = getConfig()
+  const urlDaPagina = useUrlPublica()
   const Avatar = getConfig().Avatar || AvatarIniciais
   const [itens, setItens] = useState([])
   const [carregando, setCarregando] = useState(true)
@@ -67,8 +69,7 @@ export default function LandingPagesLista() {
   }
 
   function copiarLink(slug) {
-    const url = `${window.location.origin}${rotaPublica}/${slug}`
-    navigator.clipboard?.writeText(url)
+    navigator.clipboard?.writeText(urlDaPagina(slug))
     setCopiado(slug)
     setTimeout(() => setCopiado(null), 1500)
   }
@@ -127,7 +128,7 @@ export default function LandingPagesLista() {
                     className="text-left min-w-0"
                   >
                     <p className="text-sm font-semibold text-gray-900 truncate hover:text-violet-600">{lp.nome}</p>
-                    <p className="text-xs text-gray-400 truncate">{rotaPublica}/{lp.slug}</p>
+                    <p className="text-xs text-gray-400 truncate">{semProtocolo(urlDaPagina(lp.slug))}</p>
                   </button>
                   <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full shrink-0 ${STATUS_ESTILO[lp.status]}`}>
                     {STATUS_LABEL[lp.status]}
@@ -157,7 +158,7 @@ export default function LandingPagesLista() {
                       <button onClick={() => copiarLink(lp.slug)} title="Copiar link" className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500">
                         {copiado === lp.slug ? <Check size={14} className="text-emerald-600" /> : <Copy size={14} />}
                       </button>
-                      <a href={`${rotaPublica}/${lp.slug}`} target="_blank" rel="noopener noreferrer" title="Abrir página" className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500">
+                      <a href={urlDaPagina(lp.slug)} target="_blank" rel="noopener noreferrer" title="Abrir página" className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500">
                         <ExternalLink size={14} />
                       </a>
                     </>

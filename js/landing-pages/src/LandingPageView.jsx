@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { LANDING_PAGE_TEMPLATES, coresDaPagina, secaoContatoDaPagina } from './templates'
-import { buscarLandingPagePublica, registrarVisualizacao, enviarLeadLandingPage } from './api'
+import { buscarLandingPagePublica, buscarPaginaInicialPublica, registrarVisualizacao, enviarLeadLandingPage } from './api'
 import { getConfig } from './config'
 import MolduraLandingPage from './Moldura'
 
@@ -23,14 +23,16 @@ function useFavicon(url) {
   }, [url])
 }
 
-export default function LandingPageView() {
-  const { slug } = useParams()
+// `inicial`: raiz do domínio próprio — abre a página escolhida em Configurações → Domínio próprio.
+export default function LandingPageView({ inicial = false }) {
+  const { slug: slugDaRota } = useParams()
   const [lp, setLp] = useState(null)
   const [erro, setErro] = useState(false)
   const [carregando, setCarregando] = useState(true)
 
   useEffect(() => {
-    buscarLandingPagePublica(slug)
+    const busca = inicial ? buscarPaginaInicialPublica() : buscarLandingPagePublica(slugDaRota)
+    busca
       .then(data => {
         setLp(data)
         document.title = data.meta_titulo || data.nome || getConfig().tituloPadrao
@@ -43,11 +45,13 @@ export default function LandingPageView() {
           }
           meta.content = data.meta_descricao
         }
-        registrarVisualizacao(slug)
+        registrarVisualizacao(data.slug || slugDaRota)
       })
       .catch(() => setErro(true))
       .finally(() => setCarregando(false))
-  }, [slug])
+  }, [inicial, slugDaRota])
+
+  const slug = lp?.slug || slugDaRota
 
   useFavicon(lp?.configuracoes?.marca?.favicon_url)
 

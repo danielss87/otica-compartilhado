@@ -98,6 +98,16 @@ def criar_routers(
         linha = db.query(LandingPagesConfig).filter(LandingPagesConfig.id == 1).first()
         return cfg_lp.ler(linha.dados if linha else None)
 
+    def _seguir_pagina_inicial(db: Session, slug_antigo: str, slug_novo: str) -> None:
+        """Página inicial do domínio próprio mudou de endereço → a config acompanha."""
+        if LandingPagesConfig is None or slug_antigo == slug_novo:
+            return
+        linha = db.query(LandingPagesConfig).filter(LandingPagesConfig.id == 1).first()
+        cfg = cfg_lp.ler(linha.dados if linha else None)
+        if linha and cfg["dominio"]["pagina_inicial"] == slug_antigo:
+            cfg["dominio"]["pagina_inicial"] = slug_novo
+            linha.dados = json.dumps(cfg)
+
     def _gerar_slug_unico(db: Session, nome: str) -> str:
         base = _slug(nome)
         slug = base
@@ -186,6 +196,14 @@ def criar_routers(
             g = novo["google"]
             g["busca"] = (g.get("busca") or "").strip()
             g["nota_minima"] = min(5, max(1, int(g.get("nota_minima") or 1)))
+        if "dominio" in novo:
+            d = novo["dominio"]
+            d["endereco"] = cfg_lp.normalizar_dominio(d.get("endereco"))
+            if d["endereco"] and not cfg_lp.dominio_valido(d["endereco"]):
+                raise HTTPException(422, "Domínio inválido. Use só o endereço, ex: lp.minhaotica.com.br")
+            d["pagina_inicial"] = (d.get("pagina_inicial") or "").strip()
+            if d["pagina_inicial"] and not db.query(LandingPage).filter(LandingPage.slug == d["pagina_inicial"]).first():
+                raise HTTPException(422, "A página inicial escolhida não existe mais.")
         for secao, valores in novo.items():
             atual[secao].update(valores)
         if "menu" in novo:
@@ -264,6 +282,7 @@ def criar_routers(
             conflito = db.query(LandingPage).filter(LandingPage.slug == novo_slug, LandingPage.id != lp_id).first()
             if conflito:
                 raise HTTPException(409, "Esse endereço já está em uso por outra landing page.")
+            _seguir_pagina_inicial(db, lp.slug, novo_slug)
             lp.slug = novo_slug
         data.pop("slug", None)
         if "status" in data and data["status"] not in STATUS_VALIDOS:
@@ -357,19 +376,29 @@ def criar_routers(
             return {"ativo": False}
         return google.para_pagina(dados, g["nota_minima"])
 
-    @router_publico.get("/{slug}", response_model=LandingPagePublicaOut)
-    def obter_publica(slug: str, db: Session = Depends(get_db)):
-        lp = db.query(LandingPage).filter(LandingPage.slug == slug).first()
+    def _publica_ou_404(db: Session, slug: str) -> dict:
+        lp = db.query(LandingPage).filter(LandingPage.slug == slug).first() if slug else None
         if not lp or lp.status != "publicada":
             raise HTTPException(404, "Página não encontrada.")
         return {
             "nome": lp.nome,
+            "slug": lp.slug,
             "template": lp.template,
             "conteudo": _parse_conteudo(lp),
             "meta_titulo": lp.meta_titulo,
             "meta_descricao": lp.meta_descricao,
             "configuracoes": cfg_lp.publica(_ler_config(db)),
         }
+
+    # Raiz do domínio próprio (v0.19.0): a página escolhida em Configurações → Domínio próprio.
+    # "_inicio" nunca colide com slug (slug não começa com "_"). Antes de "/{slug}".
+    @router_publico.get("/_inicio", response_model=LandingPagePublicaOut)
+    def obter_pagina_inicial(db: Session = Depends(get_db)):
+        return _publica_ou_404(db, _ler_config(db)["dominio"]["pagina_inicial"])
+
+    @router_publico.get("/{slug}", response_model=LandingPagePublicaOut)
+    def obter_publica(slug: str, db: Session = Depends(get_db)):
+        return _publica_ou_404(db, slug)
 
     @router_publico.post("/{slug}/visualizacao")
     def registrar_visualizacao(slug: str, db: Session = Depends(get_db)):

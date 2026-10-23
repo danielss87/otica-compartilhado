@@ -120,6 +120,11 @@ export async function buscarLandingPagePublica(slug) {
   return comRetentativa(async () => handlePublico(await fetch(`${basePublica()}/${slug}`)), 90000)
 }
 
+// Raiz do domínio próprio: a página escolhida como inicial (traz `slug`).
+export async function buscarPaginaInicialPublica() {
+  return buscarLandingPagePublica('_inicio')
+}
+
 export async function registrarVisualizacao(slug) {
   try {
     await fetch(`${basePublica()}/${slug}/visualizacao`, { method: 'POST' })

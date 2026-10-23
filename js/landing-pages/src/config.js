@@ -21,6 +21,9 @@ const padrao = {
   Avatar: null,
   // Título da aba na página pública quando a LP não tem meta_titulo nem nome.
   tituloPadrao: '',
+  // Domínio próprio: passo a passo de DNS/hospedagem mostrado em Configurações → Domínio
+  // próprio (texto; quebras de linha são respeitadas). Depende de onde cada app hospeda o front.
+  instrucoesDominio: '',
 }
 
 let config = { ...padrao }
