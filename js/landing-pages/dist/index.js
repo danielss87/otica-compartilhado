@@ -24,7 +24,10 @@ var padrao = {
   tituloPadrao: "",
   // Domínio próprio: passo a passo de DNS/hospedagem mostrado em Configurações → Domínio
   // próprio (texto; quebras de linha são respeitadas). Depende de onde cada app hospeda o front.
-  instrucoesDominio: ""
+  instrucoesDominio: "",
+  // Código invisível no texto do WhatsApp (v0.21.0): { url } do endpoint do app que registra o clique
+  // (recebe JSON como text/plain: codigo, pagina_url, mensagem, gclid, utm_*...). Vazio = desligado.
+  rastreioWhatsApp: null
 };
 var config = { ...padrao };
 function configurarLandingPages(opcoes = {}) {
@@ -3384,6 +3387,57 @@ function ehLinkWhatsApp(href) {
   return /^(https?:\/\/(wa\.me|api\.whatsapp\.com|web\.whatsapp\.com)\/|whatsapp:)/i.test(href || "");
 }
 
+// js/landing-pages/src/codigoWhatsApp.js
+var SIMBOLOS = ["\u200B", "\u200C", "\u200D", "\u2060"];
+var MARCADOR = "\u2063";
+function gerarCodigo() {
+  const b = new Uint8Array(3);
+  crypto.getRandomValues(b);
+  return Array.from(b, (x) => x.toString(16).padStart(2, "0")).join("");
+}
+function invisivel(codigo) {
+  const bits = parseInt(codigo, 16);
+  let s = MARCADOR;
+  for (let i = 11; i >= 0; i--) s += SIMBOLOS[bits >> 2 * i & 3];
+  return s + MARCADOR;
+}
+function marcarLinkWhatsApp(url, codigo) {
+  const m = url.match(/([?&]text=)([^&#]*)/);
+  const texto = m ? decodeURIComponent(m[2].replace(/\+/g, " ")) : "";
+  if (texto.includes(MARCADOR)) return { url, texto };
+  const novo = texto ? texto.replace(/^(\s*\S+)/, `$1${invisivel(codigo)}`) : `Ol\xE1!${invisivel(codigo)}`;
+  const enc = encodeURIComponent(novo);
+  const marcada = m ? url.replace(m[0], m[1] + enc) : url.replace(/(#.*)?$/, (hash) => `${url.includes("?") ? "&" : "?"}text=${enc}${hash || ""}`);
+  return { url: marcada, texto: texto || null };
+}
+function lerCookieGA() {
+  const m = document.cookie.match(/(?:^|;\s*)_ga=GA\d\.\d\.([^;]+)/);
+  return m ? m[1] : null;
+}
+function registrarCodigoWhatsApp(url, codigo, mensagem, origem) {
+  const dados = {
+    codigo,
+    pagina_url: window.location.href,
+    pagina_titulo: document.title,
+    pagina_entrada: window.location.href,
+    referrer: document.referrer || null,
+    mensagem,
+    ga_client_id: lerCookieGA(),
+    mobile: /Mobi|Android|iPhone/i.test(navigator.userAgent),
+    ...origem
+  };
+  const corpo = JSON.stringify(dados);
+  try {
+    if (navigator.sendBeacon && navigator.sendBeacon(url, corpo)) return;
+  } catch {
+  }
+  try {
+    fetch(url, { method: "POST", body: corpo, mode: "no-cors", keepalive: true }).catch(() => {
+    });
+  } catch {
+  }
+}
+
 // js/landing-pages/src/LandingPageView.jsx
 import { jsx as jsx8 } from "react/jsx-runtime";
 function useFavicon(url) {
@@ -3435,9 +3489,21 @@ function LandingPageView({ inicial = false }) {
   }
   function handleClique(e) {
     const a = e.target.closest?.("a[href]");
-    if (!a || !ehLinkWhatsApp(a.getAttribute("href"))) return;
+    const original = a?.getAttribute("data-lp-href") || a?.getAttribute("href");
+    if (!a || !ehLinkWhatsApp(original)) return;
     registrarCliqueWhatsApp(slug);
     registrarEvento("whatsapp_clique", { landing_page: slug }, "ads_rotulo_whatsapp");
+    const destino = getConfig().rastreioWhatsApp?.url;
+    if (destino) {
+      try {
+        const codigo = gerarCodigo();
+        const { url, texto } = marcarLinkWhatsApp(original, codigo);
+        a.setAttribute("data-lp-href", original);
+        a.setAttribute("href", url);
+        registrarCodigoWhatsApp(destino, codigo, texto, origemDoVisitante());
+      } catch {
+      }
+    }
   }
   if (carregando2) {
     return /* @__PURE__ */ jsx8("div", { className: "min-h-screen flex items-center justify-center text-sm text-gray-400", children: "Carregando..." });

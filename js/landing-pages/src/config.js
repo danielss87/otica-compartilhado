@@ -24,6 +24,9 @@ const padrao = {
   // Domínio próprio: passo a passo de DNS/hospedagem mostrado em Configurações → Domínio
   // próprio (texto; quebras de linha são respeitadas). Depende de onde cada app hospeda o front.
   instrucoesDominio: '',
+  // Código invisível no texto do WhatsApp (v0.21.0): { url } do endpoint do app que registra o clique
+  // (recebe JSON como text/plain: codigo, pagina_url, mensagem, gclid, utm_*...). Vazio = desligado.
+  rastreioWhatsApp: null,
 }
 
 let config = { ...padrao }

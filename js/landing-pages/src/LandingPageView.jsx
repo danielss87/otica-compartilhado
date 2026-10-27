@@ -4,6 +4,7 @@ import { LANDING_PAGE_TEMPLATES, coresDaPagina, secaoContatoDaPagina } from './t
 import { buscarLandingPagePublica, buscarPaginaInicialPublica, registrarVisualizacao, enviarLeadLandingPage, registrarCliqueWhatsApp } from './api'
 import { iniciarRastreamento, registrarEvento, guardarOrigem, origemDoVisitante, ehLinkWhatsApp } from './rastreamento'
 import { getConfig } from './config'
+import { gerarCodigo, marcarLinkWhatsApp, registrarCodigoWhatsApp } from './codigoWhatsApp'
 import MolduraLandingPage from './Moldura'
 
 // Troca o favicon do site pelo das configurações gerais enquanto a página está aberta.
@@ -70,9 +71,23 @@ export default function LandingPageView({ inicial = false }) {
   // Fase de captura: conta antes de o navegador sair para o WhatsApp.
   function handleClique(e) {
     const a = e.target.closest?.('a[href]')
-    if (!a || !ehLinkWhatsApp(a.getAttribute('href'))) return
+    // O href original fica guardado: cada clique gera um código novo a partir dele
+    const original = a?.getAttribute('data-lp-href') || a?.getAttribute('href')
+    if (!a || !ehLinkWhatsApp(original)) return
     registrarCliqueWhatsApp(slug)
     registrarEvento('whatsapp_clique', { landing_page: slug }, 'ads_rotulo_whatsapp')
+    const destino = getConfig().rastreioWhatsApp?.url
+    if (destino) {
+      try {
+        const codigo = gerarCodigo()
+        const { url, texto } = marcarLinkWhatsApp(original, codigo)
+        a.setAttribute('data-lp-href', original)
+        a.setAttribute('href', url)  // antes da navegação: o handler roda na fase de captura
+        registrarCodigoWhatsApp(destino, codigo, texto, origemDoVisitante())
+      } catch {
+        // qualquer erro: o clique segue com o link original
+      }
+    }
   }
 
   if (carregando) {

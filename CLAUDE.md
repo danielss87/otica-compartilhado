@@ -21,7 +21,7 @@ package.json                     # npm: otica-compartilhado (raiz do repo)
 
 ## Features
 
-### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.20.0, out/2026
+### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.21.0, out/2026
 Origem: 4 Olhos (ago/2026). Páginas de captura por template pronto com edição guiada (4 templates:
 `simples`, `promocao`, `agendar_consulta`, `greats`), página pública `/lp/:slug`, contagem de
 visualizações e captura de lead (nome + telefone + fbclid). Quinto template, `leader` (v0.10.0), em
@@ -115,6 +115,16 @@ para todas as opções.
 8. Repo **público**: nunca commitar segredo, credencial, URL interna, dado de cliente ou telefone real.
 
 ## Changelog
+
+### v0.21.0 (27/10/2026)
+- **Código invisível no WhatsApp** (`codigoWhatsApp.js`), desligado por padrão: com
+  `configurarLandingPages({ rastreioWhatsApp: { url } })`, cada clique num link de WhatsApp da página pública ganha
+  um código de 6 hex em caracteres zero-width depois da 1ª palavra do `text` (sem texto: "Olá!" + código), e o
+  clique vai por `sendBeacon` (JSON como text/plain, sem preflight de CORS) para a `url` do app, com página, gclid/
+  gbraid/wbraid, utm_*, referrer e a mensagem original. O app decodifica o código quando a conversa chega e liga o
+  contato ao clique (no Ariel: `origem_site_service.py`, mesmo formato do `popup.js` do site). Cada clique gera um
+  código novo (href original em `data-lp-href`). Qualquer erro: o clique segue com o link original.
+- Sem mudança de banco nem de backend. Sem a opção, o comportamento é idêntico ao da v0.20.0.
 
 ### v0.20.0 (23/10/2026)
 - **Rastreamento** (Configurações → Rastreamento, tudo vazio por padrão): IDs do **GA4** (`G-...`), **Google Ads**
