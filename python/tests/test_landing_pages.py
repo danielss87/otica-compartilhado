@@ -211,7 +211,7 @@ def test_configuracoes_padrao_desligadas(client):
     pub = client.get(f"/api/publico/landing-pages/{lp['slug']}").json()["configuracoes"]
     assert pub == {
         "whatsapp": {"ativo": False, "numero": "", "mensagem": "", "notificacao": False},
-        "marca": {"logo_url": None, "favicon_url": None, "fonte": ""},
+        "marca": {"logo_url": None, "favicon_url": None, "titulo": "", "fonte": ""},
         "menu": {"ativo": False, "cta_texto": "", "cta_destino": "whatsapp", "cta_url": "", "cta_cor": "padrao", "fixo": False, "cta_tilt": False},
         "rastreamento": {"ga4_id": "", "ads_id": "", "ads_rotulo_lead": "", "ads_rotulo_whatsapp": "", "hotjar_id": "", "clarity_id": ""},
     }
