@@ -7,6 +7,7 @@ import { getConfig } from './config'
 import { definirDominioProprio } from './dominio'
 import { IconeWhatsApp } from './Moldura'
 import { LogoGoogle, formatarNota } from './avaliacoesGoogle'
+import { FONTES_MARCA } from './fontes'
 
 const RASTREAMENTO_VAZIO = { ga4_id: '', ads_id: '', ads_rotulo_lead: '', ads_rotulo_whatsapp: '', hotjar_id: '', clarity_id: '' }
 
@@ -245,6 +246,14 @@ export default function ModalConfiguracoes({ onClose, empresaId = 1 }) {
                 <div>
                   <label className="text-xs font-medium text-gray-500 mb-1 block">Nome da empresa</label>
                   <input value={cfg.empresa?.nome || ''} onChange={e => setNomeEmpresa(e.target.value)} placeholder={empresaId === 1 ? 'Principal' : ''} className={inputCls} />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-gray-500 mb-1 block">Fonte das páginas</label>
+                  <select value={cfg.marca.fonte || ''} onChange={e => setMarca('fonte', e.target.value)} className={inputCls + ' bg-white'}>
+                    <option value="">Padrão do modelo</option>
+                    {FONTES_MARCA.map(f => <option key={f} value={f}>{f}</option>)}
+                  </select>
+                  <p className="text-xs text-gray-400 mt-1">Vale para o modelo Leader; os outros modelos mantêm a própria fonte.</p>
                 </div>
                 <div>
                   <label className="text-xs font-medium text-gray-500 mb-1 block">Título da aba do navegador</label>

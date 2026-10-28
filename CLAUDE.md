@@ -21,7 +21,7 @@ package.json                     # npm: otica-compartilhado (raiz do repo)
 
 ## Features
 
-### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.22.0, out/2026
+### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.23.0, out/2026
 Origem: 4 Olhos (ago/2026). Páginas de captura por template pronto com edição guiada (4 templates:
 `simples`, `promocao`, `agendar_consulta`, `greats`), página pública `/lp/:slug`, contagem de
 visualizações e captura de lead (nome + telefone + fbclid). Quinto template, `leader` (v0.10.0), em
@@ -115,6 +115,12 @@ para todas as opções.
 8. Repo **público**: nunca commitar segredo, credencial, URL interna, dado de cliente ou telefone real.
 
 ## Changelog
+
+### v0.23.0 (28/10/2026)
+- **Fonte por empresa** (`marca.fonte`, `fontes.js`): Configurações → Identidade de marca → "Fonte das páginas" (Open Sans,
+  Inter, Poppins, Montserrat, Nunito, Raleway; só nomes dessa lista vão para o link do Google Fonts). A moldura define a
+  variável CSS `--olp-fonte` e o **Leader** passa a usá-la (sem ela, continua Syne + DM Sans). Os outros modelos ignoram.
+- Sem mudança de banco. Sem escolher fonte, o comportamento é idêntico ao da v0.22.0.
 
 ### v0.22.0 (28/10/2026)
 - **Empresas**: uma instalação pode ter mais de uma empresa (ex.: Armazém dos Óculos e Instituto Otovida no Ariel), cada

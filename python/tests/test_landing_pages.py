@@ -211,7 +211,7 @@ def test_configuracoes_padrao_desligadas(client):
     pub = client.get(f"/api/publico/landing-pages/{lp['slug']}").json()["configuracoes"]
     assert pub == {
         "whatsapp": {"ativo": False, "numero": "", "mensagem": "", "notificacao": False},
-        "marca": {"logo_url": None, "favicon_url": None, "titulo": ""},
+        "marca": {"logo_url": None, "favicon_url": None, "fonte": ""},
         "menu": {"ativo": False, "cta_texto": "", "cta_destino": "whatsapp", "cta_url": "", "cta_cor": "padrao", "fixo": False, "cta_tilt": False},
         "rastreamento": {"ga4_id": "", "ads_id": "", "ads_rotulo_lead": "", "ads_rotulo_whatsapp": "", "hotjar_id": "", "clarity_id": ""},
     }
@@ -314,7 +314,7 @@ def test_menu_fixo(client):
 def test_favicon(client):
     lp = _publicar(client)
     r = client.put("/api/landing-pages/configuracoes", headers=AUTH, json={"marca": {"logo_url": "/uploads/l.png", "favicon_url": " /uploads/f.png "}})
-    assert r.json()["marca"] == {"logo_url": "/uploads/l.png", "favicon_url": "/uploads/f.png", "titulo": ""}
+    assert r.json()["marca"] == {"logo_url": "/uploads/l.png", "favicon_url": "/uploads/f.png", "titulo": "", "fonte": ""}
     pub = client.get(f"/api/publico/landing-pages/{lp['slug']}").json()["configuracoes"]
     assert pub["marca"]["favicon_url"] == "/uploads/f.png"
     r = client.put("/api/landing-pages/configuracoes", headers=AUTH, json={"marca": {"logo_url": "/uploads/l.png", "favicon_url": ""}})
@@ -579,3 +579,13 @@ def test_dominio_por_empresa_raiz_por_host(client):
     # renomear o slug da página inicial acompanha a config da empresa certa
     client.put(f"/api/landing-pages/{b['id']}", headers=AUTH, json={"slug": "home-nova"})
     assert client.get("/api/publico/landing-pages/_inicio?host=oftalmo.otovida.com.br").json()["slug"] == "home-nova"
+
+
+def test_fonte_da_empresa_so_da_lista_e_vai_para_pagina_publica(client):
+    r = client.put("/api/landing-pages/configuracoes", headers=AUTH, json={"marca": {"fonte": "Comic Sans"}})
+    assert r.status_code == 422
+    r = client.put("/api/landing-pages/configuracoes", headers=AUTH, json={"marca": {"fonte": "Open Sans"}})
+    assert r.status_code == 200 and r.json()["marca"]["fonte"] == "Open Sans"
+    lp = _publicar(client)
+    pub = client.get(f"/api/publico/landing-pages/{lp['slug']}").json()["configuracoes"]
+    assert pub["marca"]["fonte"] == "Open Sans"

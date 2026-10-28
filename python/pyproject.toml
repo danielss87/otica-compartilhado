@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "otica-shared"
-version = "0.22.0"
+version = "0.23.0"
 description = "Features compartilhadas entre Ariel (Armazém dos Óculos) e 4 Olhos gestão"
 requires-python = ">=3.9"
 # Sem dependências declaradas de propósito: fastapi, sqlalchemy (2.x) e

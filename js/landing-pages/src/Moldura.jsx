@@ -1,3 +1,4 @@
+import { estiloFonte, useFonteDaMarca } from './fontes'
 import { useRef } from 'react'
 
 // Moldura comum a TODAS as landing pages: logo no topo e botão flutuante de
@@ -194,6 +195,7 @@ function MenuTopo({ logo, menu, whatsapp, coresPagina, onIrParaContato, refMenu,
 // `porContainer`: só na pré-visualização de template com `responsivoPorContainer` — o menu segue a
 // largura simulada (celular/tablet/desktop) em vez da largura da janela.
 export default function MolduraLandingPage({ configuracoes, preview = false, secaoContato = null, coresPagina = null, porContainer = false, children }) {
+  useFonteDaMarca(configuracoes?.marca?.fonte)
   const raiz = useRef(null)
   const refMenu = useRef(null)
   const logo = configuracoes?.marca?.logo_url
@@ -203,7 +205,7 @@ export default function MolduraLandingPage({ configuracoes, preview = false, sec
   const notificacao = w?.notificacao !== false
 
   return (
-    <div ref={raiz} className="bg-white">
+    <div ref={raiz} className="bg-white" style={estiloFonte(configuracoes?.marca?.fonte)}>
       {menu?.ativo && (
         <MenuTopo
           logo={logo}

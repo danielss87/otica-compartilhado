@@ -38,11 +38,11 @@ function getConfig() {
 }
 
 // js/landing-pages/src/templates.jsx
-import { useState as useState3, useEffect as useEffect3 } from "react";
+import { useState as useState3, useEffect as useEffect4 } from "react";
 import { Image as ImageIcon2, MessageCircle, Gem, Footprints, RotateCcw, Star as Star2, Quote } from "lucide-react";
 
 // js/landing-pages/src/templateLeader.jsx
-import { useEffect as useEffect2, useRef as useRef2, useState as useState2 } from "react";
+import { useEffect as useEffect3, useRef as useRef2, useState as useState2 } from "react";
 import {
   Image as ImageIcon,
   Eye,
@@ -62,6 +62,25 @@ import {
   ChevronLeft,
   ChevronRight
 } from "lucide-react";
+
+// js/landing-pages/src/fontes.js
+import { useEffect } from "react";
+var FONTES_MARCA = ["Open Sans", "Inter", "Poppins", "Montserrat", "Nunito", "Raleway"];
+var href = (fonte) => `https://fonts.googleapis.com/css2?family=${fonte.replace(/ /g, "+")}:wght@400;500;700;800&display=swap`;
+function estiloFonte(fonte) {
+  return FONTES_MARCA.includes(fonte) ? { "--olp-fonte": `'${fonte}'` } : void 0;
+}
+function useFonteDaMarca(fonte) {
+  useEffect(() => {
+    if (!FONTES_MARCA.includes(fonte)) return;
+    const url = href(fonte);
+    if (document.querySelector(`link[href="${url}"]`)) return;
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = url;
+    document.head.appendChild(link);
+  }, [fonte]);
+}
 
 // js/landing-pages/src/Moldura.jsx
 import { useRef } from "react";
@@ -124,11 +143,11 @@ function BolinhaNotificacao() {
     )
   ] });
 }
-function BotaoWhatsApp({ href, notificacao }) {
+function BotaoWhatsApp({ href: href2, notificacao }) {
   return /* @__PURE__ */ jsxs(
     "a",
     {
-      href,
+      href: href2,
       target: "_blank",
       rel: "noopener noreferrer",
       "aria-label": "Falar no WhatsApp",
@@ -210,6 +229,7 @@ function MenuTopo({ logo, menu, whatsapp, coresPagina, onIrParaContato, refMenu,
   );
 }
 function MolduraLandingPage({ configuracoes, preview = false, secaoContato = null, coresPagina = null, porContainer = false, children }) {
+  useFonteDaMarca(configuracoes?.marca?.fonte);
   const raiz = useRef(null);
   const refMenu = useRef(null);
   const logo = configuracoes?.marca?.logo_url;
@@ -217,7 +237,7 @@ function MolduraLandingPage({ configuracoes, preview = false, secaoContato = nul
   const wpp = w?.ativo && w?.numero ? linkWhatsApp(w.numero, w.mensagem) : null;
   const menu = configuracoes?.menu;
   const notificacao = w?.notificacao !== false;
-  return /* @__PURE__ */ jsxs("div", { ref: raiz, className: "bg-white", children: [
+  return /* @__PURE__ */ jsxs("div", { ref: raiz, className: "bg-white", style: estiloFonte(configuracoes?.marca?.fonte), children: [
     menu?.ativo && /* @__PURE__ */ jsx(
       MenuTopo,
       {
@@ -240,7 +260,7 @@ function MolduraLandingPage({ configuracoes, preview = false, secaoContato = nul
 }
 
 // js/landing-pages/src/avaliacoesGoogle.jsx
-import { useEffect, useState } from "react";
+import { useEffect as useEffect2, useState } from "react";
 
 // js/landing-pages/src/api.js
 var api_exports = {};
@@ -436,7 +456,7 @@ function carregar() {
 }
 function useAvaliacoesGoogle(ligado) {
   const [dados, setDados] = useState(null);
-  useEffect(() => {
+  useEffect2(() => {
     if (!ligado) {
       setDados(null);
       return;
@@ -531,10 +551,10 @@ var LEADER_FAQ_PADRAO = [
 ];
 var LEADER_RODAPE_ITENS_PADRAO = ["Atendimento consultivo", "\xD3culos ajustados no rosto", "P\xF3s-venda garantido"];
 var FONTE_HREF = "https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap";
-var FONTE_TITULO = "'Syne', ui-sans-serif, system-ui, sans-serif";
-var FONTE_TEXTO = "'DM Sans', ui-sans-serif, system-ui, sans-serif";
+var FONTE_TITULO = "var(--olp-fonte, 'Syne'), ui-sans-serif, system-ui, sans-serif";
+var FONTE_TEXTO = "var(--olp-fonte, 'DM Sans'), ui-sans-serif, system-ui, sans-serif";
 function useFontesLeader() {
-  useEffect2(() => {
+  useEffect3(() => {
     if (document.querySelector(`link[href="${FONTE_HREF}"]`)) return;
     const link = document.createElement("link");
     link.rel = "stylesheet";
@@ -882,7 +902,7 @@ function Carrossel({ children }) {
     const pagina2 = fim ? paginas2 - 1 : Math.min(paginas2 - 1, Math.round(t.scrollLeft / (passo * porVez)));
     setEstado((e) => e.pagina === pagina2 && e.paginas === paginas2 ? e : { pagina: pagina2, paginas: paginas2 });
   }
-  useEffect2(() => {
+  useEffect3(() => {
     medir();
     const t = trilho.current;
     if (!t || typeof ResizeObserver === "undefined") return;
@@ -1577,7 +1597,7 @@ function TelefoneInputSimples({ value, onChange, placeholder }) {
 var GREATS_FONT_HREF = "https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,600&display=swap";
 var GREATS_FONT_STACK = "'Montserrat', ui-sans-serif, system-ui, sans-serif";
 function useGreatsFont() {
-  useEffect3(() => {
+  useEffect4(() => {
     if (document.querySelector(`link[href="${GREATS_FONT_HREF}"]`)) return;
     const link = document.createElement("link");
     link.rel = "stylesheet";
@@ -1712,12 +1732,12 @@ function GreatsRender({ conteudo }) {
 }
 
 // js/landing-pages/src/LandingPagesLista.jsx
-import { useEffect as useEffect6, useState as useState6 } from "react";
+import { useEffect as useEffect7, useState as useState6 } from "react";
 import { useNavigate } from "react-router-dom";
 import { Rocket, Plus as Plus2, X as X2, Copy, CopyPlus, Trash2 as Trash22, Eye as Eye2, Users, ExternalLink, Play, Pause, Check, Settings, MessageCircle as MessageCircle2, Building2 } from "lucide-react";
 
 // js/landing-pages/src/dominio.js
-import { useEffect as useEffect4, useState as useState4 } from "react";
+import { useEffect as useEffect5, useState as useState4 } from "react";
 var dominios = null;
 var carregando = null;
 var ouvintes = /* @__PURE__ */ new Set();
@@ -1740,7 +1760,7 @@ function urlPublica(slug, endereco) {
 }
 function useUrlPublica() {
   const [mapa, setMapa] = useState4(dominios);
-  useEffect4(() => {
+  useEffect5(() => {
     ouvintes.add(setMapa);
     if (dominios === null) carregar2();
     else setMapa(dominios);
@@ -1753,7 +1773,7 @@ function useUrlPublica() {
 var semProtocolo = (url) => url.replace(/^https?:\/\//, "");
 
 // js/landing-pages/src/ModalConfiguracoes.jsx
-import { useEffect as useEffect5, useRef as useRef3, useState as useState5 } from "react";
+import { useEffect as useEffect6, useRef as useRef3, useState as useState5 } from "react";
 import { X, Upload, Trash2, Globe, Activity } from "lucide-react";
 import { Fragment as Fragment2, jsx as jsx5, jsxs as jsxs5 } from "react/jsx-runtime";
 var RASTREAMENTO_VAZIO = { ga4_id: "", ads_id: "", ads_rotulo_lead: "", ads_rotulo_whatsapp: "", hotjar_id: "", clarity_id: "" };
@@ -1793,7 +1813,7 @@ function ModalConfiguracoes({ onClose, empresaId = 1 }) {
   const [testeGoogle, setTesteGoogle] = useState5(null);
   const [paginas, setPaginas] = useState5([]);
   const [testeDominio, setTesteDominio] = useState5(null);
-  useEffect5(() => {
+  useEffect6(() => {
     obterConfiguracoes(empresaId).then(setCfg).catch((e) => setErroCarregar(e.message));
     listarLandingPages().then((l) => setPaginas(l.filter((p) => (p.empresa_id || 1) === empresaId))).catch(() => {
     });
@@ -1967,6 +1987,14 @@ function ModalConfiguracoes({ onClose, empresaId = 1 }) {
             /* @__PURE__ */ jsxs5("div", { children: [
               /* @__PURE__ */ jsx5("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: "Nome da empresa" }),
               /* @__PURE__ */ jsx5("input", { value: cfg.empresa?.nome || "", onChange: (e) => setNomeEmpresa(e.target.value), placeholder: empresaId === 1 ? "Principal" : "", className: inputCls })
+            ] }),
+            /* @__PURE__ */ jsxs5("div", { children: [
+              /* @__PURE__ */ jsx5("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: "Fonte das p\xE1ginas" }),
+              /* @__PURE__ */ jsxs5("select", { value: cfg.marca.fonte || "", onChange: (e) => setMarca("fonte", e.target.value), className: inputCls + " bg-white", children: [
+                /* @__PURE__ */ jsx5("option", { value: "", children: "Padr\xE3o do modelo" }),
+                FONTES_MARCA.map((f) => /* @__PURE__ */ jsx5("option", { value: f, children: f }, f))
+              ] }),
+              /* @__PURE__ */ jsx5("p", { className: "text-xs text-gray-400 mt-1", children: "Vale para o modelo Leader; os outros modelos mant\xEAm a pr\xF3pria fonte." })
             ] }),
             /* @__PURE__ */ jsxs5("div", { children: [
               /* @__PURE__ */ jsx5("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: "T\xEDtulo da aba do navegador" }),
@@ -2309,7 +2337,7 @@ function LandingPagesLista() {
     listarEmpresas().then(setEmpresas).catch(() => {
     });
   }
-  useEffect6(() => {
+  useEffect7(() => {
     carregar3();
   }, []);
   const empresaConfig = empresaSel === "todas" ? 1 : empresaSel;
@@ -2560,7 +2588,7 @@ function ModalEscolherTemplate({ onClose, onCriado, empresas = [], empresaInicia
 }
 
 // js/landing-pages/src/LandingPageEditor.jsx
-import { useEffect as useEffect7, useState as useState7, useRef as useRef4, useCallback } from "react";
+import { useEffect as useEffect8, useState as useState7, useRef as useRef4, useCallback } from "react";
 import { useParams, useNavigate as useNavigate2 } from "react-router-dom";
 import { ArrowLeft, Save, Play as Play2, Pause as Pause2, Copy as Copy2, Check as Check2, Upload as Upload2, X as X3, Plus as Plus3, Trash2 as Trash23, Smartphone, Tablet, Monitor } from "lucide-react";
 import { Fragment as Fragment4, jsx as jsx7, jsxs as jsxs7 } from "react/jsx-runtime";
@@ -2579,17 +2607,17 @@ function LandingPageEditor() {
   const [configuracoes, setConfiguracoes] = useState7(null);
   const [dispositivo, setDispositivo] = useState7("celular");
   const [empresas, setEmpresas] = useState7([]);
-  useEffect7(() => {
+  useEffect8(() => {
     listarEmpresas().then(setEmpresas).catch(() => {
     });
   }, []);
   const empresaDaPagina = lp?.empresa_id || 1;
-  useEffect7(() => {
+  useEffect8(() => {
     if (!lp) return;
     obterConfiguracoes(empresaDaPagina).then(setConfiguracoes).catch(() => {
     });
   }, [!!lp, empresaDaPagina]);
-  useEffect7(() => {
+  useEffect8(() => {
     obterLandingPage(id).then((data) => {
       definirPaginaDasAvaliacoes(data.slug);
       setLp(data);
@@ -2734,7 +2762,7 @@ function SeletorDispositivo({ valor, onChange }) {
 function MolduraDispositivo({ largura, children }) {
   const ref = useRef4(null);
   const [disponivel, setDisponivel] = useState7(0);
-  useEffect7(() => {
+  useEffect8(() => {
     const el = ref.current;
     if (!el || !largura) return;
     const medir = () => setDisponivel(el.clientWidth);
@@ -3406,7 +3434,7 @@ function CampoFaq({ campo, valor, onChange }) {
 }
 
 // js/landing-pages/src/LandingPageView.jsx
-import { useEffect as useEffect8, useState as useState8 } from "react";
+import { useEffect as useEffect9, useState as useState8 } from "react";
 import { useParams as useParams2 } from "react-router-dom";
 
 // js/landing-pages/src/rastreamento.js
@@ -3486,8 +3514,8 @@ function origemDoVisitante() {
   const r = daUrl();
   return Object.keys(r).length ? r : sessao;
 }
-function ehLinkWhatsApp(href) {
-  return /^(https?:\/\/(wa\.me|api\.whatsapp\.com|web\.whatsapp\.com)\/|whatsapp:)/i.test(href || "");
+function ehLinkWhatsApp(href2) {
+  return /^(https?:\/\/(wa\.me|api\.whatsapp\.com|web\.whatsapp\.com)\/|whatsapp:)/i.test(href2 || "");
 }
 
 // js/landing-pages/src/codigoWhatsApp.js
@@ -3544,7 +3572,7 @@ function registrarCodigoWhatsApp(url, codigo, mensagem, origem) {
 // js/landing-pages/src/LandingPageView.jsx
 import { jsx as jsx8 } from "react/jsx-runtime";
 function useFavicon(url) {
-  useEffect8(() => {
+  useEffect9(() => {
     if (!url) return;
     const originais = [...document.querySelectorAll('link[rel~="icon"]')];
     originais.forEach((el) => el.remove());
@@ -3563,10 +3591,10 @@ function LandingPageView({ inicial = false }) {
   const [lp, setLp] = useState8(null);
   const [erro, setErro] = useState8(false);
   const [carregando2, setCarregando] = useState8(true);
-  useEffect8(() => {
+  useEffect9(() => {
     guardarOrigem();
   }, []);
-  useEffect8(() => {
+  useEffect9(() => {
     const busca = inicial ? buscarPaginaInicialPublica() : buscarLandingPagePublica(slugDaRota);
     busca.then((data) => {
       definirPaginaDasAvaliacoes(data.slug || slugDaRota);

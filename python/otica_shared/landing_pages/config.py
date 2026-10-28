@@ -10,6 +10,8 @@ import re
 from typing import Optional
 from urllib.parse import quote
 
+FONTES_MARCA = ("Open Sans", "Inter", "Poppins", "Montserrat", "Nunito", "Raleway")
+
 PADRAO = {
     "whatsapp": {
         "ativo": False, "numero": "", "mensagem": "Olá! Vim pela página e gostaria de mais informações.",
@@ -19,7 +21,9 @@ PADRAO = {
     },
     # favicon_url (v0.7.0): ícone da aba do navegador em todas as páginas públicas.
     # titulo (v0.22.0): título da aba usado quando a página não tem o próprio (meta_titulo).
-    "marca": {"logo_url": None, "favicon_url": None, "titulo": ""},
+    # fonte (v0.23.0): família do Google Fonts da empresa ("" = a do modelo). Só as de `FONTES_MARCA`
+    # (todas com os pesos 400–800), por ser o nome que vai parar num link de fonte.
+    "marca": {"logo_url": None, "favicon_url": None, "titulo": "", "fonte": ""},
     # Empresa (v0.22.0): nome da empresa dona desta linha de configuração. Vazio na empresa 1 =
     # "Principal". Cada empresa tem logo, favicon, título, menu, WhatsApp, domínio e rastreamento próprios.
     "empresa": {"nome": ""},
@@ -152,7 +156,7 @@ def publica(cfg: dict) -> dict:
             "mensagem": w["mensagem"] if ativo else "",
             "notificacao": bool(w["notificacao"]) if ativo else False,
         },
-        "marca": {"logo_url": cfg["marca"]["logo_url"], "favicon_url": cfg["marca"]["favicon_url"]},
+        "marca": {"logo_url": cfg["marca"]["logo_url"], "favicon_url": cfg["marca"]["favicon_url"], "fonte": cfg["marca"]["fonte"]},
         "menu": {
             "ativo": menu_ativo,
             "cta_texto": m["cta_texto"] if menu_ativo and cta_url else "",

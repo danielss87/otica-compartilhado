@@ -250,6 +250,9 @@ def criar_routers(
             for chave in ("logo_url", "favicon_url"):
                 novo["marca"][chave] = (novo["marca"].get(chave) or "").strip() or None
             novo["marca"]["titulo"] = (novo["marca"].get("titulo") or "").strip()[:200]
+            novo["marca"]["fonte"] = (novo["marca"].get("fonte") or "").strip()
+            if novo["marca"]["fonte"] and novo["marca"]["fonte"] not in cfg_lp.FONTES_MARCA:
+                raise HTTPException(422, "Fonte inválida. Escolha uma da lista.")
         if "empresa" in novo:
             novo["empresa"]["nome"] = (novo["empresa"].get("nome") or "").strip()[:100]
         if "google" in novo:

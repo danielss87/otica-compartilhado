@@ -86,8 +86,9 @@ export const LEADER_FAQ_PADRAO = [
 export const LEADER_RODAPE_ITENS_PADRAO = ['Atendimento consultivo', 'Óculos ajustados no rosto', 'Pós-venda garantido']
 
 const FONTE_HREF = 'https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap'
-const FONTE_TITULO = "'Syne', ui-sans-serif, system-ui, sans-serif"
-const FONTE_TEXTO = "'DM Sans', ui-sans-serif, system-ui, sans-serif"
+// `--olp-fonte` (v0.23.0): fonte da empresa, definida na moldura; sem ela valem Syne e DM Sans.
+const FONTE_TITULO = "var(--olp-fonte, 'Syne'), ui-sans-serif, system-ui, sans-serif"
+const FONTE_TEXTO = "var(--olp-fonte, 'DM Sans'), ui-sans-serif, system-ui, sans-serif"
 
 function useFontesLeader() {
   useEffect(() => {

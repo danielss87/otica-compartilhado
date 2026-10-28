@@ -52,6 +52,7 @@ class ConfigMarca(BaseModel):
     logo_url: Optional[str] = None
     favicon_url: Optional[str] = None
     titulo: str = ""  # título da aba quando a página não tem o próprio
+    fonte: str = ""  # família do Google Fonts (ver `FONTES_MARCA`); vazio = a do modelo
 
 
 class ConfigEmpresa(BaseModel):
