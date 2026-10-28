@@ -211,7 +211,7 @@ def test_configuracoes_padrao_desligadas(client):
     pub = client.get(f"/api/publico/landing-pages/{lp['slug']}").json()["configuracoes"]
     assert pub == {
         "whatsapp": {"ativo": False, "numero": "", "mensagem": "", "notificacao": False},
-        "marca": {"logo_url": None, "favicon_url": None},
+        "marca": {"logo_url": None, "favicon_url": None, "titulo": ""},
         "menu": {"ativo": False, "cta_texto": "", "cta_destino": "whatsapp", "cta_url": "", "cta_cor": "padrao", "fixo": False, "cta_tilt": False},
         "rastreamento": {"ga4_id": "", "ads_id": "", "ads_rotulo_lead": "", "ads_rotulo_whatsapp": "", "hotjar_id": "", "clarity_id": ""},
     }
@@ -314,7 +314,7 @@ def test_menu_fixo(client):
 def test_favicon(client):
     lp = _publicar(client)
     r = client.put("/api/landing-pages/configuracoes", headers=AUTH, json={"marca": {"logo_url": "/uploads/l.png", "favicon_url": " /uploads/f.png "}})
-    assert r.json()["marca"] == {"logo_url": "/uploads/l.png", "favicon_url": "/uploads/f.png"}
+    assert r.json()["marca"] == {"logo_url": "/uploads/l.png", "favicon_url": "/uploads/f.png", "titulo": ""}
     pub = client.get(f"/api/publico/landing-pages/{lp['slug']}").json()["configuracoes"]
     assert pub["marca"]["favicon_url"] == "/uploads/f.png"
     r = client.put("/api/landing-pages/configuracoes", headers=AUTH, json={"marca": {"logo_url": "/uploads/l.png", "favicon_url": ""}})
@@ -501,3 +501,81 @@ def test_lead_grava_gclid_e_utm(client):
     lead = client.get(f"/api/landing-pages/{lp['id']}/leads", headers=AUTH).json()[0]
     assert lead["gclid"] == "Cj0KCQ" and lead["utm_campaign"] == "123" and lead["utm_term"] == "oculos de grau"
     assert lead["gbraid"] is None and len(lead["utm_content"]) == 255
+
+
+# ─── Empresas (v0.22.0) ─────────────────────────────────────────────────────
+
+def _empresa(client, nome="Instituto Otovida"):
+    r = client.post("/api/landing-pages/empresas", json={"nome": nome}, headers=AUTH)
+    assert r.status_code == 201, r.text
+    return r.json()
+
+
+def test_empresa_1_sempre_existe_e_pagina_sem_empresa_cai_nela(client):
+    lista = client.get("/api/landing-pages/empresas", headers=AUTH).json()
+    assert lista == [{"id": 1, "nome": "Principal", "total_paginas": 0, "dominio": ""}]
+    lp = _criar(client)
+    assert lp["empresa_id"] == 1
+    assert client.get("/api/landing-pages/empresas", headers=AUTH).json()[0]["total_paginas"] == 1
+
+
+def test_criar_empresa_e_pagina_herda_branding_e_titulo(client):
+    ot = _empresa(client)
+    assert ot["id"] == 2
+    r = client.put(f"/api/landing-pages/configuracoes?empresa_id={ot['id']}", headers=AUTH, json={
+        "marca": {"logo_url": "https://x/logo.png", "favicon_url": "https://x/fav.png", "titulo": "Otovida | Oftalmologia"},
+        "whatsapp": {"ativo": True, "numero": "48988215074", "mensagem": "Oi Otovida", "notificacao": True},
+    })
+    assert r.status_code == 200, r.text
+    # a empresa 1 não muda
+    assert client.get("/api/landing-pages/configuracoes", headers=AUTH).json()["whatsapp"]["numero"] == ""
+    lp = client.post("/api/landing-pages", json={"nome": "Bradesco", "template": "simples", "empresa_id": ot["id"]}, headers=AUTH).json()
+    assert lp["empresa_id"] == 2
+    client.post(f"/api/landing-pages/{lp['id']}/publicar", headers=AUTH)
+    pub = client.get(f"/api/publico/landing-pages/{lp['slug']}").json()
+    assert pub["meta_titulo"] == "Otovida | Oftalmologia"
+    assert pub["configuracoes"]["marca"]["favicon_url"] == "https://x/fav.png"
+    assert pub["configuracoes"]["whatsapp"]["numero"] == "5548988215074"
+    # título da própria página vence o da empresa
+    client.put(f"/api/landing-pages/{lp['id']}", headers=AUTH, json={"meta_titulo": "Só esta"})
+    assert client.get(f"/api/publico/landing-pages/{lp['slug']}").json()["meta_titulo"] == "Só esta"
+
+
+def test_empresa_inexistente_e_nome_repetido(client):
+    assert client.post("/api/landing-pages", json={"nome": "x", "template": "simples", "empresa_id": 9}, headers=AUTH).status_code == 404
+    assert client.get("/api/landing-pages/configuracoes?empresa_id=9", headers=AUTH).status_code == 404
+    _empresa(client)
+    r = client.post("/api/landing-pages/empresas", json={"nome": "instituto otovida"}, headers=AUTH)
+    assert r.status_code == 409
+
+
+def test_mover_pagina_de_empresa_e_duplicar_mantem(client):
+    ot = _empresa(client)
+    lp = _criar(client)
+    r = client.put(f"/api/landing-pages/{lp['id']}", headers=AUTH, json={"empresa_id": ot["id"]})
+    assert r.json()["empresa_id"] == ot["id"]
+    copia = client.post(f"/api/landing-pages/{lp['id']}/duplicar", headers=AUTH).json()
+    assert copia["empresa_id"] == ot["id"]
+    back = client.put(f"/api/landing-pages/{lp['id']}", headers=AUTH, json={"empresa_id": 1}).json()
+    assert back["empresa_id"] == 1
+
+
+def test_dominio_por_empresa_raiz_por_host(client):
+    ot = _empresa(client)
+    a = _publicar(client)
+    b = client.post("/api/landing-pages", json={"nome": "Home Otovida", "template": "simples", "empresa_id": ot["id"]}, headers=AUTH).json()
+    client.post(f"/api/landing-pages/{b['id']}/publicar", headers=AUTH)
+    client.put("/api/landing-pages/configuracoes", headers=AUTH, json={"dominio": {"endereco": "lp.armazem.com.br", "pagina_inicial": a["slug"]}})
+    r = client.put(f"/api/landing-pages/configuracoes?empresa_id={ot['id']}", headers=AUTH,
+                   json={"dominio": {"endereco": "oftalmo.otovida.com.br", "pagina_inicial": b["slug"]}})
+    assert r.status_code == 200, r.text
+    assert client.get("/api/publico/landing-pages/_inicio?host=oftalmo.otovida.com.br").json()["slug"] == b["slug"]
+    assert client.get("/api/publico/landing-pages/_inicio?host=lp.armazem.com.br").json()["slug"] == a["slug"]
+    assert client.get("/api/publico/landing-pages/_inicio").json()["slug"] == a["slug"]  # sem host: empresa 1
+    # o mesmo domínio não pode ser de duas empresas
+    r = client.put(f"/api/landing-pages/configuracoes?empresa_id={ot['id']}", headers=AUTH,
+                   json={"dominio": {"endereco": "lp.armazem.com.br", "pagina_inicial": ""}})
+    assert r.status_code == 409
+    # renomear o slug da página inicial acompanha a config da empresa certa
+    client.put(f"/api/landing-pages/{b['id']}", headers=AUTH, json={"slug": "home-nova"})
+    assert client.get("/api/publico/landing-pages/_inicio?host=oftalmo.otovida.com.br").json()["slug"] == "home-nova"

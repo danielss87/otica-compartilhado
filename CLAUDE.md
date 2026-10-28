@@ -21,7 +21,7 @@ package.json                     # npm: otica-compartilhado (raiz do repo)
 
 ## Features
 
-### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.21.0, out/2026
+### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.22.0, out/2026
 Origem: 4 Olhos (ago/2026). Páginas de captura por template pronto com edição guiada (4 templates:
 `simples`, `promocao`, `agendar_consulta`, `greats`), página pública `/lp/:slug`, contagem de
 visualizações e captura de lead (nome + telefone + fbclid). Quinto template, `leader` (v0.10.0), em
@@ -115,6 +115,22 @@ para todas as opções.
 8. Repo **público**: nunca commitar segredo, credencial, URL interna, dado de cliente ou telefone real.
 
 ## Changelog
+
+### v0.22.0 (28/10/2026)
+- **Empresas**: uma instalação pode ter mais de uma empresa (ex.: Armazém dos Óculos e Instituto Otovida no Ariel), cada
+  uma com **logo, favicon, título da aba, menu do topo, WhatsApp, domínio próprio, avaliações do Google e rastreamento
+  próprios**. A página só aponta para a empresa dela (`landing_pages.empresa_id`, **coluna nova: `ALTER TABLE
+  landing_pages ADD COLUMN empresa_id INTEGER` em cada app**; NULL = empresa 1).
+- Cada empresa é uma **linha de `landing_pages_config`** (a de id=1 é a original e vale para toda página sem
+  empresa: nada muda para quem não criar empresa nova). Nome da empresa em `config.empresa.nome`; `marca.titulo` é o
+  título da aba usado quando a página não tem `meta_titulo`.
+- API: `GET/POST /landing-pages/empresas`; `GET/PUT /landing-pages/configuracoes?empresa_id=` (padrão 1);
+  página aceita `empresa_id` no criar/atualizar; `GET /publico/landing-pages/_inicio?host=` acha a empresa dona do
+  domínio (sem host: empresa 1); `GET /publico/landing-pages/avaliacoes-google?slug=`. O mesmo domínio não pode ser de
+  duas empresas (409).
+- Painel: filtro por empresa e "+ Empresa" na lista, seletor de empresa ao criar e no editor, nome da empresa e título
+  da aba em Configurações → Identidade de marca. Só aparece seletor quando há mais de uma empresa.
+- A 4 Olhos pode ignorar: sem empresa nova, o comportamento é idêntico ao da v0.21.0.
 
 ### v0.21.0 (27/10/2026)
 - **Código invisível no WhatsApp** (`codigoWhatsApp.js`), desligado por padrão: com

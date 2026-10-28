@@ -121,8 +121,10 @@ export async function buscarLandingPagePublica(slug) {
 }
 
 // Raiz do domínio próprio: a página escolhida como inicial (traz `slug`).
+// `host` (v0.22.0): o backend acha a empresa dona do domínio acessado.
 export async function buscarPaginaInicialPublica() {
-  return buscarLandingPagePublica('_inicio')
+  const host = typeof window !== 'undefined' ? window.location.hostname : ''
+  return comRetentativa(async () => handlePublico(await fetch(`${basePublica()}/_inicio?host=${encodeURIComponent(host)}`)), 90000)
 }
 
 export async function registrarVisualizacao(slug) {
@@ -156,12 +158,25 @@ export async function enviarLeadLandingPage(slug, payload) {
 
 // ─── Configurações gerais (valem para todas as landing pages) ──────────────
 
-export async function obterConfiguracoes() {
-  return handle(await req(`${base()}/configuracoes`, { headers: headers() }))
+// Empresas (v0.22.0): cada uma com as próprias configurações. A 1 é a original do app.
+export async function listarEmpresas() {
+  return handle(await req(`${base()}/empresas`, { headers: headers() }))
 }
 
-export async function salvarConfiguracoes(payload) {
-  return handle(await req(`${base()}/configuracoes`, {
+export async function criarEmpresa(nome) {
+  return handle(await req(`${base()}/empresas`, {
+    method: 'POST',
+    headers: headers({ 'Content-Type': 'application/json' }),
+    body: JSON.stringify({ nome }),
+  }))
+}
+
+export async function obterConfiguracoes(empresaId = 1) {
+  return handle(await req(`${base()}/configuracoes?empresa_id=${empresaId}`, { headers: headers() }))
+}
+
+export async function salvarConfiguracoes(payload, empresaId = 1) {
+  return handle(await req(`${base()}/configuracoes?empresa_id=${empresaId}`, {
     method: 'PUT',
     headers: headers({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(payload),
@@ -171,8 +186,8 @@ export async function salvarConfiguracoes(payload) {
 // ─── Avaliações do Google (v0.15.0) ─────────────────────────────────────────
 
 // Público: avaliações já filtradas para a página ({ ativo, nota, total, url, avaliacoes }).
-export async function buscarAvaliacoesGoogle() {
-  return handlePublico(await fetch(`${basePublica()}/avaliacoes-google`))
+export async function buscarAvaliacoesGoogle(slug = '') {
+  return handlePublico(await fetch(`${basePublica()}/avaliacoes-google?slug=${encodeURIComponent(slug)}`))
 }
 
 // Painel: consulta o Google agora com a busca digitada no modal (antes de salvar).

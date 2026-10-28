@@ -249,10 +249,12 @@ __export(api_exports, {
   buscarAvaliacoesGoogle: () => buscarAvaliacoesGoogle,
   buscarLandingPagePublica: () => buscarLandingPagePublica,
   buscarPaginaInicialPublica: () => buscarPaginaInicialPublica,
+  criarEmpresa: () => criarEmpresa,
   criarLandingPage: () => criarLandingPage,
   deletarLandingPage: () => deletarLandingPage,
   duplicarLandingPage: () => duplicarLandingPage,
   enviarLeadLandingPage: () => enviarLeadLandingPage,
+  listarEmpresas: () => listarEmpresas,
   listarLandingPages: () => listarLandingPages,
   listarLeadsLandingPage: () => listarLeadsLandingPage,
   listarTemplates: () => listarTemplates,
@@ -361,7 +363,8 @@ async function buscarLandingPagePublica(slug) {
   return comRetentativa(async () => handlePublico(await fetch(`${basePublica()}/${slug}`)), 9e4);
 }
 async function buscarPaginaInicialPublica() {
-  return buscarLandingPagePublica("_inicio");
+  const host = typeof window !== "undefined" ? window.location.hostname : "";
+  return comRetentativa(async () => handlePublico(await fetch(`${basePublica()}/_inicio?host=${encodeURIComponent(host)}`)), 9e4);
 }
 async function registrarVisualizacao(slug) {
   try {
@@ -385,18 +388,28 @@ async function enviarLeadLandingPage(slug, payload) {
     body: JSON.stringify(payload)
   })), 6e4);
 }
-async function obterConfiguracoes() {
-  return handle(await req(`${base()}/configuracoes`, { headers: headers() }));
+async function listarEmpresas() {
+  return handle(await req(`${base()}/empresas`, { headers: headers() }));
 }
-async function salvarConfiguracoes(payload) {
-  return handle(await req(`${base()}/configuracoes`, {
+async function criarEmpresa(nome) {
+  return handle(await req(`${base()}/empresas`, {
+    method: "POST",
+    headers: headers({ "Content-Type": "application/json" }),
+    body: JSON.stringify({ nome })
+  }));
+}
+async function obterConfiguracoes(empresaId = 1) {
+  return handle(await req(`${base()}/configuracoes?empresa_id=${empresaId}`, { headers: headers() }));
+}
+async function salvarConfiguracoes(payload, empresaId = 1) {
+  return handle(await req(`${base()}/configuracoes?empresa_id=${empresaId}`, {
     method: "PUT",
     headers: headers({ "Content-Type": "application/json" }),
     body: JSON.stringify(payload)
   }));
 }
-async function buscarAvaliacoesGoogle() {
-  return handlePublico(await fetch(`${basePublica()}/avaliacoes-google`));
+async function buscarAvaliacoesGoogle(slug = "") {
+  return handlePublico(await fetch(`${basePublica()}/avaliacoes-google?slug=${encodeURIComponent(slug)}`));
 }
 async function testarAvaliacoesGoogle(busca) {
   return handle(await req(`${base()}/avaliacoes-google/teste?busca=${encodeURIComponent(busca)}`, { headers: headers() }));
@@ -404,10 +417,17 @@ async function testarAvaliacoesGoogle(busca) {
 
 // js/landing-pages/src/avaliacoesGoogle.jsx
 import { jsx as jsx2, jsxs as jsxs2 } from "react/jsx-runtime";
+var slugAtual = "";
 var promessa = null;
+function definirPaginaDasAvaliacoes(slug) {
+  if (slug !== slugAtual) {
+    slugAtual = slug || "";
+    promessa = null;
+  }
+}
 function carregar() {
   if (!promessa) {
-    promessa = buscarAvaliacoesGoogle().then((d) => d?.ativo && d.avaliacoes?.length ? d : null).catch(() => {
+    promessa = buscarAvaliacoesGoogle(slugAtual).then((d) => d?.ativo && d.avaliacoes?.length ? d : null).catch(() => {
       promessa = null;
       return null;
     });
@@ -1694,20 +1714,23 @@ function GreatsRender({ conteudo }) {
 // js/landing-pages/src/LandingPagesLista.jsx
 import { useEffect as useEffect6, useState as useState6 } from "react";
 import { useNavigate } from "react-router-dom";
-import { Rocket, Plus as Plus2, X as X2, Copy, CopyPlus, Trash2 as Trash22, Eye as Eye2, Users, ExternalLink, Play, Pause, Check, Settings, MessageCircle as MessageCircle2 } from "lucide-react";
+import { Rocket, Plus as Plus2, X as X2, Copy, CopyPlus, Trash2 as Trash22, Eye as Eye2, Users, ExternalLink, Play, Pause, Check, Settings, MessageCircle as MessageCircle2, Building2 } from "lucide-react";
 
 // js/landing-pages/src/dominio.js
 import { useEffect as useEffect4, useState as useState4 } from "react";
-var dominio = null;
+var dominios = null;
 var carregando = null;
 var ouvintes = /* @__PURE__ */ new Set();
-function definirDominioProprio(endereco) {
-  dominio = endereco || "";
-  ouvintes.forEach((f) => f(dominio));
+function definirDominioProprio(endereco, empresaId = 1) {
+  dominios = { ...dominios || {}, [empresaId]: endereco || "" };
+  ouvintes.forEach((f) => f(dominios));
 }
 function carregar2() {
   if (!carregando) {
-    carregando = obterConfiguracoes().then((c) => definirDominioProprio(c?.dominio?.endereco)).catch(() => {
+    carregando = listarEmpresas().then((lista2) => {
+      dominios = Object.fromEntries(lista2.map((e) => [e.id, e.dominio || ""]));
+      ouvintes.forEach((f) => f(dominios));
+    }).catch(() => {
       carregando = null;
     });
   }
@@ -1716,16 +1739,16 @@ function urlPublica(slug, endereco) {
   return endereco ? `https://${endereco}/${slug}` : `${window.location.origin}${getConfig().rotaPublica}/${slug}`;
 }
 function useUrlPublica() {
-  const [endereco, setEndereco] = useState4(dominio);
+  const [mapa, setMapa] = useState4(dominios);
   useEffect4(() => {
-    ouvintes.add(setEndereco);
-    if (dominio === null) carregar2();
-    else setEndereco(dominio);
+    ouvintes.add(setMapa);
+    if (dominios === null) carregar2();
+    else setMapa(dominios);
     return () => {
-      ouvintes.delete(setEndereco);
+      ouvintes.delete(setMapa);
     };
   }, []);
-  return (slug) => urlPublica(slug, endereco);
+  return (slug, empresaId = 1) => urlPublica(slug, mapa?.[empresaId] || "");
 }
 var semProtocolo = (url) => url.replace(/^https?:\/\//, "");
 
@@ -1757,7 +1780,7 @@ function Interruptor({ ligado, onChange, label }) {
     }
   );
 }
-function ModalConfiguracoes({ onClose }) {
+function ModalConfiguracoes({ onClose, empresaId = 1 }) {
   const [cfg, setCfg] = useState5(null);
   const [erroCarregar, setErroCarregar] = useState5("");
   const [salvando, setSalvando] = useState5(false);
@@ -1771,10 +1794,10 @@ function ModalConfiguracoes({ onClose }) {
   const [paginas, setPaginas] = useState5([]);
   const [testeDominio, setTesteDominio] = useState5(null);
   useEffect5(() => {
-    obterConfiguracoes().then(setCfg).catch((e) => setErroCarregar(e.message));
-    listarLandingPages().then(setPaginas).catch(() => {
+    obterConfiguracoes(empresaId).then(setCfg).catch((e) => setErroCarregar(e.message));
+    listarLandingPages().then((l) => setPaginas(l.filter((p) => (p.empresa_id || 1) === empresaId))).catch(() => {
     });
-  }, []);
+  }, [empresaId]);
   function setDominio(campo, valor) {
     setCfg((c) => ({ ...c, dominio: { endereco: "", pagina_inicial: "", ...c.dominio, [campo]: valor } }));
     setSalvo(false);
@@ -1814,6 +1837,10 @@ function ModalConfiguracoes({ onClose }) {
     } catch (e) {
       setTesteGoogle({ erro: e.message });
     }
+  }
+  function setNomeEmpresa(valor) {
+    setCfg((c) => ({ ...c, empresa: { ...c.empresa, nome: valor } }));
+    setSalvo(false);
   }
   function setMarca(campo, url) {
     setCfg((c) => ({ ...c, marca: { ...c.marca, [campo]: url } }));
@@ -1858,10 +1885,11 @@ function ModalConfiguracoes({ onClose }) {
         menu: cfg.menu,
         ...cfg.google ? { google: cfg.google } : {},
         ...cfg.dominio ? { dominio: cfg.dominio } : {},
-        ...cfg.rastreamento ? { rastreamento: cfg.rastreamento } : {}
-      });
+        ...cfg.rastreamento ? { rastreamento: cfg.rastreamento } : {},
+        ...cfg.empresa ? { empresa: cfg.empresa } : {}
+      }, empresaId);
       setCfg(atualizado);
-      definirDominioProprio(atualizado.dominio?.endereco);
+      definirDominioProprio(atualizado.dominio?.endereco, empresaId);
       setSalvo(true);
     } catch (e) {
       setErro(e.message);
@@ -1875,7 +1903,7 @@ function ModalConfiguracoes({ onClose }) {
       /* @__PURE__ */ jsxs5("div", { className: "flex items-center justify-between px-5 py-4 border-b border-gray-100", children: [
         /* @__PURE__ */ jsxs5("div", { children: [
           /* @__PURE__ */ jsx5("h2", { className: "text-base font-bold text-gray-900", children: "Configura\xE7\xF5es" }),
-          /* @__PURE__ */ jsx5("p", { className: "text-xs text-gray-400", children: "Valem para todas as landing pages" })
+          /* @__PURE__ */ jsx5("p", { className: "text-xs text-gray-400", children: empresaId === 1 && !cfg?.empresa?.nome ? "Valem para todas as landing pages" : `Valem para as p\xE1ginas de ${cfg?.empresa?.nome || "esta empresa"}` })
         ] }),
         /* @__PURE__ */ jsx5("button", { onClick: onClose, className: "p-1.5 rounded-lg hover:bg-gray-100 text-gray-400", "aria-label": "Fechar", children: /* @__PURE__ */ jsx5(X, { size: 18 }) })
       ] }),
@@ -1935,6 +1963,15 @@ function ModalConfiguracoes({ onClose }) {
             /* @__PURE__ */ jsxs5("div", { children: [
               /* @__PURE__ */ jsx5("p", { className: "text-sm font-semibold text-gray-900", children: "Identidade de marca" }),
               /* @__PURE__ */ jsx5("p", { className: "text-xs text-gray-500", children: "O logo aparece no topo de todas as p\xE1ginas, e o favicon na aba do navegador." })
+            ] }),
+            /* @__PURE__ */ jsxs5("div", { children: [
+              /* @__PURE__ */ jsx5("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: "Nome da empresa" }),
+              /* @__PURE__ */ jsx5("input", { value: cfg.empresa?.nome || "", onChange: (e) => setNomeEmpresa(e.target.value), placeholder: empresaId === 1 ? "Principal" : "", className: inputCls })
+            ] }),
+            /* @__PURE__ */ jsxs5("div", { children: [
+              /* @__PURE__ */ jsx5("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: "T\xEDtulo da aba do navegador" }),
+              /* @__PURE__ */ jsx5("input", { value: cfg.marca.titulo || "", onChange: (e) => setMarca("titulo", e.target.value), placeholder: "Ex: Otovida | Oftalmologia", className: inputCls }),
+              /* @__PURE__ */ jsx5("p", { className: "text-xs text-gray-400 mt-1", children: 'Usado nas p\xE1ginas que n\xE3o t\xEAm t\xEDtulo pr\xF3prio (campo "T\xEDtulo da p\xE1gina" no editor).' })
             ] }),
             cfg.marca.logo_url ? /* @__PURE__ */ jsxs5("div", { className: "flex items-center gap-3", children: [
               /* @__PURE__ */ jsx5("div", { className: "flex items-center justify-center rounded-lg border border-gray-200 bg-white px-4 py-3", children: /* @__PURE__ */ jsx5("img", { src: cfg.marca.logo_url, alt: "Logo", className: "h-12 w-auto max-w-[200px] object-contain" }) }),
@@ -2263,14 +2300,33 @@ function LandingPagesLista() {
   const [modalCriar, setModalCriar] = useState6(false);
   const [modalConfig, setModalConfig] = useState6(false);
   const [copiado, setCopiado] = useState6(null);
+  const [empresas, setEmpresas] = useState6([]);
+  const [empresaSel, setEmpresaSel] = useState6("todas");
   function carregar3() {
     setCarregando(true);
     listarLandingPages().then(setItens).catch(() => {
     }).finally(() => setCarregando(false));
+    listarEmpresas().then(setEmpresas).catch(() => {
+    });
   }
   useEffect6(() => {
     carregar3();
   }, []);
+  const empresaConfig = empresaSel === "todas" ? 1 : empresaSel;
+  const visiveis = empresaSel === "todas" ? itens : itens.filter((lp) => (lp.empresa_id || 1) === empresaSel);
+  const nomeEmpresa = (id) => empresas.find((e) => e.id === id)?.nome;
+  async function handleNovaEmpresa() {
+    const nome = window.prompt("Nome da nova empresa (ex: Instituto Otovida):");
+    if (!nome?.trim()) return;
+    try {
+      const nova = await criarEmpresa(nome.trim());
+      carregar3();
+      setEmpresaSel(nova.id);
+      setModalConfig(true);
+    } catch (e) {
+      alert(e.message);
+    }
+  }
   async function handlePublicarPausar(lp) {
     try {
       if (lp.status === "publicada") await pausarLandingPage(lp.id);
@@ -2299,7 +2355,7 @@ function LandingPagesLista() {
     }
   }
   function copiarLink(slug) {
-    navigator.clipboard?.writeText(urlDaPagina(slug));
+    navigator.clipboard?.writeText(urlDaPagina(slug, itens.find((i) => i.slug === slug)?.empresa_id || 1));
     setCopiado(slug);
     setTimeout(() => setCopiado(null), 1500);
   }
@@ -2338,73 +2394,96 @@ function LandingPagesLista() {
         )
       ] })
     ] }) }),
-    /* @__PURE__ */ jsx6("div", { className: "max-w-5xl mx-auto p-4 sm:p-6", children: carregando2 ? /* @__PURE__ */ jsx6("p", { className: "text-sm text-gray-400 text-center py-10", children: "Carregando..." }) : itens.length === 0 ? /* @__PURE__ */ jsxs6("div", { className: "text-center py-16", children: [
-      /* @__PURE__ */ jsx6(Rocket, { size: 32, className: "mx-auto text-gray-300 mb-3" }),
-      /* @__PURE__ */ jsx6("p", { className: "text-sm text-gray-500", children: "Nenhuma landing page ainda." }),
-      /* @__PURE__ */ jsx6("button", { onClick: () => setModalCriar(true), className: "mt-3 text-sm font-medium text-violet-600 hover:text-violet-700", children: "Criar a primeira" })
-    ] }) : /* @__PURE__ */ jsx6("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4", children: itens.map((lp) => /* @__PURE__ */ jsxs6("div", { className: "bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex flex-col gap-3", children: [
-      /* @__PURE__ */ jsxs6("div", { className: "flex items-start justify-between gap-2", children: [
-        /* @__PURE__ */ jsxs6(
+    /* @__PURE__ */ jsxs6("div", { className: "max-w-5xl mx-auto p-4 sm:p-6", children: [
+      empresas.length > 1 && /* @__PURE__ */ jsxs6("div", { className: "flex flex-wrap items-center gap-2 mb-4", children: [
+        /* @__PURE__ */ jsx6(Building2, { size: 15, className: "text-gray-400" }),
+        [{ id: "todas", nome: "Todas" }, ...empresas].map((e) => /* @__PURE__ */ jsx6(
           "button",
           {
-            onClick: () => navigate(`${rotaPainel}/${lp.id}`),
-            className: "text-left min-w-0",
-            children: [
-              /* @__PURE__ */ jsx6("p", { className: "text-sm font-semibold text-gray-900 truncate hover:text-violet-600", children: lp.nome }),
-              /* @__PURE__ */ jsx6("p", { className: "text-xs text-gray-400 truncate", children: semProtocolo(urlDaPagina(lp.slug)) })
-            ]
-          }
-        ),
-        /* @__PURE__ */ jsx6("span", { className: `text-[11px] font-medium px-2 py-0.5 rounded-full shrink-0 ${STATUS_ESTILO[lp.status]}`, children: STATUS_LABEL[lp.status] })
+            onClick: () => setEmpresaSel(e.id),
+            className: `px-3 py-1 rounded-full text-xs font-medium border transition-colors ${empresaSel === e.id ? "bg-violet-600 text-white border-violet-600" : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"}`,
+            children: e.nome
+          },
+          e.id
+        )),
+        /* @__PURE__ */ jsx6("button", { onClick: handleNovaEmpresa, className: "px-3 py-1 rounded-full text-xs font-medium border border-dashed border-gray-300 text-gray-500 hover:text-violet-600 hover:border-violet-400", children: "+ Empresa" })
       ] }),
-      /* @__PURE__ */ jsxs6("div", { className: "flex items-center gap-4 text-xs text-gray-500", children: [
-        /* @__PURE__ */ jsxs6("span", { className: "flex items-center gap-1", children: [
-          /* @__PURE__ */ jsx6(Eye2, { size: 13 }),
-          " ",
-          lp.visualizacoes
+      empresas.length <= 1 && !carregando2 && /* @__PURE__ */ jsx6("div", { className: "mb-4", children: /* @__PURE__ */ jsx6("button", { onClick: handleNovaEmpresa, className: "text-xs font-medium text-gray-400 hover:text-violet-600", children: "+ Adicionar outra empresa" }) }),
+      carregando2 ? /* @__PURE__ */ jsx6("p", { className: "text-sm text-gray-400 text-center py-10", children: "Carregando..." }) : visiveis.length === 0 ? /* @__PURE__ */ jsxs6("div", { className: "text-center py-16", children: [
+        /* @__PURE__ */ jsx6(Rocket, { size: 32, className: "mx-auto text-gray-300 mb-3" }),
+        /* @__PURE__ */ jsx6("p", { className: "text-sm text-gray-500", children: "Nenhuma landing page ainda." }),
+        /* @__PURE__ */ jsx6("button", { onClick: () => setModalCriar(true), className: "mt-3 text-sm font-medium text-violet-600 hover:text-violet-700", children: "Criar a primeira" })
+      ] }) : /* @__PURE__ */ jsx6("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4", children: visiveis.map((lp) => /* @__PURE__ */ jsxs6("div", { className: "bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex flex-col gap-3", children: [
+        /* @__PURE__ */ jsxs6("div", { className: "flex items-start justify-between gap-2", children: [
+          /* @__PURE__ */ jsxs6(
+            "button",
+            {
+              onClick: () => navigate(`${rotaPainel}/${lp.id}`),
+              className: "text-left min-w-0",
+              children: [
+                /* @__PURE__ */ jsx6("p", { className: "text-sm font-semibold text-gray-900 truncate hover:text-violet-600", children: lp.nome }),
+                /* @__PURE__ */ jsx6("p", { className: "text-xs text-gray-400 truncate", children: semProtocolo(urlDaPagina(lp.slug, lp.empresa_id)) }),
+                empresas.length > 1 && /* @__PURE__ */ jsx6("p", { className: "text-[11px] text-gray-400 truncate", children: nomeEmpresa(lp.empresa_id || 1) })
+              ]
+            }
+          ),
+          /* @__PURE__ */ jsx6("span", { className: `text-[11px] font-medium px-2 py-0.5 rounded-full shrink-0 ${STATUS_ESTILO[lp.status]}`, children: STATUS_LABEL[lp.status] })
         ] }),
-        /* @__PURE__ */ jsxs6("span", { className: "flex items-center gap-1", title: "Cliques no WhatsApp", children: [
-          /* @__PURE__ */ jsx6(MessageCircle2, { size: 13 }),
-          " ",
-          lp.cliques_whatsapp ?? 0
+        /* @__PURE__ */ jsxs6("div", { className: "flex items-center gap-4 text-xs text-gray-500", children: [
+          /* @__PURE__ */ jsxs6("span", { className: "flex items-center gap-1", children: [
+            /* @__PURE__ */ jsx6(Eye2, { size: 13 }),
+            " ",
+            lp.visualizacoes
+          ] }),
+          /* @__PURE__ */ jsxs6("span", { className: "flex items-center gap-1", title: "Cliques no WhatsApp", children: [
+            /* @__PURE__ */ jsx6(MessageCircle2, { size: 13 }),
+            " ",
+            lp.cliques_whatsapp ?? 0
+          ] }),
+          /* @__PURE__ */ jsxs6("span", { className: "flex items-center gap-1", children: [
+            /* @__PURE__ */ jsx6(Users, { size: 13 }),
+            " ",
+            lp.total_leads
+          ] }),
+          lp.criado_por_nome && /* @__PURE__ */ jsx6("span", { className: "flex items-center gap-1.5 ml-auto", children: /* @__PURE__ */ jsx6(Avatar, { nome: lp.criado_por_nome, fotoUrl: lp.criado_por_foto_url, size: "xs" }) })
         ] }),
-        /* @__PURE__ */ jsxs6("span", { className: "flex items-center gap-1", children: [
-          /* @__PURE__ */ jsx6(Users, { size: 13 }),
-          " ",
-          lp.total_leads
-        ] }),
-        lp.criado_por_nome && /* @__PURE__ */ jsx6("span", { className: "flex items-center gap-1.5 ml-auto", children: /* @__PURE__ */ jsx6(Avatar, { nome: lp.criado_por_nome, fotoUrl: lp.criado_por_foto_url, size: "xs" }) })
-      ] }),
-      /* @__PURE__ */ jsxs6("div", { className: "flex items-center gap-1.5 pt-2 border-t border-gray-100", children: [
-        /* @__PURE__ */ jsx6(
-          "button",
-          {
-            onClick: () => handlePublicarPausar(lp),
-            title: lp.status === "publicada" ? "Pausar" : "Publicar",
-            className: "p-1.5 rounded-lg hover:bg-gray-100 text-gray-500",
-            children: lp.status === "publicada" ? /* @__PURE__ */ jsx6(Pause, { size: 14 }) : /* @__PURE__ */ jsx6(Play, { size: 14 })
-          }
-        ),
-        lp.status === "publicada" && /* @__PURE__ */ jsxs6(Fragment3, { children: [
-          /* @__PURE__ */ jsx6("button", { onClick: () => copiarLink(lp.slug), title: "Copiar link", className: "p-1.5 rounded-lg hover:bg-gray-100 text-gray-500", children: copiado === lp.slug ? /* @__PURE__ */ jsx6(Check, { size: 14, className: "text-emerald-600" }) : /* @__PURE__ */ jsx6(Copy, { size: 14 }) }),
-          /* @__PURE__ */ jsx6("a", { href: urlDaPagina(lp.slug), target: "_blank", rel: "noopener noreferrer", title: "Abrir p\xE1gina", className: "p-1.5 rounded-lg hover:bg-gray-100 text-gray-500", children: /* @__PURE__ */ jsx6(ExternalLink, { size: 14 }) })
-        ] }),
-        /* @__PURE__ */ jsx6("button", { onClick: () => handleDuplicar(lp), title: "Duplicar", className: "p-1.5 rounded-lg hover:bg-gray-100 text-gray-500", children: /* @__PURE__ */ jsx6(CopyPlus, { size: 14 }) }),
-        /* @__PURE__ */ jsx6("button", { onClick: () => handleExcluir(lp), title: "Excluir", className: "p-1.5 rounded-lg hover:bg-red-50 text-red-500 ml-auto", children: /* @__PURE__ */ jsx6(Trash22, { size: 14 }) })
-      ] })
-    ] }, lp.id)) }) }),
-    modalConfig && /* @__PURE__ */ jsx6(ModalConfiguracoes, { onClose: () => setModalConfig(false) }),
+        /* @__PURE__ */ jsxs6("div", { className: "flex items-center gap-1.5 pt-2 border-t border-gray-100", children: [
+          /* @__PURE__ */ jsx6(
+            "button",
+            {
+              onClick: () => handlePublicarPausar(lp),
+              title: lp.status === "publicada" ? "Pausar" : "Publicar",
+              className: "p-1.5 rounded-lg hover:bg-gray-100 text-gray-500",
+              children: lp.status === "publicada" ? /* @__PURE__ */ jsx6(Pause, { size: 14 }) : /* @__PURE__ */ jsx6(Play, { size: 14 })
+            }
+          ),
+          lp.status === "publicada" && /* @__PURE__ */ jsxs6(Fragment3, { children: [
+            /* @__PURE__ */ jsx6("button", { onClick: () => copiarLink(lp.slug), title: "Copiar link", className: "p-1.5 rounded-lg hover:bg-gray-100 text-gray-500", children: copiado === lp.slug ? /* @__PURE__ */ jsx6(Check, { size: 14, className: "text-emerald-600" }) : /* @__PURE__ */ jsx6(Copy, { size: 14 }) }),
+            /* @__PURE__ */ jsx6("a", { href: urlDaPagina(lp.slug, lp.empresa_id), target: "_blank", rel: "noopener noreferrer", title: "Abrir p\xE1gina", className: "p-1.5 rounded-lg hover:bg-gray-100 text-gray-500", children: /* @__PURE__ */ jsx6(ExternalLink, { size: 14 }) })
+          ] }),
+          /* @__PURE__ */ jsx6("button", { onClick: () => handleDuplicar(lp), title: "Duplicar", className: "p-1.5 rounded-lg hover:bg-gray-100 text-gray-500", children: /* @__PURE__ */ jsx6(CopyPlus, { size: 14 }) }),
+          /* @__PURE__ */ jsx6("button", { onClick: () => handleExcluir(lp), title: "Excluir", className: "p-1.5 rounded-lg hover:bg-red-50 text-red-500 ml-auto", children: /* @__PURE__ */ jsx6(Trash22, { size: 14 }) })
+        ] })
+      ] }, lp.id)) })
+    ] }),
+    modalConfig && /* @__PURE__ */ jsx6(ModalConfiguracoes, { empresaId: empresaConfig, onClose: () => {
+      setModalConfig(false);
+      carregar3();
+    } }),
     modalCriar && /* @__PURE__ */ jsx6(
       ModalEscolherTemplate,
       {
+        empresas,
+        empresaInicial: empresaConfig,
         onClose: () => setModalCriar(false),
         onCriado: (lp) => navigate(`${rotaPainel}/${lp.id}`)
       }
     )
   ] });
 }
-function ModalEscolherTemplate({ onClose, onCriado }) {
+function ModalEscolherTemplate({ onClose, onCriado, empresas = [], empresaInicial = 1 }) {
   const [nome, setNome] = useState6("");
+  const [empresaId, setEmpresaId] = useState6(empresaInicial);
   const [templateId, setTemplateId] = useState6(null);
   const [salvando, setSalvando] = useState6(false);
   const [erro, setErro] = useState6("");
@@ -2413,7 +2492,7 @@ function ModalEscolherTemplate({ onClose, onCriado }) {
     setSalvando(true);
     setErro("");
     try {
-      const lp = await criarLandingPage({ nome: nome.trim(), template: templateId });
+      const lp = await criarLandingPage({ nome: nome.trim(), template: templateId, empresa_id: empresaId });
       onCriado(lp);
     } catch (e) {
       setErro(e.message);
@@ -2440,6 +2519,10 @@ function ModalEscolherTemplate({ onClose, onCriado }) {
               className: "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
             }
           )
+        ] }),
+        empresas.length > 1 && /* @__PURE__ */ jsxs6("div", { children: [
+          /* @__PURE__ */ jsx6("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: "Empresa" }),
+          /* @__PURE__ */ jsx6("select", { value: empresaId, onChange: (e) => setEmpresaId(Number(e.target.value)), className: "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-violet-400", children: empresas.map((e) => /* @__PURE__ */ jsx6("option", { value: e.id, children: e.nome }, e.id)) })
         ] }),
         /* @__PURE__ */ jsxs6("div", { children: [
           /* @__PURE__ */ jsx6("label", { className: "text-xs font-medium text-gray-500 mb-2 block", children: "Escolha um template" }),
@@ -2495,12 +2578,20 @@ function LandingPageEditor() {
   const saveTimeout = useRef4(null);
   const [configuracoes, setConfiguracoes] = useState7(null);
   const [dispositivo, setDispositivo] = useState7("celular");
+  const [empresas, setEmpresas] = useState7([]);
   useEffect7(() => {
-    obterConfiguracoes().then(setConfiguracoes).catch(() => {
+    listarEmpresas().then(setEmpresas).catch(() => {
     });
   }, []);
+  const empresaDaPagina = lp?.empresa_id || 1;
+  useEffect7(() => {
+    if (!lp) return;
+    obterConfiguracoes(empresaDaPagina).then(setConfiguracoes).catch(() => {
+    });
+  }, [!!lp, empresaDaPagina]);
   useEffect7(() => {
     obterLandingPage(id).then((data) => {
+      definirPaginaDasAvaliacoes(data.slug);
       setLp(data);
       setNome(data.nome);
       setConteudo(data.conteudo || {});
@@ -2534,7 +2625,7 @@ function LandingPageEditor() {
     }
   }
   function copiarLink() {
-    navigator.clipboard?.writeText(urlDaPagina(lp.slug));
+    navigator.clipboard?.writeText(urlDaPagina(lp.slug, empresaDaPagina));
     setCopiado(true);
     setTimeout(() => setCopiado(false), 1500);
   }
@@ -2575,7 +2666,7 @@ function LandingPageEditor() {
     ] }) }),
     /* @__PURE__ */ jsxs7("div", { className: "flex-1 max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-0 lg:gap-6 p-4 sm:p-6", children: [
       /* @__PURE__ */ jsxs7("div", { className: "space-y-4", children: [
-        /* @__PURE__ */ jsx7(CamposPagina, { lp, nome, onNomeChange: handleNomeChange, onSalvo: setLp, urlDaPagina }),
+        /* @__PURE__ */ jsx7(CamposPagina, { lp, nome, onNomeChange: handleNomeChange, onSalvo: setLp, urlDaPagina: (slug) => urlDaPagina(slug, empresaDaPagina), empresas }),
         template.secoes?.length > 0 && /* @__PURE__ */ jsxs7("div", { children: [
           /* @__PURE__ */ jsx7("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: "Se\xE7\xE3o de contato" }),
           /* @__PURE__ */ jsx7(
@@ -2661,7 +2752,7 @@ function normalizarSlug(texto, final = false) {
   if (final) s = s.replace(/^-+|-+$/g, "").slice(0, 80);
   return s;
 }
-function CamposPagina({ lp, nome, onNomeChange, onSalvo, urlDaPagina }) {
+function CamposPagina({ lp, nome, onNomeChange, onSalvo, urlDaPagina, empresas = [] }) {
   const [slug, setSlug] = useState7(lp.slug);
   const [salvandoSlug, setSalvandoSlug] = useState7(false);
   const [erroSlug, setErroSlug] = useState7("");
@@ -2691,6 +2782,18 @@ function CamposPagina({ lp, nome, onNomeChange, onSalvo, urlDaPagina }) {
           onChange: (e) => onNomeChange(e.target.value),
           placeholder: "Ex: Promo\xE7\xE3o Dia das M\xE3es",
           className: "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
+        }
+      )
+    ] }),
+    empresas.length > 1 && /* @__PURE__ */ jsxs7("div", { children: [
+      /* @__PURE__ */ jsx7("label", { className: "text-xs font-medium text-gray-500 mb-1 block", children: "Empresa (logo, WhatsApp, menu e dom\xEDnio v\xEAm dela)" }),
+      /* @__PURE__ */ jsx7(
+        "select",
+        {
+          value: lp.empresa_id || 1,
+          onChange: (e) => atualizarLandingPage(lp.id, { empresa_id: Number(e.target.value) }).then(onSalvo).catch((err) => alert(err.message)),
+          className: "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-violet-400",
+          children: empresas.map((e) => /* @__PURE__ */ jsx7("option", { value: e.id, children: e.nome }, e.id))
         }
       )
     ] }),
@@ -3466,6 +3569,7 @@ function LandingPageView({ inicial = false }) {
   useEffect8(() => {
     const busca = inicial ? buscarPaginaInicialPublica() : buscarLandingPagePublica(slugDaRota);
     busca.then((data) => {
+      definirPaginaDasAvaliacoes(data.slug || slugDaRota);
       setLp(data);
       document.title = data.meta_titulo || data.nome || getConfig().tituloPadrao;
       if (data.meta_descricao) {

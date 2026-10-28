@@ -18,7 +18,11 @@ PADRAO = {
         "notificacao": True,
     },
     # favicon_url (v0.7.0): ícone da aba do navegador em todas as páginas públicas.
-    "marca": {"logo_url": None, "favicon_url": None},
+    # titulo (v0.22.0): título da aba usado quando a página não tem o próprio (meta_titulo).
+    "marca": {"logo_url": None, "favicon_url": None, "titulo": ""},
+    # Empresa (v0.22.0): nome da empresa dona desta linha de configuração. Vazio na empresa 1 =
+    # "Principal". Cada empresa tem logo, favicon, título, menu, WhatsApp, domínio e rastreamento próprios.
+    "empresa": {"nome": ""},
     # Menu no topo (v0.4.0): logo à esquerda + botão CTA à direita no desktop; só o
     # logo centralizado no celular. cta_destino: "whatsapp" (número configurado) | "url" |
     # "contato" (rola até a seção de contato da própria página, v0.5.0). cta_cor (v0.5.0):

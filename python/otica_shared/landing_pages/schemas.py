@@ -7,6 +7,7 @@ from pydantic import BaseModel
 class LandingPageCreate(BaseModel):
     nome: str
     template: str
+    empresa_id: Optional[int] = None  # None = empresa 1
 
 
 class LandingPageUpdate(BaseModel):
@@ -16,10 +17,12 @@ class LandingPageUpdate(BaseModel):
     status: Optional[str] = None
     meta_titulo: Optional[str] = None
     meta_descricao: Optional[str] = None
+    empresa_id: Optional[int] = None
 
 
 class LandingPageOut(BaseModel):
     id: int
+    empresa_id: int = 1
     nome: str
     slug: str
     template: str
@@ -48,6 +51,22 @@ class ConfigWhatsapp(BaseModel):
 class ConfigMarca(BaseModel):
     logo_url: Optional[str] = None
     favicon_url: Optional[str] = None
+    titulo: str = ""  # título da aba quando a página não tem o próprio
+
+
+class ConfigEmpresa(BaseModel):
+    nome: str = ""
+
+
+class EmpresaOut(BaseModel):
+    id: int
+    nome: str
+    total_paginas: int = 0
+    dominio: str = ""  # endereço do domínio próprio ("" = sem); o painel monta os links com ele
+
+
+class EmpresaCreate(BaseModel):
+    nome: str
 
 
 class ConfigMenu(BaseModel):
@@ -91,6 +110,8 @@ class LandingPagesConfigOut(ConfigPublicaOut):
     """Configurações que valem para todas as landing pages."""
     google: ConfigGoogle = ConfigGoogle()
     dominio: ConfigDominio = ConfigDominio()
+    empresa: ConfigEmpresa = ConfigEmpresa()
+    empresa_id: int = 1
 
 
 class LandingPagesConfigUpdate(BaseModel):
@@ -100,6 +121,7 @@ class LandingPagesConfigUpdate(BaseModel):
     google: Optional[ConfigGoogle] = None
     dominio: Optional[ConfigDominio] = None
     rastreamento: Optional[ConfigRastreamento] = None
+    empresa: Optional[ConfigEmpresa] = None
 
 
 class LandingPagePublicaOut(BaseModel):

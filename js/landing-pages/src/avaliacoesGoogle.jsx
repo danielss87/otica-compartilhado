@@ -11,10 +11,16 @@ import { buscarAvaliacoesGoogle } from './api'
 
 // Uma busca por carregamento da página, compartilhada entre componentes (e entre as
 // re-renderizações da pré-visualização do editor).
+// A loja no Google é da empresa dona da página (v0.22.0), então a busca leva o slug. Quem abre a
+// página (visualização pública ou editor) chama `definirPaginaDasAvaliacoes` antes de renderizar o template.
+let slugAtual = ''
 let promessa = null
+export function definirPaginaDasAvaliacoes(slug) {
+  if (slug !== slugAtual) { slugAtual = slug || ''; promessa = null }
+}
 function carregar() {
   if (!promessa) {
-    promessa = buscarAvaliacoesGoogle()
+    promessa = buscarAvaliacoesGoogle(slugAtual)
       .then(d => (d?.ativo && d.avaliacoes?.length ? d : null))
       .catch(() => { promessa = null; return null })
   }

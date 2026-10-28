@@ -35,6 +35,9 @@ def criar_modelos(Base, *, tabela_usuarios: str, modelo_usuario: str):
         visualizacoes  = Column(Integer, nullable=False, default=0)
         # v0.20.0 — cliques em links de WhatsApp na página pública (ALTER TABLE em cada app)
         cliques_whatsapp = Column(Integer, nullable=False, default=0, server_default="0")
+        # v0.22.0 — empresa dona da página (id da linha em `landing_pages_config`). NULL = empresa 1
+        # (a original do app). Sem FK de propósito; ALTER TABLE em cada app.
+        empresa_id     = Column(Integer, nullable=True, index=True)
         criado_por_id  = Column(Integer, ForeignKey(f"{tabela_usuarios}.id"), nullable=True)
         criado_em      = Column(DateTime(timezone=True), server_default=func.now())
         atualizado_em  = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
@@ -71,7 +74,8 @@ def criar_modelos(Base, *, tabela_usuarios: str, modelo_usuario: str):
 
 
 def criar_modelo_config(Base):
-    """Configurações que valem para TODAS as landing pages (uma linha só, id=1).
+    """Configurações das landing pages. Cada linha é uma EMPRESA (v0.22.0); a linha id=1 é a
+    original do app e vale para toda página sem `empresa_id`.
 
     `dados` é JSON solto (formato em `config.py`) de propósito: configuração
     nova entra sem ALTER TABLE em nenhum dos apps. Tabela nova

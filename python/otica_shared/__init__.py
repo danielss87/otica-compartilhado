@@ -1,2 +1,2 @@
 """Features compartilhadas entre Ariel e 4 Olhos gestão. Ver CLAUDE.md na raiz do repo."""
-__version__ = "0.21.0"
+__version__ = "0.22.0"

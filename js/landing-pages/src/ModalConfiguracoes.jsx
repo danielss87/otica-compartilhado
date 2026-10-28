@@ -37,7 +37,8 @@ function Interruptor({ ligado, onChange, label }) {
   )
 }
 
-export default function ModalConfiguracoes({ onClose }) {
+// `empresaId` (v0.22.0): as configurações são de uma empresa; 1 = a original do app.
+export default function ModalConfiguracoes({ onClose, empresaId = 1 }) {
   const [cfg, setCfg] = useState(null)
   const [erroCarregar, setErroCarregar] = useState('')
   const [salvando, setSalvando] = useState(false)
@@ -52,9 +53,9 @@ export default function ModalConfiguracoes({ onClose }) {
   const [testeDominio, setTesteDominio] = useState(null) // { carregando } | { ok } | { erro }
 
   useEffect(() => {
-    obterConfiguracoes().then(setCfg).catch(e => setErroCarregar(e.message))
-    listarLandingPages().then(setPaginas).catch(() => {})
-  }, [])
+    obterConfiguracoes(empresaId).then(setCfg).catch(e => setErroCarregar(e.message))
+    listarLandingPages().then(l => setPaginas(l.filter(p => (p.empresa_id || 1) === empresaId))).catch(() => {})
+  }, [empresaId])
 
   function setDominio(campo, valor) {
     setCfg(c => ({ ...c, dominio: { endereco: '', pagina_inicial: '', ...c.dominio, [campo]: valor } }))
@@ -105,6 +106,11 @@ export default function ModalConfiguracoes({ onClose }) {
     }
   }
 
+  function setNomeEmpresa(valor) {
+    setCfg(c => ({ ...c, empresa: { ...c.empresa, nome: valor } }))
+    setSalvo(false)
+  }
+
   function setMarca(campo, url) {
     setCfg(c => ({ ...c, marca: { ...c.marca, [campo]: url } }))
     setSalvo(false)
@@ -150,9 +156,10 @@ export default function ModalConfiguracoes({ onClose }) {
         ...(cfg.google ? { google: cfg.google } : {}),
         ...(cfg.dominio ? { dominio: cfg.dominio } : {}),
         ...(cfg.rastreamento ? { rastreamento: cfg.rastreamento } : {}),
-      })
+        ...(cfg.empresa ? { empresa: cfg.empresa } : {}),
+      }, empresaId)
       setCfg(atualizado)
-      definirDominioProprio(atualizado.dominio?.endereco)
+      definirDominioProprio(atualizado.dominio?.endereco, empresaId)
       setSalvo(true)
     } catch (e) {
       setErro(e.message)
@@ -168,7 +175,9 @@ export default function ModalConfiguracoes({ onClose }) {
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
           <div>
             <h2 className="text-base font-bold text-gray-900">Configurações</h2>
-            <p className="text-xs text-gray-400">Valem para todas as landing pages</p>
+            <p className="text-xs text-gray-400">
+              {empresaId === 1 && !cfg?.empresa?.nome ? 'Valem para todas as landing pages' : `Valem para as páginas de ${cfg?.empresa?.nome || 'esta empresa'}`}
+            </p>
           </div>
           <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400" aria-label="Fechar">
             <X size={18} />
@@ -232,6 +241,15 @@ export default function ModalConfiguracoes({ onClose }) {
                 <div>
                   <p className="text-sm font-semibold text-gray-900">Identidade de marca</p>
                   <p className="text-xs text-gray-500">O logo aparece no topo de todas as páginas, e o favicon na aba do navegador.</p>
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-gray-500 mb-1 block">Nome da empresa</label>
+                  <input value={cfg.empresa?.nome || ''} onChange={e => setNomeEmpresa(e.target.value)} placeholder={empresaId === 1 ? 'Principal' : ''} className={inputCls} />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-gray-500 mb-1 block">Título da aba do navegador</label>
+                  <input value={cfg.marca.titulo || ''} onChange={e => setMarca('titulo', e.target.value)} placeholder="Ex: Otovida | Oftalmologia" className={inputCls} />
+                  <p className="text-xs text-gray-400 mt-1">Usado nas páginas que não têm título próprio (campo "Título da página" no editor).</p>
                 </div>
                 {cfg.marca.logo_url ? (
                   <div className="flex items-center gap-3">

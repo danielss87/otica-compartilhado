@@ -7,8 +7,9 @@ import { useUrlPublica, semProtocolo } from './dominio'
 import MolduraLandingPage from './Moldura'
 import {
   obterLandingPage, atualizarLandingPage, publicarLandingPage, pausarLandingPage,
-  uploadImagemLandingPage, obterConfiguracoes,
+  uploadImagemLandingPage, obterConfiguracoes, listarEmpresas,
 } from './api'
+import { definirPaginaDasAvaliacoes } from './avaliacoesGoogle'
 
 export default function LandingPageEditor() {
   const { id } = useParams()
@@ -27,12 +28,18 @@ export default function LandingPageEditor() {
   // Largura simulada na pré-visualização (só templates responsivos por container query).
   const [dispositivo, setDispositivo] = useState('celular')
 
+  // Empresas (v0.22.0): a pré-visualização usa as configurações da empresa dona da página.
+  const [empresas, setEmpresas] = useState([])
+  useEffect(() => { listarEmpresas().then(setEmpresas).catch(() => {}) }, [])
+  const empresaDaPagina = lp?.empresa_id || 1
   useEffect(() => {
-    obterConfiguracoes().then(setConfiguracoes).catch(() => {})
-  }, [])
+    if (!lp) return
+    obterConfiguracoes(empresaDaPagina).then(setConfiguracoes).catch(() => {})
+  }, [!!lp, empresaDaPagina])
 
   useEffect(() => {
     obterLandingPage(id).then(data => {
+      definirPaginaDasAvaliacoes(data.slug)
       setLp(data)
       setNome(data.nome)
       setConteudo(data.conteudo || {})
@@ -71,7 +78,7 @@ export default function LandingPageEditor() {
   }
 
   function copiarLink() {
-    navigator.clipboard?.writeText(urlDaPagina(lp.slug))
+    navigator.clipboard?.writeText(urlDaPagina(lp.slug, empresaDaPagina))
     setCopiado(true)
     setTimeout(() => setCopiado(false), 1500)
   }
@@ -116,7 +123,7 @@ export default function LandingPageEditor() {
 
       <div className="flex-1 max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-0 lg:gap-6 p-4 sm:p-6">
         <div className="space-y-4">
-          <CamposPagina lp={lp} nome={nome} onNomeChange={handleNomeChange} onSalvo={setLp} urlDaPagina={urlDaPagina} />
+          <CamposPagina lp={lp} nome={nome} onNomeChange={handleNomeChange} onSalvo={setLp} urlDaPagina={slug => urlDaPagina(slug, empresaDaPagina)} empresas={empresas} />
 
           {template.secoes?.length > 0 && (
             <div>
@@ -234,7 +241,7 @@ function normalizarSlug(texto, final = false) {
   return s
 }
 
-function CamposPagina({ lp, nome, onNomeChange, onSalvo, urlDaPagina }) {
+function CamposPagina({ lp, nome, onNomeChange, onSalvo, urlDaPagina, empresas = [] }) {
   const [slug, setSlug] = useState(lp.slug)
   const [salvandoSlug, setSalvandoSlug] = useState(false)
   const [erroSlug, setErroSlug] = useState('')
@@ -267,6 +274,18 @@ function CamposPagina({ lp, nome, onNomeChange, onSalvo, urlDaPagina }) {
           className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
         />
       </div>
+      {empresas.length > 1 && (
+        <div>
+          <label className="text-xs font-medium text-gray-500 mb-1 block">Empresa (logo, WhatsApp, menu e domínio vêm dela)</label>
+          <select
+            value={lp.empresa_id || 1}
+            onChange={e => atualizarLandingPage(lp.id, { empresa_id: Number(e.target.value) }).then(onSalvo).catch(err => alert(err.message))}
+            className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-violet-400"
+          >
+            {empresas.map(e => <option key={e.id} value={e.id}>{e.nome}</option>)}
+          </select>
+        </div>
+      )}
       <div>
         <label className="text-xs font-medium text-gray-500 mb-1 block">Endereço da página</label>
         <div className="flex flex-col sm:flex-row gap-2">

@@ -22,6 +22,8 @@ from sqlalchemy.orm import Session
 from . import config as cfg_lp
 from . import google_avaliacoes as google
 from .schemas import (
+    EmpresaCreate,
+    EmpresaOut,
     LandingPageCreate,
     LandingPageLeadCreate,
     LandingPageLeadOut,
@@ -96,21 +98,38 @@ def criar_routers(
     """
     cache_google = google.CacheAvaliacoes()
 
-    def _ler_config(db: Session) -> dict:
+    # Empresas (v0.22.0): cada linha de `landing_pages_config` é uma empresa; a de id=1 é a original
+    # do app e vale para toda página sem `empresa_id`. Branding, menu, WhatsApp, domínio e
+    # rastreamento são por empresa; a página só aponta para a dela.
+    def _ler_config(db: Session, empresa_id: int = 1) -> dict:
         if LandingPagesConfig is None:
             return cfg_lp.mesclar_com_padrao({})
-        linha = db.query(LandingPagesConfig).filter(LandingPagesConfig.id == 1).first()
+        linha = db.query(LandingPagesConfig).filter(LandingPagesConfig.id == empresa_id).first()
         return cfg_lp.ler(linha.dados if linha else None)
 
+    def _empresa_da_pagina(lp) -> int:
+        return lp.empresa_id or 1
+
+    def _empresa_existe(db: Session, empresa_id: int) -> bool:
+        if empresa_id == 1:
+            return True
+        return LandingPagesConfig is not None and db.query(LandingPagesConfig).filter(
+            LandingPagesConfig.id == empresa_id
+        ).first() is not None
+
+    def _exigir_empresa(db: Session, empresa_id: int) -> None:
+        if not _empresa_existe(db, empresa_id):
+            raise HTTPException(404, "Empresa não encontrada.")
+
     def _seguir_pagina_inicial(db: Session, slug_antigo: str, slug_novo: str) -> None:
-        """Página inicial do domínio próprio mudou de endereço → a config acompanha."""
+        """Página inicial do domínio próprio mudou de endereço → a config (de qualquer empresa) acompanha."""
         if LandingPagesConfig is None or slug_antigo == slug_novo:
             return
-        linha = db.query(LandingPagesConfig).filter(LandingPagesConfig.id == 1).first()
-        cfg = cfg_lp.ler(linha.dados if linha else None)
-        if linha and cfg["dominio"]["pagina_inicial"] == slug_antigo:
-            cfg["dominio"]["pagina_inicial"] = slug_novo
-            linha.dados = json.dumps(cfg)
+        for linha in db.query(LandingPagesConfig).all():
+            cfg = cfg_lp.ler(linha.dados)
+            if cfg["dominio"]["pagina_inicial"] == slug_antigo:
+                cfg["dominio"]["pagina_inicial"] = slug_novo
+                linha.dados = json.dumps(cfg)
 
     def _gerar_slug_unico(db: Session, nome: str) -> str:
         base = _slug(nome)
@@ -141,6 +160,7 @@ def criar_routers(
             criado_por_nome, criado_por_foto_url = _info_criador_padrao(lp)
         return {
             "id": lp.id,
+            "empresa_id": _empresa_da_pagina(lp),
             "nome": lp.nome,
             "slug": lp.slug,
             "template": lp.template,
@@ -176,17 +196,49 @@ def criar_routers(
         return TEMPLATES_META
 
     # Registradas antes de "/{lp_id}" para "configuracoes" não ser lido como id.
-    @router.get("/configuracoes", response_model=LandingPagesConfigOut)
-    def obter_configuracoes(db: Session = Depends(get_db)):
+    @router.get("/empresas", response_model=list[EmpresaOut])
+    def listar_empresas(db: Session = Depends(get_db)):
         if LandingPagesConfig is None:
             raise HTTPException(404, "Configurações não habilitadas neste sistema.")
-        return _ler_config(db)
+        ids = sorted({1, *(l.id for l in db.query(LandingPagesConfig).all())})
+        contagem: dict = {}
+        for (eid,) in db.query(LandingPage.empresa_id).all():
+            contagem[eid or 1] = contagem.get(eid or 1, 0) + 1
+        return [
+            {"id": i, "nome": _ler_config(db, i)["empresa"]["nome"] or ("Principal" if i == 1 else f"Empresa {i}"),
+             "total_paginas": contagem.get(i, 0), "dominio": _ler_config(db, i)["dominio"]["endereco"]}
+            for i in ids
+        ]
+
+    @router.post("/empresas", response_model=EmpresaOut, status_code=201)
+    def criar_empresa(payload: EmpresaCreate, db: Session = Depends(get_db)):
+        if LandingPagesConfig is None:
+            raise HTTPException(404, "Configurações não habilitadas neste sistema.")
+        nome = payload.nome.strip()
+        if not nome:
+            raise HTTPException(422, "Informe o nome da empresa.")
+        if any(_ler_config(db, l.id)["empresa"]["nome"].strip().lower() == nome.lower() for l in db.query(LandingPagesConfig).all()):
+            raise HTTPException(409, "Já existe uma empresa com esse nome.")
+        novo_id = max([1, *(l.id for l in db.query(LandingPagesConfig).all())]) + 1
+        cfg = cfg_lp.mesclar_com_padrao({})
+        cfg["empresa"]["nome"] = nome
+        db.add(LandingPagesConfig(id=novo_id, dados=json.dumps(cfg)))
+        db.commit()
+        return {"id": novo_id, "nome": nome, "total_paginas": 0}
+
+    @router.get("/configuracoes", response_model=LandingPagesConfigOut)
+    def obter_configuracoes(empresa_id: int = 1, db: Session = Depends(get_db)):
+        if LandingPagesConfig is None:
+            raise HTTPException(404, "Configurações não habilitadas neste sistema.")
+        _exigir_empresa(db, empresa_id)
+        return {**_ler_config(db, empresa_id), "empresa_id": empresa_id}
 
     @router.put("/configuracoes", response_model=LandingPagesConfigOut)
-    def atualizar_configuracoes(payload: LandingPagesConfigUpdate, db: Session = Depends(get_db)):
+    def atualizar_configuracoes(payload: LandingPagesConfigUpdate, empresa_id: int = 1, db: Session = Depends(get_db)):
         if LandingPagesConfig is None:
             raise HTTPException(404, "Configurações não habilitadas neste sistema.")
-        atual = _ler_config(db)
+        _exigir_empresa(db, empresa_id)
+        atual = _ler_config(db, empresa_id)
         novo = payload.model_dump(exclude_unset=True)
         if "whatsapp" in novo:
             w = novo["whatsapp"]
@@ -197,6 +249,9 @@ def criar_routers(
         if "marca" in novo:
             for chave in ("logo_url", "favicon_url"):
                 novo["marca"][chave] = (novo["marca"].get(chave) or "").strip() or None
+            novo["marca"]["titulo"] = (novo["marca"].get("titulo") or "").strip()[:200]
+        if "empresa" in novo:
+            novo["empresa"]["nome"] = (novo["empresa"].get("nome") or "").strip()[:100]
         if "google" in novo:
             g = novo["google"]
             g["busca"] = (g.get("busca") or "").strip()
@@ -206,6 +261,10 @@ def criar_routers(
             d["endereco"] = cfg_lp.normalizar_dominio(d.get("endereco"))
             if d["endereco"] and not cfg_lp.dominio_valido(d["endereco"]):
                 raise HTTPException(422, "Domínio inválido. Use só o endereço, ex: lp.minhaotica.com.br")
+            if d["endereco"]:
+                for outra in db.query(LandingPagesConfig).filter(LandingPagesConfig.id != empresa_id).all():
+                    if cfg_lp.ler(outra.dados)["dominio"]["endereco"] == d["endereco"]:
+                        raise HTTPException(409, "Esse domínio já é de outra empresa.")
             d["pagina_inicial"] = (d.get("pagina_inicial") or "").strip()
             if d["pagina_inicial"] and not db.query(LandingPage).filter(LandingPage.slug == d["pagina_inicial"]).first():
                 raise HTTPException(422, "A página inicial escolhida não existe mais.")
@@ -231,13 +290,13 @@ def criar_routers(
                     raise HTTPException(422, "Informe o link do botão do menu.")
                 if m["cta_destino"] == "whatsapp" and not atual["whatsapp"]["numero"]:
                     raise HTTPException(422, "Para o botão do menu abrir o WhatsApp, preencha o número na seção Botão de WhatsApp.")
-        linha = db.query(LandingPagesConfig).filter(LandingPagesConfig.id == 1).first()
+        linha = db.query(LandingPagesConfig).filter(LandingPagesConfig.id == empresa_id).first()
         if not linha:
-            linha = LandingPagesConfig(id=1)
+            linha = LandingPagesConfig(id=empresa_id)
             db.add(linha)
         linha.dados = json.dumps(atual)
         db.commit()
-        return atual
+        return {**atual, "empresa_id": empresa_id}
 
     # Painel: consulta o Google agora (sem cache) para conferir a configuração. Recebe a busca
     # digitada no modal, antes de salvar. Erro do Google → 400 (nunca 401: deslogaria a pessoa).
@@ -266,11 +325,14 @@ def criar_routers(
             raise HTTPException(422, f"Template inválido: {payload.template}")
         if not payload.nome.strip():
             raise HTTPException(422, "Nome é obrigatório.")
+        empresa_id = payload.empresa_id or 1
+        _exigir_empresa(db, empresa_id)
         lp = LandingPage(
             nome=payload.nome.strip(),
             slug=_gerar_slug_unico(db, payload.nome),
             template=payload.template,
             conteudo=json.dumps({}),
+            empresa_id=None if empresa_id == 1 else empresa_id,
             status="rascunho",
             criado_por_id=getattr(usuario, "id", None),
         )
@@ -295,6 +357,10 @@ def criar_routers(
             _seguir_pagina_inicial(db, lp.slug, novo_slug)
             lp.slug = novo_slug
         data.pop("slug", None)
+        if "empresa_id" in data:
+            novo_empresa = data["empresa_id"] or 1
+            _exigir_empresa(db, novo_empresa)
+            data["empresa_id"] = None if novo_empresa == 1 else novo_empresa
         if "status" in data and data["status"] not in STATUS_VALIDOS:
             raise HTTPException(422, "Status inválido.")
         if "conteudo" in data:
@@ -334,6 +400,7 @@ def criar_routers(
             status="rascunho",
             meta_titulo=original.meta_titulo,
             meta_descricao=original.meta_descricao,
+            empresa_id=original.empresa_id,
             criado_por_id=getattr(usuario, "id", None),
         )
         db.add(copia)
@@ -377,8 +444,9 @@ def criar_routers(
 
     # Antes de "/{slug}" para "avaliacoes-google" não ser lido como slug.
     @router_publico.get("/avaliacoes-google")
-    def avaliacoes_google(db: Session = Depends(get_db)):
-        g = _ler_config(db)["google"]
+    def avaliacoes_google(slug: str = "", db: Session = Depends(get_db)):
+        lp = db.query(LandingPage).filter(LandingPage.slug == slug).first() if slug else None
+        g = _ler_config(db, _empresa_da_pagina(lp) if lp else 1)["google"]
         if not google_places_api_key or not g["busca"]:
             return {"ativo": False}
         dados = cache_google.obter(g["busca"], google_places_api_key)
@@ -390,20 +458,30 @@ def criar_routers(
         lp = db.query(LandingPage).filter(LandingPage.slug == slug).first() if slug else None
         if not lp or lp.status != "publicada":
             raise HTTPException(404, "Página não encontrada.")
+        cfg = _ler_config(db, _empresa_da_pagina(lp))
         return {
             "nome": lp.nome,
             "slug": lp.slug,
             "template": lp.template,
             "conteudo": _parse_conteudo(lp),
-            "meta_titulo": lp.meta_titulo,
+            # Título da aba: o da página; sem ele, o da empresa (v0.22.0).
+            "meta_titulo": lp.meta_titulo or cfg["marca"]["titulo"] or None,
             "meta_descricao": lp.meta_descricao,
-            "configuracoes": cfg_lp.publica(_ler_config(db)),
+            "configuracoes": cfg_lp.publica(cfg),
         }
 
     # Raiz do domínio próprio (v0.19.0): a página escolhida em Configurações → Domínio próprio.
     # "_inicio" nunca colide com slug (slug não começa com "_"). Antes de "/{slug}".
     @router_publico.get("/_inicio", response_model=LandingPagePublicaOut)
-    def obter_pagina_inicial(db: Session = Depends(get_db)):
+    def obter_pagina_inicial(host: str = "", db: Session = Depends(get_db)):
+        # `host` (v0.22.0): a empresa dona do domínio acessado. Sem host, ou host de nenhuma
+        # empresa, vale a empresa 1 (comportamento anterior).
+        host = cfg_lp.normalizar_dominio(host)
+        if host and LandingPagesConfig is not None:
+            for linha in db.query(LandingPagesConfig).order_by(LandingPagesConfig.id).all():
+                dom = cfg_lp.ler(linha.dados)["dominio"]
+                if dom["endereco"] == host:
+                    return _publica_ou_404(db, dom["pagina_inicial"])
         return _publica_ou_404(db, _ler_config(db)["dominio"]["pagina_inicial"])
 
     @router_publico.get("/{slug}", response_model=LandingPagePublicaOut)

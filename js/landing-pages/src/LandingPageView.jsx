@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { LANDING_PAGE_TEMPLATES, coresDaPagina, secaoContatoDaPagina } from './templates'
+import { definirPaginaDasAvaliacoes } from './avaliacoesGoogle'
 import { buscarLandingPagePublica, buscarPaginaInicialPublica, registrarVisualizacao, enviarLeadLandingPage, registrarCliqueWhatsApp } from './api'
 import { iniciarRastreamento, registrarEvento, guardarOrigem, origemDoVisitante, ehLinkWhatsApp } from './rastreamento'
 import { getConfig } from './config'
@@ -40,6 +41,7 @@ export default function LandingPageView({ inicial = false }) {
     const busca = inicial ? buscarPaginaInicialPublica() : buscarLandingPagePublica(slugDaRota)
     busca
       .then(data => {
+        definirPaginaDasAvaliacoes(data.slug || slugDaRota)
         setLp(data)
         document.title = data.meta_titulo || data.nome || getConfig().tituloPadrao
         if (data.meta_descricao) {

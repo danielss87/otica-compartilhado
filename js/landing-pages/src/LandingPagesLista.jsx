@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Rocket, Plus, X, Copy, CopyPlus, Trash2, Eye, Users, ExternalLink, Play, Pause, Check, Settings, MessageCircle } from 'lucide-react'
+import { Rocket, Plus, X, Copy, CopyPlus, Trash2, Eye, Users, ExternalLink, Play, Pause, Check, Settings, MessageCircle, Building2 } from 'lucide-react'
 import { TEMPLATE_LIST, TemplateCardPreview } from './templates'
 import { getConfig } from './config'
 import { useUrlPublica, semProtocolo } from './dominio'
 import ModalConfiguracoes from './ModalConfiguracoes'
 import {
   listarLandingPages, criarLandingPage, publicarLandingPage, pausarLandingPage,
-  duplicarLandingPage, deletarLandingPage,
+  duplicarLandingPage, deletarLandingPage, listarEmpresas, criarEmpresa,
 } from './api'
 
 const STATUS_ESTILO = {
@@ -36,13 +36,33 @@ export default function LandingPagesLista() {
   const [modalCriar, setModalCriar] = useState(false)
   const [modalConfig, setModalConfig] = useState(false)
   const [copiado, setCopiado] = useState(null)
+  // Empresas (v0.22.0): cada uma com logo, WhatsApp, menu e domínio próprios. `empresaSel` filtra a lista
+  // ('todas' ou o id) e diz de qual empresa são as Configurações.
+  const [empresas, setEmpresas] = useState([])
+  const [empresaSel, setEmpresaSel] = useState('todas')
 
   function carregar() {
     setCarregando(true)
     listarLandingPages().then(setItens).catch(() => {}).finally(() => setCarregando(false))
+    listarEmpresas().then(setEmpresas).catch(() => {})
   }
 
   useEffect(() => { carregar() }, [])
+
+  const empresaConfig = empresaSel === 'todas' ? 1 : empresaSel
+  const visiveis = empresaSel === 'todas' ? itens : itens.filter(lp => (lp.empresa_id || 1) === empresaSel)
+  const nomeEmpresa = id => empresas.find(e => e.id === id)?.nome
+
+  async function handleNovaEmpresa() {
+    const nome = window.prompt('Nome da nova empresa (ex: Instituto Otovida):')
+    if (!nome?.trim()) return
+    try {
+      const nova = await criarEmpresa(nome.trim())
+      carregar()
+      setEmpresaSel(nova.id)
+      setModalConfig(true)
+    } catch (e) { alert(e.message) }
+  }
 
   async function handlePublicarPausar(lp) {
     try {
@@ -69,7 +89,7 @@ export default function LandingPagesLista() {
   }
 
   function copiarLink(slug) {
-    navigator.clipboard?.writeText(urlDaPagina(slug))
+    navigator.clipboard?.writeText(urlDaPagina(slug, itens.find(i => i.slug === slug)?.empresa_id || 1))
     setCopiado(slug)
     setTimeout(() => setCopiado(null), 1500)
   }
@@ -108,9 +128,33 @@ export default function LandingPagesLista() {
       </div>
 
       <div className="max-w-5xl mx-auto p-4 sm:p-6">
+        {empresas.length > 1 && (
+          <div className="flex flex-wrap items-center gap-2 mb-4">
+            <Building2 size={15} className="text-gray-400" />
+            {[{ id: 'todas', nome: 'Todas' }, ...empresas].map(e => (
+              <button
+                key={e.id}
+                onClick={() => setEmpresaSel(e.id)}
+                className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
+                  empresaSel === e.id ? 'bg-violet-600 text-white border-violet-600' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                {e.nome}
+              </button>
+            ))}
+            <button onClick={handleNovaEmpresa} className="px-3 py-1 rounded-full text-xs font-medium border border-dashed border-gray-300 text-gray-500 hover:text-violet-600 hover:border-violet-400">
+              + Empresa
+            </button>
+          </div>
+        )}
+        {empresas.length <= 1 && !carregando && (
+          <div className="mb-4">
+            <button onClick={handleNovaEmpresa} className="text-xs font-medium text-gray-400 hover:text-violet-600">+ Adicionar outra empresa</button>
+          </div>
+        )}
         {carregando ? (
           <p className="text-sm text-gray-400 text-center py-10">Carregando...</p>
-        ) : itens.length === 0 ? (
+        ) : visiveis.length === 0 ? (
           <div className="text-center py-16">
             <Rocket size={32} className="mx-auto text-gray-300 mb-3" />
             <p className="text-sm text-gray-500">Nenhuma landing page ainda.</p>
@@ -120,7 +164,7 @@ export default function LandingPagesLista() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {itens.map(lp => (
+            {visiveis.map(lp => (
               <div key={lp.id} className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex flex-col gap-3">
                 <div className="flex items-start justify-between gap-2">
                   <button
@@ -128,7 +172,8 @@ export default function LandingPagesLista() {
                     className="text-left min-w-0"
                   >
                     <p className="text-sm font-semibold text-gray-900 truncate hover:text-violet-600">{lp.nome}</p>
-                    <p className="text-xs text-gray-400 truncate">{semProtocolo(urlDaPagina(lp.slug))}</p>
+                    <p className="text-xs text-gray-400 truncate">{semProtocolo(urlDaPagina(lp.slug, lp.empresa_id))}</p>
+                    {empresas.length > 1 && <p className="text-[11px] text-gray-400 truncate">{nomeEmpresa(lp.empresa_id || 1)}</p>}
                   </button>
                   <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full shrink-0 ${STATUS_ESTILO[lp.status]}`}>
                     {STATUS_LABEL[lp.status]}
@@ -159,7 +204,7 @@ export default function LandingPagesLista() {
                       <button onClick={() => copiarLink(lp.slug)} title="Copiar link" className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500">
                         {copiado === lp.slug ? <Check size={14} className="text-emerald-600" /> : <Copy size={14} />}
                       </button>
-                      <a href={urlDaPagina(lp.slug)} target="_blank" rel="noopener noreferrer" title="Abrir página" className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500">
+                      <a href={urlDaPagina(lp.slug, lp.empresa_id)} target="_blank" rel="noopener noreferrer" title="Abrir página" className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500">
                         <ExternalLink size={14} />
                       </a>
                     </>
@@ -177,10 +222,12 @@ export default function LandingPagesLista() {
         )}
       </div>
 
-      {modalConfig && <ModalConfiguracoes onClose={() => setModalConfig(false)} />}
+      {modalConfig && <ModalConfiguracoes empresaId={empresaConfig} onClose={() => { setModalConfig(false); carregar() }} />}
 
       {modalCriar && (
         <ModalEscolherTemplate
+          empresas={empresas}
+          empresaInicial={empresaConfig}
           onClose={() => setModalCriar(false)}
           onCriado={(lp) => navigate(`${rotaPainel}/${lp.id}`)}
         />
@@ -189,8 +236,9 @@ export default function LandingPagesLista() {
   )
 }
 
-function ModalEscolherTemplate({ onClose, onCriado }) {
+function ModalEscolherTemplate({ onClose, onCriado, empresas = [], empresaInicial = 1 }) {
   const [nome, setNome] = useState('')
+  const [empresaId, setEmpresaId] = useState(empresaInicial)
   const [templateId, setTemplateId] = useState(null)
   const [salvando, setSalvando] = useState(false)
   const [erro, setErro] = useState('')
@@ -200,7 +248,7 @@ function ModalEscolherTemplate({ onClose, onCriado }) {
     setSalvando(true)
     setErro('')
     try {
-      const lp = await criarLandingPage({ nome: nome.trim(), template: templateId })
+      const lp = await criarLandingPage({ nome: nome.trim(), template: templateId, empresa_id: empresaId })
       onCriado(lp)
     } catch (e) {
       setErro(e.message)
@@ -229,6 +277,14 @@ function ModalEscolherTemplate({ onClose, onCriado }) {
               className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
             />
           </div>
+          {empresas.length > 1 && (
+            <div>
+              <label className="text-xs font-medium text-gray-500 mb-1 block">Empresa</label>
+              <select value={empresaId} onChange={e => setEmpresaId(Number(e.target.value))} className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-violet-400">
+                {empresas.map(e => <option key={e.id} value={e.id}>{e.nome}</option>)}
+              </select>
+            </div>
+          )}
           <div>
             <label className="text-xs font-medium text-gray-500 mb-2 block">Escolha um template</label>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
