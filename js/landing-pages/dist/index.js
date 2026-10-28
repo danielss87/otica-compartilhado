@@ -191,9 +191,9 @@ function corDoCta(menu, coresPagina) {
   if (menu.cta_cor === "destaque" && coresPagina?.destaque) return coresPagina.destaque;
   return menu.cta_destino === "whatsapp" ? "#25D366" : "#111827";
 }
-function MenuTopo({ logo, menu, whatsapp, coresPagina, onIrParaContato, refMenu, porContainer }) {
+function MenuTopo({ logo, menu, whatsapp, mensagemWhatsApp, coresPagina, onIrParaContato, refMenu, porContainer }) {
   const vaiProContato = menu.cta_destino === "contato";
-  const ctaUrl = vaiProContato ? "#contato" : menu.cta_destino === "whatsapp" && whatsapp?.numero ? linkWhatsApp(whatsapp.numero, whatsapp.mensagem) : menu.cta_url;
+  const ctaUrl = vaiProContato ? "#contato" : menu.cta_destino === "whatsapp" && whatsapp?.numero ? linkWhatsApp(whatsapp.numero, mensagemWhatsApp) : menu.cta_url;
   const cta = menu.cta_texto && ctaUrl;
   const ehWhatsapp = menu.cta_destino === "whatsapp";
   return /* @__PURE__ */ jsxs(
@@ -228,13 +228,14 @@ function MenuTopo({ logo, menu, whatsapp, coresPagina, onIrParaContato, refMenu,
     }
   );
 }
-function MolduraLandingPage({ configuracoes, preview = false, secaoContato = null, coresPagina = null, porContainer = false, children }) {
+function MolduraLandingPage({ configuracoes, preview = false, secaoContato = null, coresPagina = null, mensagemPagina = "", porContainer = false, children }) {
   useFonteDaMarca(configuracoes?.marca?.fonte);
   const raiz = useRef(null);
   const refMenu = useRef(null);
   const logo = configuracoes?.marca?.logo_url;
   const w = configuracoes?.whatsapp;
-  const wpp = w?.ativo && w?.numero ? linkWhatsApp(w.numero, w.mensagem) : null;
+  const mensagem = w?.mensagem_da_pagina && mensagemPagina?.trim() || w?.mensagem;
+  const wpp = w?.ativo && w?.numero ? linkWhatsApp(w.numero, mensagem) : null;
   const menu = configuracoes?.menu;
   const notificacao = w?.notificacao !== false;
   return /* @__PURE__ */ jsxs("div", { ref: raiz, className: "bg-white", style: estiloFonte(configuracoes?.marca?.fonte), children: [
@@ -244,6 +245,7 @@ function MolduraLandingPage({ configuracoes, preview = false, secaoContato = nul
         logo,
         menu,
         whatsapp: w,
+        mensagemWhatsApp: mensagem,
         coresPagina,
         refMenu,
         porContainer,
@@ -1976,6 +1978,13 @@ function ModalConfiguracoes({ onClose, empresaId = 1 }) {
                   /* @__PURE__ */ jsx5("p", { className: "text-xs text-gray-400", children: "C\xEDrculo vermelho pulsando no bot\xE3o, como uma mensagem nova." })
                 ] }),
                 /* @__PURE__ */ jsx5(Interruptor, { ligado: cfg.whatsapp.notificacao !== false, onChange: (v) => setWhatsapp("notificacao", v), label: "Mostrar bolinha de notifica\xE7\xE3o" })
+              ] }),
+              cfg.whatsapp.ativo && /* @__PURE__ */ jsxs5("div", { className: "flex items-center justify-between gap-3", children: [
+                /* @__PURE__ */ jsxs5("div", { children: [
+                  /* @__PURE__ */ jsx5("p", { className: "text-xs font-medium text-gray-700", children: "Usar a mensagem de cada p\xE1gina" }),
+                  /* @__PURE__ */ jsx5("p", { className: "text-xs text-gray-400", children: "Se a p\xE1gina tem mensagem de WhatsApp pr\xF3pria, o bot\xE3o flutuante usa ela, e d\xE1 para saber de qual p\xE1gina veio o contato. Sem mensagem pr\xF3pria, vai a padr\xE3o acima." })
+                ] }),
+                /* @__PURE__ */ jsx5(Interruptor, { ligado: Boolean(cfg.whatsapp.mensagem_da_pagina), onChange: (v) => setWhatsapp("mensagem_da_pagina", v), label: "Usar a mensagem de cada p\xE1gina" })
               ] })
             ] })
           ] }),
@@ -2728,6 +2737,7 @@ function LandingPageEditor() {
               preview: true,
               secaoContato: secaoContatoDaPagina(lp.template, conteudo),
               coresPagina: coresDaPagina(lp.template, conteudo),
+              mensagemPagina: conteudo?.whatsapp_mensagem,
               porContainer: Boolean(template.responsivoPorContainer),
               children: /* @__PURE__ */ jsx7(template.Render, { conteudo })
             }
@@ -3653,6 +3663,7 @@ function LandingPageView({ inicial = false }) {
       configuracoes: lp.configuracoes,
       secaoContato: secaoContatoDaPagina(lp.template, lp.conteudo),
       coresPagina: coresDaPagina(lp.template, lp.conteudo),
+      mensagemPagina: lp.conteudo?.whatsapp_mensagem,
       children: /* @__PURE__ */ jsx8(template.Render, { conteudo: lp.conteudo || {}, onLead: handleLead })
     }
   ) });

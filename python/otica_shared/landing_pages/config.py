@@ -18,6 +18,10 @@ PADRAO = {
         # Bolinha vermelha pulsante simulando notificação no botão (v0.4.0) — ligada por
         # padrão por pedido do Daniel, inclusive pra quem já tinha salvo a config antes.
         "notificacao": True,
+        # v0.24.0: o botão flutuante (e o do menu, se for WhatsApp) usa a mensagem do WhatsApp da
+        # própria página (`conteudo.whatsapp_mensagem`), quando ela tem uma; sem mensagem própria, a padrão.
+        # Desligado por padrão para não mudar páginas já publicadas.
+        "mensagem_da_pagina": False,
     },
     # favicon_url (v0.7.0): ícone da aba do navegador em todas as páginas públicas.
     # titulo (v0.22.0): título da aba usado quando a página não tem o próprio (meta_titulo).
@@ -155,6 +159,7 @@ def publica(cfg: dict) -> dict:
             "numero": w["numero"] if ativo else "",
             "mensagem": w["mensagem"] if ativo else "",
             "notificacao": bool(w["notificacao"]) if ativo else False,
+            "mensagem_da_pagina": bool(w["mensagem_da_pagina"]) if ativo else False,
         },
         "marca": {"logo_url": cfg["marca"]["logo_url"], "favicon_url": cfg["marca"]["favicon_url"], "fonte": cfg["marca"]["fonte"]},
         "menu": {

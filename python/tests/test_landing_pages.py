@@ -210,7 +210,7 @@ def test_configuracoes_padrao_desligadas(client):
     lp = _publicar(client)
     pub = client.get(f"/api/publico/landing-pages/{lp['slug']}").json()["configuracoes"]
     assert pub == {
-        "whatsapp": {"ativo": False, "numero": "", "mensagem": "", "notificacao": False},
+        "whatsapp": {"ativo": False, "numero": "", "mensagem": "", "notificacao": False, "mensagem_da_pagina": False},
         "marca": {"logo_url": None, "favicon_url": None, "titulo": "", "fonte": ""},
         "menu": {"ativo": False, "cta_texto": "", "cta_destino": "whatsapp", "cta_url": "", "cta_cor": "padrao", "fixo": False, "cta_tilt": False},
         "rastreamento": {"ga4_id": "", "ads_id": "", "ads_rotulo_lead": "", "ads_rotulo_whatsapp": "", "hotjar_id": "", "clarity_id": ""},
@@ -223,18 +223,29 @@ def test_configuracoes_whatsapp_e_logo(client):
         "whatsapp": {"ativo": True, "numero": "(11) 99999-8888", "mensagem": "  Oi!  "},
     })
     assert r.status_code == 200
-    assert r.json()["whatsapp"] == {"ativo": True, "numero": "5511999998888", "mensagem": "Oi!", "notificacao": True}
+    assert r.json()["whatsapp"] == {"ativo": True, "numero": "5511999998888", "mensagem": "Oi!", "notificacao": True, "mensagem_da_pagina": False}
     # atualizar só a marca não mexe no WhatsApp
     r = client.put("/api/landing-pages/configuracoes", headers=AUTH, json={"marca": {"logo_url": "https://cdn/logo.png"}})
     assert r.json()["whatsapp"]["ativo"] is True
     lp = _publicar(client)
     pub = client.get(f"/api/publico/landing-pages/{lp['slug']}").json()["configuracoes"]
-    assert pub["whatsapp"] == {"ativo": True, "numero": "5511999998888", "mensagem": "Oi!", "notificacao": True}
+    assert pub["whatsapp"] == {"ativo": True, "numero": "5511999998888", "mensagem": "Oi!", "notificacao": True, "mensagem_da_pagina": False}
     assert pub["marca"]["logo_url"] == "https://cdn/logo.png"
     # desligar esconde o número da página pública
     client.put("/api/landing-pages/configuracoes", headers=AUTH, json={"whatsapp": {"ativo": False, "numero": "5511999998888", "mensagem": "Oi!"}})
     pub = client.get(f"/api/publico/landing-pages/{lp['slug']}").json()["configuracoes"]
     assert pub["whatsapp"]["ativo"] is False and pub["whatsapp"]["numero"] == ""
+
+
+def test_whatsapp_mensagem_da_pagina(client):
+    # nasce desligada; ligada, vai para a página pública
+    r = client.put("/api/landing-pages/configuracoes", headers=AUTH, json={
+        "whatsapp": {"ativo": True, "numero": "5511999998888", "mensagem": "Oi!", "mensagem_da_pagina": True},
+    })
+    assert r.json()["whatsapp"]["mensagem_da_pagina"] is True
+    lp = _publicar(client)
+    pub = client.get(f"/api/publico/landing-pages/{lp['slug']}").json()["configuracoes"]
+    assert pub["whatsapp"]["mensagem_da_pagina"] is True
 
 
 def test_configuracoes_whatsapp_sem_numero_valido(client):

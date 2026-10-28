@@ -149,12 +149,12 @@ function corDoCta(menu, coresPagina) {
 
 // `whatsapp`: config do botão de WhatsApp. A página pública já recebe `menu.cta_url` pronto
 // (calculado no backend, `config.publica`); o editor recebe a config completa e monta aqui.
-function MenuTopo({ logo, menu, whatsapp, coresPagina, onIrParaContato, refMenu, porContainer }) {
+function MenuTopo({ logo, menu, whatsapp, mensagemWhatsApp, coresPagina, onIrParaContato, refMenu, porContainer }) {
   const vaiProContato = menu.cta_destino === 'contato'
   const ctaUrl = vaiProContato
     ? '#contato'
     : menu.cta_destino === 'whatsapp' && whatsapp?.numero
-      ? linkWhatsApp(whatsapp.numero, whatsapp.mensagem)
+      ? linkWhatsApp(whatsapp.numero, mensagemWhatsApp)
       : menu.cta_url
   const cta = menu.cta_texto && ctaUrl
   const ehWhatsapp = menu.cta_destino === 'whatsapp'
@@ -192,15 +192,18 @@ function MenuTopo({ logo, menu, whatsapp, coresPagina, onIrParaContato, refMenu,
 // pré-visualização (sticky), em vez de `fixed` na janela inteira.
 // `secaoContato`: id do bloco (`data-secao`) que é a seção de contato desta página;
 // `coresPagina`: { principal, destaque } desta página. Ambos vêm de templates.jsx.
+// `mensagemPagina`: mensagem do WhatsApp da própria página (`conteudo.whatsapp_mensagem`, sem o padrão do
+// modelo); com `whatsapp.mensagem_da_pagina` ligado, o botão flutuante e o do menu usam ela no lugar da padrão.
 // `porContainer`: só na pré-visualização de template com `responsivoPorContainer` — o menu segue a
 // largura simulada (celular/tablet/desktop) em vez da largura da janela.
-export default function MolduraLandingPage({ configuracoes, preview = false, secaoContato = null, coresPagina = null, porContainer = false, children }) {
+export default function MolduraLandingPage({ configuracoes, preview = false, secaoContato = null, coresPagina = null, mensagemPagina = '', porContainer = false, children }) {
   useFonteDaMarca(configuracoes?.marca?.fonte)
   const raiz = useRef(null)
   const refMenu = useRef(null)
   const logo = configuracoes?.marca?.logo_url
   const w = configuracoes?.whatsapp
-  const wpp = w?.ativo && w?.numero ? linkWhatsApp(w.numero, w.mensagem) : null
+  const mensagem = (w?.mensagem_da_pagina && mensagemPagina?.trim()) || w?.mensagem
+  const wpp = w?.ativo && w?.numero ? linkWhatsApp(w.numero, mensagem) : null
   const menu = configuracoes?.menu
   const notificacao = w?.notificacao !== false
 
@@ -211,6 +214,7 @@ export default function MolduraLandingPage({ configuracoes, preview = false, sec
           logo={logo}
           menu={menu}
           whatsapp={w}
+          mensagemWhatsApp={mensagem}
           coresPagina={coresPagina}
           refMenu={refMenu}
           porContainer={porContainer}

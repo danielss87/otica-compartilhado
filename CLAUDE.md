@@ -21,7 +21,7 @@ package.json                     # npm: otica-compartilhado (raiz do repo)
 
 ## Features
 
-### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.23.0, out/2026
+### Landing pages (`landing_pages` / `otica-compartilhado/landing-pages`) — v0.24.0, out/2026
 Origem: 4 Olhos (ago/2026). Páginas de captura por template pronto com edição guiada (4 templates:
 `simples`, `promocao`, `agendar_consulta`, `greats`), página pública `/lp/:slug`, contagem de
 visualizações e captura de lead (nome + telefone + fbclid). Quinto template, `leader` (v0.10.0), em
@@ -115,6 +115,14 @@ para todas as opções.
 8. Repo **público**: nunca commitar segredo, credencial, URL interna, dado de cliente ou telefone real.
 
 ## Changelog
+
+### v0.24.0 (28/10/2026)
+- **Botão de WhatsApp com a mensagem de cada página** (Configurações → Botão de WhatsApp → "Usar a mensagem de cada
+  página", `whatsapp.mensagem_da_pagina`, **desligado por padrão**): ligado, o botão flutuante e o botão do menu (quando
+  leva ao WhatsApp) usam a `whatsapp_mensagem` da própria página, se ela tiver uma, no lugar da mensagem padrão. Serve
+  para saber, pela primeira linha da conversa, de qual página (campanha) veio o contato. Página sem mensagem própria
+  continua com a padrão. `MolduraLandingPage` ganhou a prop `mensagemPagina` (conteúdo cru, sem o padrão do modelo).
+- Sem mudança de banco. Desligado, o comportamento é idêntico ao da v0.23.0.
 
 ### v0.23.0 (28/10/2026)
 - **Fonte por empresa** (`marca.fonte`, `fontes.js`): Configurações → Identidade de marca → "Fonte das páginas" (Open Sans,

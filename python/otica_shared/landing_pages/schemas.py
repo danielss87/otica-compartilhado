@@ -46,6 +46,7 @@ class ConfigWhatsapp(BaseModel):
     numero: str = ""
     mensagem: str = ""
     notificacao: bool = True
+    mensagem_da_pagina: bool = False
 
 
 class ConfigMarca(BaseModel):

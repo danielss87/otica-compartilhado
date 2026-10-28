@@ -166,6 +166,7 @@ export default function LandingPageEditor() {
                   preview
                   secaoContato={secaoContatoDaPagina(lp.template, conteudo)}
                   coresPagina={coresDaPagina(lp.template, conteudo)}
+                  mensagemPagina={conteudo?.whatsapp_mensagem}
                   porContainer={Boolean(template.responsivoPorContainer)}
                 >
                   <template.Render conteudo={conteudo} />

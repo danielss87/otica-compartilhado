@@ -119,6 +119,7 @@ export default function LandingPageView({ inicial = false }) {
         configuracoes={lp.configuracoes}
         secaoContato={secaoContatoDaPagina(lp.template, lp.conteudo)}
         coresPagina={coresDaPagina(lp.template, lp.conteudo)}
+        mensagemPagina={lp.conteudo?.whatsapp_mensagem}
       >
         <template.Render conteudo={lp.conteudo || {}} onLead={handleLead} />
       </MolduraLandingPage>

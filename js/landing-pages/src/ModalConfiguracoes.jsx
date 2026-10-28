@@ -235,6 +235,15 @@ export default function ModalConfiguracoes({ onClose, empresaId = 1 }) {
                       <Interruptor ligado={cfg.whatsapp.notificacao !== false} onChange={v => setWhatsapp('notificacao', v)} label="Mostrar bolinha de notificação" />
                     </div>
                     )}
+                    {cfg.whatsapp.ativo && (
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <p className="text-xs font-medium text-gray-700">Usar a mensagem de cada página</p>
+                        <p className="text-xs text-gray-400">Se a página tem mensagem de WhatsApp própria, o botão flutuante usa ela, e dá para saber de qual página veio o contato. Sem mensagem própria, vai a padrão acima.</p>
+                      </div>
+                      <Interruptor ligado={Boolean(cfg.whatsapp.mensagem_da_pagina)} onChange={v => setWhatsapp('mensagem_da_pagina', v)} label="Usar a mensagem de cada página" />
+                    </div>
+                    )}
                 </div>
               </section>
 
