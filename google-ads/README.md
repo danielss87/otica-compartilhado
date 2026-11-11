@@ -15,6 +15,8 @@ Arquivos:
 - `concorrentes.json`: a lista de concorrentes (fonte única). Editar só com `concorrentes.py adicionar`.
 - `concorrentes.py`: compara a lista com a conta e com os termos de pesquisa (só Python, sem dependência).
 - `aprendizados-comuns.md`: o que vale para qualquer conta de ótica (comportamento do Google, da API, critérios).
+- `ESTRATEGIA.md`: estratégia conjunta (quem fica com cada busca, verba pelo retorno, medição, experimentos, rotina). **Ler primeiro.**
+- Volume de busca: Planejador do Armazém (acesso Basic) vale para as duas (dado da região): ver `ESTRATEGIA.md`, seção 5.
 
 Sem versão nem pacote: as skills leem estes arquivos direto em `~/Desktop/otica-compartilhado/google-ads/`.
 
