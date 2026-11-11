@@ -45,6 +45,11 @@ Aplicar a divisão = negativas por fatia em cada conta, uma proposta por conta, 
 tem palavras que são do Armazém ("óculos pronto na hora/em 24h/urgente", "lentes zeiss", "ótica são josé"): sair delas
 faz parte da proposta.
 
+**Marca no orgânico (Search Console, 11/11/2026):** a 4 Olhos já é a 1ª posição grátis para a própria marca ("4 olhos",
+"4olhos", "ótica 4 olhos": ~480 cliques orgânicos em 90 dias). Não pagar por busca da própria marca em nenhuma das
+duas contas, a menos que um concorrente passe a anunciar nela. Já "ótica + cidade/Camelão" quase não traz clique
+orgânico: é onde o pago faz diferença.
+
 ## 2. Verba pelo retorno (decisão do Daniel, 11/11/2026)
 
 Nenhuma conta tem verba fixa: começa baixo e sobe só onde o custo por venda paga.
