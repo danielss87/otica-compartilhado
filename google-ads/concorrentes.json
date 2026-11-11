@@ -1,0 +1,4439 @@
+{
+ "_leia": "Lista compartilhada de concorrentes no Google Ads (Ariel + 4 Olhos). Regras e uso: README.md. Editar com concorrentes.py adicionar.",
+ "concorrentes": [
+  {
+   "termo": "4 olhos",
+   "corresp": "frase",
+   "dono": "4olhos",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27",
+   "nota": "marca da 4 Olhos: só a conta do Ariel negativa"
+  },
+  {
+   "termo": "4olhos",
+   "corresp": "frase",
+   "dono": "4olhos",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27",
+   "nota": "marca da 4 Olhos: só a conta do Ariel negativa"
+  },
+  {
+   "termo": "99 otica",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "99 ótica",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "99 oticas",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "99 óticas",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "a&e otica",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "alair otica",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "angiale",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "armazem do oculos",
+   "corresp": "frase",
+   "dono": "ariel",
+   "visto_em": [],
+   "desde": "2026-11-11",
+   "nota": "marca do Ariel: só a conta da 4 Olhos negativa"
+  },
+  {
+   "termo": "armazém do óculos",
+   "corresp": "frase",
+   "dono": "ariel",
+   "visto_em": [],
+   "desde": "2026-11-11",
+   "nota": "marca do Ariel: só a conta da 4 Olhos negativa"
+  },
+  {
+   "termo": "armazem dos oculos",
+   "corresp": "frase",
+   "dono": "ariel",
+   "visto_em": [],
+   "desde": "2026-11-11",
+   "nota": "marca do Ariel: só a conta da 4 Olhos negativa"
+  },
+  {
+   "termo": "armazém dos óculos",
+   "corresp": "frase",
+   "dono": "ariel",
+   "visto_em": [],
+   "desde": "2026-11-11",
+   "nota": "marca do Ariel: só a conta da 4 Olhos negativa"
+  },
+  {
+   "termo": "arte do olhar",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "atacadao do oculos",
+   "corresp": "ampla",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "atacadão do óculos",
+   "corresp": "ampla",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "atacadao dos oculos",
+   "corresp": "ampla",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "atacadão dos óculos",
+   "corresp": "ampla",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "baratao dos oculos",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "baratao dos óculos",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "baratão dos oculos",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "baratão dos óculos",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "bbz",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "bella visão",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "beth",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "bethe otica",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "bistek otica",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "carol",
+   "corresp": "ampla",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "celyn",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "center vision",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "central visao",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "central visão",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "centro da visao",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "centro da visão",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "centro visao",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "centro visão",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "chili beans",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "chilli beans",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "chillibeans",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "claudete",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "dalmolin",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "dimensão",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "dimpol",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "diniz",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "dlentes",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "doce olhar",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "e-vision",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "edna",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "eduardo joalheria",
+   "corresp": "ampla",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "essencial",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "estatus",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "evision",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "excel lentes",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "excelencia optica",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "excelência óptica",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "faccial",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "familia urso",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "família urso",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ferri",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "firmo",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "firmoo",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "flor de margarida",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "foernges",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "francine otica",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "giassi otica",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "goldin",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "heyoo",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "hospital do oculos",
+   "corresp": "frase",
+   "visto_em": [
+    "4olhos"
+   ],
+   "desde": "2026-11-11",
+   "nota": "Hospital dos Óculos sem o s"
+  },
+  {
+   "termo": "hospital do óculos",
+   "corresp": "frase",
+   "visto_em": [
+    "4olhos"
+   ],
+   "desde": "2026-11-11",
+   "nota": "Hospital dos Óculos sem o s"
+  },
+  {
+   "termo": "hospital dos oculos",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "hospital dos óculos",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ibiza",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "iguacu laboratorio",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "iguacu laboratório",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "iguaçu laboratorio",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "iguaçu laboratório",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "inove",
+   "corresp": "ampla",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "instituto do oculos",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "instituto do óculos",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "instituto dos oculos",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "instituto dos óculos",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "instituto visao solidaria",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "instituto visão solidária",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "isabela dias",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ivs",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "janinna",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "joalheria boa vista",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "juma otica",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "junior otica",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "junior ótica",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "júnior ótica",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "klins",
+   "corresp": "frase",
+   "visto_em": [
+    "4olhos"
+   ],
+   "desde": "2026-11-11",
+   "nota": "Ótica Klins, Tijucas"
+  },
+  {
+   "termo": "lavier",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "luso otica",
+   "corresp": "ampla",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "luso ótica",
+   "corresp": "ampla",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "lusotica",
+   "corresp": "ampla",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "lusótica",
+   "corresp": "ampla",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "m & f",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "m e f",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "m&f",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "marçal",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "master color",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "meira",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "menina dos olhos",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "menina flor",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "menina linda",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "mercadao",
+   "corresp": "ampla",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "mercadão",
+   "corresp": "ampla",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "mercadao dos oculos",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "mercadão dos óculos",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "mercado do oculos",
+   "corresp": "ampla",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "mercado do óculos",
+   "corresp": "ampla",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "mercado dos oculos",
+   "corresp": "ampla",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "mercado dos óculos",
+   "corresp": "ampla",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "militz",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "mix mundo",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "mondadori",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "monviso",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "multilentes",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "nine nine",
+   "corresp": "frase",
+   "visto_em": [
+    "4olhos"
+   ],
+   "desde": "2026-11-11",
+   "nota": "99 Óticas escrito por extenso"
+  },
+  {
+   "termo": "nohan",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "nossa otica",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "nossa ótica",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ojo",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ojo by mr ray",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "olhares",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oliveira",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "optica luna",
+   "corresp": "frase",
+   "visto_em": [
+    "4olhos"
+   ],
+   "desde": "2026-11-11",
+   "nota": "grafia 'optica' escapa de 'otica luna'"
+  },
+  {
+   "termo": "óptica luna",
+   "corresp": "frase",
+   "visto_em": [
+    "4olhos"
+   ],
+   "desde": "2026-11-11",
+   "nota": "grafia 'óptica' escapa de 'ótica luna'"
+  },
+  {
+   "termo": "orasis",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "órasis",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótcia tictac",
+   "corresp": "ampla",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica 99",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica 99",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica alair",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica alair",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica aline",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica aline",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica arte do olhar",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica arte do olhar",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica ativa",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica ativa",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica beni",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica beni",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica bethe",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica bethe",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica bistek",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica bistek",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica boa visao",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica boa visão",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica boa visão",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica boa vista",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica boa vista",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica capital",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica capital",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica catarina",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica catarina",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica central visão",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica conceito",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica conceito",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica craft",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica craft",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica cristal",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica cristal",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica de todos",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica de todos",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica demitrius",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica dimensao",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica dimensão",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica dimensão",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica diniz",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica ds",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica ds",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica edna",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica eduardo",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica eduardo",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica elegance",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica elegance",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica eleve",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica emporio visual",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica empório visual",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica empório visual",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica exata",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica exata",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica excelencia",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica excelência",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica ferrari",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica ferrari",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica ferri",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica fit master",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica francine",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica francine",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica giassi",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica giassi",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica giumbelli",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica goo",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica goo",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica guanabara",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica guanabara",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica helena",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica helena",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica horizonte",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica inove",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica ivs",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica ivs",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica juma",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica juma",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica junior",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica junior",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica júnior",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica lk",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica lk",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica lucas",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica lucas",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica luna",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica luna",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica madri",
+   "corresp": "exata",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica madri",
+   "corresp": "exata",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica maria",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica maria",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica marinho",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica marinho",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica mav",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica mav",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica max",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica max",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica mello",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica mello",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica miami",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica miami",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica mondadori",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica montreal",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica montreal",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica nova estação",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica nova vida",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica nova vida",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica nova visao",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica nova visão",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica nova visão",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica oasis",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica oásis",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica oasis",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica oásis",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica ojo",
+   "corresp": "ampla",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica ojo",
+   "corresp": "ampla",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica orange",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica orange",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica paris",
+   "corresp": "ampla",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica paris",
+   "corresp": "ampla",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica perfeicao",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica perfeição",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica perfeição",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica ponto da visao",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica ponto da visão",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica ponto da visão",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica pontual",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica pontual",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica precisao",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica precisão",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica prevent",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica prevent",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica quevedo",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica real",
+   "corresp": "exata",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica real",
+   "corresp": "exata",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica referencia",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica referência",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica referencia",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica referência",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica rio branco",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica rio branco",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica rosa de saron",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica rosan",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica rosan",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica santa clara",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica santa clara",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica santa luzia",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica santa luzia",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica santo grau",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica santo grau",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica santo luxo",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica santo luxo",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica soldi",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica soldi",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica souza",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica souza",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica status",
+   "corresp": "ampla",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica status",
+   "corresp": "ampla",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica tadeu",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica tadeu",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica tati",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica tati",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica taty",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica taty",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica tecnica",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica técnica",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica técnica",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica tic tac",
+   "corresp": "ampla",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica tictac",
+   "corresp": "ampla",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica tictac",
+   "corresp": "ampla",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica via visão",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica vidal",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica vidal",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica visao",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica visão",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica visão de todos",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica vital",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica vital",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica vitoria",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica vitória",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica vitoria",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica vitória",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica viva",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica viva",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "otica vivi",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ótica vivi",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas 99",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas 99",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas alair",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas alair",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas aline",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas aline",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas arte do olhar",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas arte do olhar",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas ativa",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas ativa",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas beni",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas beni",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas bethe",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas bethe",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas bistek",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas bistek",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas boa visao",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas boa visão",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas boa visão",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas boa vista",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas boa vista",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas capital",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas capital",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas carol",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas catarina",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas catarina",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas conceito",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas conceito",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas craft",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas craft",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas cristal",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas cristal",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas de todos",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas de todos",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas dimensao",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas dimensão",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas dimensão",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas diniz",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas do povo",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas ds",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas eduardo",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas eduardo",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas elegance",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas elegance",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas emporio visual",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas empório visual",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas empório visual",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas exata",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas exata",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas ferrari",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas ferrari",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas francine",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas francine",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas gassi",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas giassi",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas giassi",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas goo",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas goo",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas guanabara",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas guanabara",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas helena",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas helena",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas ivs",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas juma",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas juma",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas lk",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas lk",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas lucas",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas lucas",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas luna",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas luna",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas madri",
+   "corresp": "exata",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas madri",
+   "corresp": "exata",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas maria",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas maria",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas marinho",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas marinho",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas mav",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas mav",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas max",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas max",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas mello",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas mello",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas miami",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas miami",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas montreal",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas montreal",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas nova vida",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas nova vida",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas nova visao",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas nova visão",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas nova visão",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas oasis",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas oasis",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas ojo",
+   "corresp": "ampla",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas ojo",
+   "corresp": "ampla",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas orange",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas orange",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas paris",
+   "corresp": "ampla",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas paris",
+   "corresp": "ampla",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas perfeicao",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas perfeição",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas perfeição",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas ponto da visao",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas ponto da visão",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas ponto da visão",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas pontual",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas pontual",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas precisao",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas precisão",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas prevent",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas prevent",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas quevedo",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas real",
+   "corresp": "exata",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas real",
+   "corresp": "exata",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas rio branco",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas rio branco",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas rosan",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas rosan",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas santa clara",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas santa clara",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas santa luzia",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas santa luzia",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas santo grau",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas santo grau",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas soldi",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas soldi",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas souza",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas souza",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas tadeu",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas tadeu",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas tati",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas tati",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas taty",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas taty",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas tecnica",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas técnica",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas técnica",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas via visão",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas vidal",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas vidal",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas visao",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas visão",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas vitoria",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas vitória",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas vitoria",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas vitória",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "oticas vivi",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "óticas vivi",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "pagani",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "pagnathe",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "personaotica",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "personaótica",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "picolli",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ponto de visao",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ponto de visão",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ponto de vista",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ponto optico",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ponto óptico",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "primelens",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "q oculos",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "qoculos",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "qóculos",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "qotica",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "quatro olhos",
+   "corresp": "frase",
+   "dono": "4olhos",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27",
+   "nota": "marca da 4 Olhos: só a conta do Ariel negativa"
+  },
+  {
+   "termo": "quevedo",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "renner",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "ressignificar",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "rosan otica",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "safine",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "safira",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "santa luzia otica",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "santo grau",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "sidy",
+   "corresp": "frase",
+   "visto_em": [
+    "4olhos"
+   ],
+   "desde": "2026-11-11",
+   "nota": "Sidy Ótica e Relojoaria"
+  },
+  {
+   "termo": "soldi otica",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "solução",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "star",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "steiner",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "styllus",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "sunglass hut",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "sunglasshut",
+   "corresp": "ampla",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "sunhut",
+   "corresp": "frase",
+   "visto_em": [
+    "4olhos"
+   ],
+   "desde": "2026-11-11",
+   "nota": "Sunglass Hut abreviado"
+  },
+  {
+   "termo": "super otica",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "super ótica",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "tati & lu",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "tati e lu",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "taty otica",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "tessarollo",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "tessarolo",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "tic tac",
+   "corresp": "ampla",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "tictac",
+   "corresp": "ampla",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "upscale",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "urso",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "useaela",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "varela",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "veroni",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "via exata",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "via visao",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "via visão",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "visao solidaria",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "visão solidária",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "vision center",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "visium",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "vital otica",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "vital ótica",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "viva oculos",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "viva óculos",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "vivara",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "yoco",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "zamares",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "zerezes",
+   "corresp": "ampla",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  },
+  {
+   "termo": "zyon",
+   "corresp": "frase",
+   "visto_em": [
+    "ariel"
+   ],
+   "desde": "2026-10-27"
+  }
+ ],
+ "nao_negativar": [
+  {
+   "termo": "otica popular",
+   "motivo": "rede concorrente e também adjetivo (ótica barata): negativa só por campanha, nas que não falam de preço",
+   "decidido": "ariel 27/10"
+  },
+  {
+   "termo": "ótica popular",
+   "motivo": "idem",
+   "decidido": "ariel 27/10"
+  },
+  {
+   "termo": "otica especialista",
+   "motivo": "concorrente (Trindade) e adjetivo: negativa só por campanha; campanha de multifocal/especialista fica sem",
+   "decidido": "ariel 28/10"
+  },
+  {
+   "termo": "ótica especialista",
+   "motivo": "idem",
+   "decidido": "ariel 28/10"
+  },
+  {
+   "termo": "otica express",
+   "motivo": "existe ótica delivery com esse nome, mas é adjetivo plausível (quer ótica rápida)",
+   "decidido": "ariel 04/11"
+  },
+  {
+   "termo": "ótica express",
+   "motivo": "idem",
+   "decidido": "ariel 04/11"
+  },
+  {
+   "termo": "otica central",
+   "motivo": "existe a concorrente, mas pode ser a Avenida Central de São José: em observação",
+   "decidido": "ariel 11/11"
+  },
+  {
+   "termo": "ótica central",
+   "motivo": "idem",
+   "decidido": "ariel 11/11"
+  },
+  {
+   "termo": "feirão do óculos",
+   "motivo": "não há loja com esse nome; pode ser busca de preço: em observação",
+   "decidido": "ariel 11/11"
+  },
+  {
+   "termo": "feirao do oculos",
+   "motivo": "idem",
+   "decidido": "ariel 11/11"
+  },
+  {
+   "termo": "otica mais",
+   "motivo": "bloquearia 'ótica mais próxima'",
+   "decidido": "ariel 06/11"
+  },
+  {
+   "termo": "ótica mais",
+   "motivo": "idem",
+   "decidido": "ariel 06/11"
+  },
+  {
+   "termo": "sos oculos",
+   "motivo": "pode ser busca de urgência",
+   "decidido": "ariel 06/11"
+  },
+  {
+   "termo": "otica confiavel",
+   "motivo": "adjetivo",
+   "decidido": "ariel 06/11"
+  },
+  {
+   "termo": "via catarina",
+   "motivo": "shopping de Palhoça (lugar onde anunciamos)",
+   "decidido": "ariel 07/11"
+  },
+  {
+   "termo": "otica ipiranga",
+   "motivo": "bairro de São José",
+   "decidido": "ariel 07/11"
+  },
+  {
+   "termo": "wayfarer",
+   "motivo": "estilo de óculos, não só Ray-Ban",
+   "decidido": "ariel 04/11"
+  },
+  {
+   "termo": "balgriff",
+   "motivo": "tipo de óculos (parafusado)",
+   "decidido": "ariel 04/11"
+  },
+  {
+   "termo": "nulux",
+   "motivo": "lente Hoya, que vendemos",
+   "decidido": "ariel 05/11"
+  },
+  {
+   "termo": "transitions",
+   "motivo": "lente Essilor, que vendemos",
+   "decidido": "ariel 05/11"
+  }
+ ],
+ "fora_da_lista": {
+  "motivo": "marcas de armação e termos genéricos ficam na conta de cada empresa: o que um não vende pode ser o que o outro vende",
+  "exemplos_do_ariel": [
+   "armani",
+   "armatti",
+   "armatto",
+   "arnette",
+   "barcur",
+   "benetton",
+   "carrera",
+   "chrome hearts",
+   "colcci",
+   "di pops",
+   "evoke",
+   "fendi",
+   "flipo",
+   "grazi massafera",
+   "gucci",
+   "hu wood",
+   "kate spade",
+   "lanca perfume",
+   "lança perfume",
+   "lemtosh",
+   "levi's",
+   "levis",
+   "luz da lua",
+   "marc jacobs",
+   "maresia",
+   "miu miu",
+   "morena rosa",
+   "moretti",
+   "mormaii",
+   "moscot",
+   "oakley",
+   "oculos avon",
+   "óculos avon",
+   "oculos gap",
+   "óculos gap",
+   "oculos prado",
+   "óculos prado",
+   "pacevue",
+   "persol",
+   "porsche",
+   "prada",
+   "ray ban",
+   "ray-ban",
+   "rayban",
+   "replica",
+   "réplica",
+   "replicas",
+   "réplicas",
+   "saint germain",
+   "saint laurent",
+   "santa lolla",
+   "speedo",
+   "spellbound",
+   "swarovski",
+   "tiffany",
+   "urban police",
+   "vogue",
+   "yikaidi",
+   "ysl",
+   "zeno",
+   "arrumar meu oculos",
+   "arrumar meu óculos",
+   "arrumar oculos",
+   "arrumar óculos",
+   "clinica de oculos",
+   "clinica de óculos",
+   "clínica de oculos",
+   "clínica de óculos",
+   "concerta",
+   "concertar",
+   "concerto",
+   "concertos",
+   "conserta",
+   "consertar",
+   "conserto",
+   "consertos",
+   "consulta gratis",
+   "contratando",
+   "epi",
+   "EPI",
+   "gratis",
+   "grátis",
+   "ingleses",
+   "otica publica",
+   "otica pública",
+   "ótica publica",
+   "ótica pública",
+   "oticas publicas",
+   "óticas públicas",
+   "relojoaria",
+   "reparo de oculos",
+   "reparo de óculos",
+   "reparos de oculos",
+   "reparos de óculos",
+   "trabalhe aqui",
+   "trabalhe conosco",
+   "vagas"
+  ]
+ }
+}
