@@ -54,11 +54,13 @@ orgânico: é onde o pago faz diferença.
 
 Nenhuma conta tem verba fixa: começa baixo e sobe só onde o custo por venda paga.
 
-- **Custo máximo por venda** = ticket × margem que o Daniel aceita gastar em anúncio. Ponto de partida (ajustar quando
-  ele der a margem real): 15% do ticket → **4 Olhos ~R$ 50**, **Armazém ~R$ 150** por venda.
+- **Custo máximo por venda** = ticket × parte do ticket que o Daniel aceita gastar em anúncio.
+  - **4 Olhos: até 40% do ticket** (decisão do Daniel, 11/11/2026) → ~R$ 340 × 40% = **~R$ 136 por venda**.
+  - **Armazém: 15% do ticket (provisório, falta o Daniel definir)** → ~R$ 990 × 15% = ~R$ 150 por venda.
 - **Custo máximo por contato** = custo máximo por venda × taxa contato→venda medida de cada empresa (enquanto não houver
-  medida, usar 1 venda a cada 4 contatos → 4 Olhos ~R$ 12, Armazém ~R$ 37). É por isso que o Armazém pode pagar mais
-  pelo mesmo clique: a busca que vale para ele (ZEISS, multifocal, urgência) é a de ticket alto.
+  medida, usar 1 venda a cada 4 contatos → 4 Olhos ~R$ 34, Armazém ~R$ 37). Com os 40%, as duas aguentam um custo por
+  contato parecido; a divisão das buscas (seção 1) é o que impede que essa folga vire leilão entre as duas.
+- Recalcular os tetos quando o ticket médio mudar (4 Olhos: `origem_marketing`/O.S. no sistema; Armazém: SSÓtica).
 - **Subir**: +20% por semana na campanha que ficou abaixo do teto por 2 semanas seguidas, com pelo menos 10 contatos.
 - **Cortar ou pausar**: só com dado suficiente (≥ 30 cliques ou o teto de custo gasto 2 vezes sem venda) e nunca por uma
   métrica só (regra das duas skills).
@@ -78,7 +80,7 @@ Nenhuma conta tem verba fixa: começa baixo e sobe só onde o custo por venda pa
 
 **4 Olhos**
 1. Campanha de pesquisa **Centro Florianópolis** (raio da loja do Centro, ótica centro/florianópolis, anúncio com R$ 250
-   e o endereço), no lugar da Smart. Critério: custo por contato ≤ R$ 12 em 2 semanas.
+   e o endereço), no lugar da Smart. Critério: custo por contato ≤ R$ 34 em 2 semanas (teto de 40% do ticket).
 2. Tirar da "[ASTER] [VISITA EM LOJA]" as palavras que são do Armazém e trocar o objetivo de rota por contato.
 3. Lista de concorrentes: revisão em 25/11 (E1 do diário).
 
