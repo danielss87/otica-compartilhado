@@ -978,6 +978,24 @@
    "desde": "2026-10-27"
   },
   {
+   "termo": "multi hospital",
+   "corresp": "frase",
+   "visto_em": [
+    "4olhos"
+   ],
+   "desde": "2026-11-14",
+   "nota": "Multihospital: óculos gratuito pelo SUS (Daniel, 14/11)"
+  },
+  {
+   "termo": "multihospital",
+   "corresp": "frase",
+   "visto_em": [
+    "4olhos"
+   ],
+   "desde": "2026-11-14",
+   "nota": "Multihospital: óculos gratuito pelo SUS (Daniel, 14/11)"
+  },
+  {
    "termo": "multilentes",
    "corresp": "frase",
    "visto_em": [
